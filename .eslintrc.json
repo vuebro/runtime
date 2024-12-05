@@ -2,13 +2,16 @@
   "root": true,
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
+    "extraFileExtensions": [".vue"]
   },
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/strict-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:vue/vue3-strongly-recommended",
+    "plugin:vue-pug/vue3-recommended",
     "plugin:perfectionist/recommended-natural-legacy",
     "plugin:prettier/recommended"
   ],
@@ -21,5 +24,10 @@
         "endOfLine": "auto"
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": true
+    }
   }
 }
