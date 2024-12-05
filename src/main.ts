@@ -10,9 +10,9 @@ import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { customFetch, data, getFonts, importmap, pages } from "@vues3/shared";
 import { validateImportmap } from "@vues3/types";
-import defaults from "app/uno.config";
 import { computed, createApp, nextTick, readonly } from "vue";
 
+import defaults from "../uno.config";
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.sass";
