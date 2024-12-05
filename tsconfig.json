@@ -1,23 +1,30 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "esModuleInterop": true,
     "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
+    "target": "esnext",
+    "allowJs": true,
+    "resolveJsonModule": true,
     "moduleDetection": "force",
+    "isolatedModules": true,
+    "module": "preserve",
     "noEmit": true,
-
-    /* Linting */
+    "lib": ["esnext", "dom", "dom.iterable"],
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noImplicitAny": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "resolvePackageJsonExports": false,
+    "paths": {
+      "src": ["./src"],
+      "src/*": ["./src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["./**/*", "./**/*.d.ts"],
+  "exclude": ["./dist", "./node_modules"],
+  "vueCompilerOptions": {
+    "plugins": ["@vue/language-plugin-pug"]
+  }
 }
