@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "build": "vite build --emptyOutDir"
+    "build": "tsc && vite build --emptyOutDir"
   },
   "dependencies": {
     "@iconify/vue": "^4.1.2",
