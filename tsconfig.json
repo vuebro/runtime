@@ -1,29 +1,12 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "esnext",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
     "module": "preserve",
     "noEmit": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
     "strict": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "noImplicitAny": false,
-    "exactOptionalPropertyTypes": false,
-    "noUncheckedIndexedAccess": false,
-    "resolvePackageJsonExports": false,
-    "paths": {
-      "src": ["./src"],
-      "src/*": ["./src/*"]
-    }
+    "resolvePackageJsonExports": false
   },
-  "include": ["./**/*", "./**/*.d.ts"],
-  "exclude": ["./dist", "./node_modules"],
   "vueCompilerOptions": {
     "plugins": ["@vue/language-plugin-pug"]
   }
