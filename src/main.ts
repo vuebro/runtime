@@ -1,6 +1,6 @@
 import type { Preset } from "@unocss/core";
 import type { RuntimeOptions } from "@unocss/runtime";
-import type { TImportmap, TPage } from "@vues3/types";
+import type { TImportmap, TPage } from "@vues3/shared";
 import type { Component } from "vue";
 import type { RouteRecordRaw } from "vue-router";
 
@@ -9,7 +9,6 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import { customFetch, data, getFonts, importmap, pages } from "@vues3/shared";
-import { validateImportmap } from "@vues3/types";
 import { computed, createApp, nextTick, readonly } from "vue";
 
 import defaults from "../uno.config";
@@ -37,7 +36,6 @@ const initRouter = (async () => {
     }) as unknown as [TImportmap, TPage[]],
   );
   importmap.imports = imports;
-  validateImportmap(importmap);
   data.push(page);
   await nextTick();
   window.app.provide(
