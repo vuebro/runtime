@@ -1,41 +1,62 @@
+import type { RollupOptions } from "rollup";
 import type {
   AliasOptions,
   BuildOptions,
+  CSSOptions,
   PluginOption,
   SassPreprocessorOptions,
-  UserConfig,
 } from "vite";
 import type { RenameFunc } from "vite-plugin-static-copy";
 
 import vue from "@vitejs/plugin-vue";
-import { fileURLToPath, URL } from "node:url";
+import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { version } from "vue";
 
-const dest = "assets";
-const src = "./node_modules/vue/dist/vue.esm-browser.prod.js";
-const rename: RenameFunc = (fileName, fileExtension) =>
-  `${fileName}-${version}.${fileExtension}`;
-const targets = [{ dest, rename, src }];
-const plugins: PluginOption[] = [vue(), viteStaticCopy({ targets })];
-const app = fileURLToPath(new URL("..", import.meta.url));
-const alias: AliasOptions = { "@": ".", app };
-const resolve: UserConfig["resolve"] = { alias };
-const manifest = true;
-const manualChunks = (id: string) =>
-  id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, "");
-const output = { manualChunks };
-const external = ["vue"];
-const rollupOptions: BuildOptions["rollupOptions"] = { external, output };
-const build: BuildOptions = { manifest, rollupOptions };
-const define: object = {
+const base = "./";
+const build: BuildOptions = (() => {
+  const manifest = true;
+  const rollupOptions: RollupOptions = (() => {
+    const output = (() => {
+      const manualChunks = (id: string) =>
+        id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, "");
+      return { manualChunks };
+    })();
+    const external = ["vue"];
+    return { external, output };
+  })();
+  return { manifest, rollupOptions };
+})();
+const css: CSSOptions = (() => {
+  const preprocessorOptions = (() => {
+    const sass: SassPreprocessorOptions = (() => {
+      const api = "modern-compiler";
+      return { api };
+    })();
+    return { sass };
+  })();
+  return { preprocessorOptions };
+})();
+const define = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   __VUE_PROD_DEVTOOLS__: true,
 };
-const api = "modern-compiler";
-const sass: SassPreprocessorOptions = { api };
-const preprocessorOptions = { sass };
-const css = { preprocessorOptions };
-const base = "./";
+const plugins: PluginOption[] = (() => {
+  const targets = (() => {
+    const dest = "assets";
+    const src = "./node_modules/vue/dist/vue.esm-browser.prod.js";
+    const rename: RenameFunc = (fileName, fileExtension) =>
+      `${fileName}-${version}.${fileExtension}`;
+    return [{ dest, rename, src }];
+  })();
+  return [vue(), viteStaticCopy({ targets })];
+})();
+const resolve = (() => {
+  const alias: AliasOptions = (() => {
+    const app = fileURLToPath(new URL("..", import.meta.url));
+    return { "@": ".", app };
+  })();
+  return { alias };
+})();
 export default defineConfig({ base, build, css, define, plugins, resolve });
