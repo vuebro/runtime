@@ -1,5 +1,5 @@
 import type { RuntimeContext } from "@unocss/runtime";
-import type { TPage } from "@vues3/types";
+import type { TPage } from "@vues3/shared";
 import type { AsyncComponentLoader } from "vue";
 import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
 import type {
