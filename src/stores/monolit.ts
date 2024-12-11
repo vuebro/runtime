@@ -11,7 +11,7 @@ import type {
 
 import { importmap, pages } from "@vues3/shared";
 import { useStyleTag } from "@vueuse/core";
-import uuid from "uuid-random";
+import { v4 } from "uuid";
 import * as vue from "vue";
 import { loadModule } from "vue3-sfc-loader";
 import { createRouter, createWebHistory } from "vue-router";
@@ -67,7 +67,7 @@ const addStyle = (styles: string, id?: string) => {
   useStyleTag(styles, { id });
 };
 export const getAsyncComponent = ({ id }: TPage) => {
-  const abstractPath = `${id ?? uuid()}.vue`;
+  const abstractPath = `${id ?? v4()}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile = async (filePath: string) => {
     const { imports } = importmap;
