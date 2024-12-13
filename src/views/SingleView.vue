@@ -1,6 +1,15 @@
-<template lang="pug">
-div(:class="the?.class", :id="the?.id", un-cloak, v-if="the?.enabled")
-  component(:id="the?.id", :is, @vue:mounted="() => { resolve(the); }")
+<template>
+  <div :class="the?.class" :id="the?.id" un-cloak v-if="the?.enabled">
+    <component
+      :id="the?.id"
+      :is
+      @vue:mounted="
+        () => {
+          resolve(the);
+        }
+      "
+    ></component>
+  </div>
 </template>
 <script setup lang="ts">
 import type { TPage } from "@vues3/shared";
