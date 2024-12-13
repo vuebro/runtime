@@ -1,4 +1,4 @@
 {
-  "plugins": ["@prettier/plugin-pug", "prettier-plugin-jsdoc"],
+  "plugins": ["prettier-plugin-jsdoc"],
   "tsdoc": true
 }
