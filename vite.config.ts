@@ -1,11 +1,5 @@
 import type { RollupOptions } from "rollup";
-import type {
-  AliasOptions,
-  BuildOptions,
-  CSSOptions,
-  PluginOption,
-  SassPreprocessorOptions,
-} from "vite";
+import type { AliasOptions, BuildOptions, PluginOption } from "vite";
 import type { RenameFunc } from "vite-plugin-static-copy";
 
 import vue from "@vitejs/plugin-vue";
@@ -28,16 +22,6 @@ const build: BuildOptions = (() => {
   })();
   return { manifest, rollupOptions };
 })();
-const css: CSSOptions = (() => {
-  const preprocessorOptions = (() => {
-    const sass: SassPreprocessorOptions = (() => {
-      const api = "modern-compiler";
-      return { api };
-    })();
-    return { sass };
-  })();
-  return { preprocessorOptions };
-})();
 const define = {
   __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   __VUE_PROD_DEVTOOLS__: true,
@@ -59,4 +43,4 @@ const resolve = (() => {
   })();
   return { alias };
 })();
-export default defineConfig({ base, build, css, define, plugins, resolve });
+export default defineConfig({ base, build, define, plugins, resolve });
