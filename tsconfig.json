@@ -23,8 +23,5 @@
     "noPropertyAccessFromIndexSignature": false,
 
     "resolvePackageJsonExports": false
-  },
-  "vueCompilerOptions": {
-    "plugins": ["@vue/language-plugin-pug"]
   }
 }
