@@ -14,7 +14,7 @@ import { computed, createApp, nextTick, readonly } from "vue";
 import defaults from "../uno.config";
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
-import "./style.sass";
+import "./style.css";
 
 window.console.info(
   "⛵",
