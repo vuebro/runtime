@@ -1,6 +1,7 @@
-<template lang="pug">
-router-view(v-slot="{ Component }")
-  component(:id="pages[0].id", :is="Component")
+<template>
+  <router-view v-slot="{ Component }">
+    <component :id="pages[0].id" :is="Component"></component>
+  </router-view>
 </template>
 <script setup lang="ts">
 import type { MetaFlat } from "zhead";
