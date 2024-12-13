@@ -1,18 +1,23 @@
-<template lang="pug">
-div(
-  :class="the.class",
-  :id="the.id",
-  :key="the.id",
-  :role="the.id === that?.id ? 'main' : undefined",
-  ref="refs",
-  un-cloak,
-  v-for="the in $siblings"
-)
-  component(
-    :id="the.id",
-    :is="template(the)",
-    @vue:mounted="() => { resolve(the); }"
-  )
+<template>
+  <div
+    :class="the.class"
+    :id="the.id"
+    :key="the.id"
+    :role="the.id === that?.id ? 'main' : undefined"
+    ref="refs"
+    un-cloak
+    v-for="the in $siblings"
+  >
+    <component
+      :id="the.id"
+      :is="template(the)"
+      @vue:mounted="
+        () => {
+          resolve(the);
+        }
+      "
+    ></component>
+  </div>
 </template>
 <script setup lang="ts">
 import type { TPage } from "@vues3/shared";
