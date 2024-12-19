@@ -60,8 +60,9 @@ const initRouter = (async () => {
         name,
         "",
       );
-      const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
-      router.addRoute({ path, ...(loc && { alias }), children, component });
+      const path = relative?.replace(/^\/?/, "/").replace(/\/?$/, "/");
+      if (path)
+        router.addRoute({ path, ...(loc && { alias }), children, component });
     });
   }
   const path = "/:pathMatch(.*)*";
