@@ -50,19 +50,21 @@ const initRouter = (async () => {
     ) => [{ component, name, path }] as RouteRecordRaw[];
     const component = () => import("./views/SingleView.vue");
     pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
-      const alias = (loc?.replaceAll(" ", "_") ?? "")
-        .replace(/^\/?/, "/")
-        .replace(/\/?$/, "/");
-      const children = getChildren(
-        (parent?.along ?? along)
-          ? () => import("./views/MultiView.vue")
-          : component,
-        name,
-        "",
-      );
-      const path = relative?.replace(/^\/?/, "/").replace(/\/?$/, "/");
-      if (path)
-        router.addRoute({ path, ...(loc && { alias }), children, component });
+      if (relative) {
+        const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
+        const alias = loc
+          ?.replaceAll(" ", "_")
+          .replace(/^\/?/, "/")
+          .replace(/\/?$/, "/");
+        const children = getChildren(
+          (parent?.along ?? along)
+            ? () => import("./views/MultiView.vue")
+            : component,
+          name,
+          "",
+        );
+        router.addRoute({ alias, children, component, path });
+      }
     });
   }
   const path = "/:pathMatch(.*)*";
