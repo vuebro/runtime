@@ -125,7 +125,7 @@ export const a = computed(() =>
   pages.value.find(({ id }) => id === router.currentRoute.value.name),
 );
 export const that = computed(() =>
-  router.currentRoute.value.path === "/" ? a.value?.$children?.[0] : a.value,
+  router.currentRoute.value.path === "/" ? a.value?.$children[0] : a.value,
 );
 const siblings = computed(() => that.value?.siblings ?? []);
 export const $siblings = computed(() =>
