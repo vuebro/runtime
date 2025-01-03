@@ -13,9 +13,11 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const a = computed(() => pages.value.find(({ id }) => id === route.name));
+const a = computed(
+  () => pages.value.find(({ id }) => id === route.name) ?? null,
+);
 const canonical = computed(() =>
-  a.value?.to === undefined
+  a.value?.to === null || a.value === null
     ? undefined
     : `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
 );
