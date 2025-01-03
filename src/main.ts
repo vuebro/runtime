@@ -50,7 +50,7 @@ const initRouter = (async () => {
     ) => [{ component, name, path }] as RouteRecordRaw[];
     const component = () => import("./views/SingleView.vue");
     pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
-      if (relative) {
+      if (relative !== null) {
         const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
         const alias = loc
           ?.replaceAll(" ", "_")
@@ -63,7 +63,7 @@ const initRouter = (async () => {
           name,
           "",
         );
-        router.addRoute({ alias, children, component, path });
+        router.addRoute({ ...(loc && { alias }), children, component, path });
       }
     });
   }
