@@ -1,33 +1,65 @@
 <template>
-  <div :class="the?.class" :id="the?.id" un-cloak v-if="the?.enabled">
+  <div :class="the?.class" :id="the?.id ?? v4()" un-cloak v-if="the?.enabled">
     <component
       :id="the?.id"
       :is
       @vue:mounted="
         () => {
-          resolve(the);
+          if (the) resolve(the);
         }
       "
     ></component>
   </div>
 </template>
 <script setup lang="ts">
-import type { TPage } from "@vues3/shared";
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
 
+import type { TPage } from "@vues3/shared";
+import type { ComputedRef } from "vue";
+
+import { v4 } from "uuid";
 import { computed, inject, onUpdated } from "vue";
 
 import { getAsyncComponent, promises, resolve, that } from "../stores/monolit";
 
-const { id } = defineProps<{ id?: string }>();
-const pages: Record<string, TPage> | undefined = inject("pages");
-const the = computed(() => (id ? pages?.[id as keyof object] : that.value));
-const is = computed(() => {
+/* -------------------------------------------------------------------------- */
+/*                                 Properties                                 */
+/* -------------------------------------------------------------------------- */
+
+const { id }: { id: string | undefined } = defineProps<{ id?: string }>();
+
+/* -------------------------------------------------------------------------- */
+/*                                 Injections                                 */
+/* -------------------------------------------------------------------------- */
+
+const pages: null | Record<string, TPage> = inject("pages") ?? null;
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const the: ComputedRef<null | TPage> = computed(() =>
+  id ? (pages?.[id as keyof object] ?? null) : that.value,
+);
+
+/* -------------------------------------------------------------------------- */
+
+const is: ComputedRef<null | Promise<object>> = computed(() => {
   const [[key, value] = []] = promises;
   promises.clear();
-  if (key) promises.set(key, value);
+  if (key && value) promises.set(key, value);
   return the.value && getAsyncComponent(the.value);
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
 onUpdated(() => {
-  if (id) resolve(the.value);
+  if (id && the.value) resolve(the.value);
 });
+
+/* -------------------------------------------------------------------------- */
 </script>
