@@ -1,7 +1,17 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TPage } from "@vues3/shared";
-import type { AsyncComponentLoader } from "vue";
-import type { AbstractPath, ContentData, File, Options } from "vue3-sfc-loader";
+import type { AsyncComponentLoader, ComputedRef, Ref } from "vue";
+import type {
+  AbstractPath,
+  ContentData,
+  File,
+  ModuleExport,
+  Options,
+} from "vue3-sfc-loader";
 import type {
   Router,
   RouteRecordRaw,
@@ -13,26 +23,130 @@ import { importmap, pages } from "@vues3/shared";
 import { useStyleTag } from "@vueuse/core";
 import { v4 } from "uuid";
 import * as vue from "vue";
+import { computed, defineAsyncComponent, ref } from "vue";
 import { loadModule } from "vue3-sfc-loader";
 import { createRouter, createWebHistory } from "vue-router";
 
-export const behavior = "smooth";
-export const threshold = 0.1;
+/* -------------------------------------------------------------------------- */
+/*                                  Variables                                 */
+/* -------------------------------------------------------------------------- */
+
+let onScroll: RouterScrollBehavior | undefined;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
+  onScroll && onScroll(to, from, savedPosition);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const behavior = "smooth";
+
+/* -------------------------------------------------------------------------- */
+
+const threshold = 0.1;
+
+/* -------------------------------------------------------------------------- */
+
 const top = 0;
+
+/* -------------------------------------------------------------------------- */
+
 const left = 0;
-const { computed, defineAsyncComponent, ref } = vue;
-export const promises = new Map();
-const promiseWithResolvers = <T>() => {
+
+/* -------------------------------------------------------------------------- */
+
+const promises: Map<string, PromiseWithResolvers<null>> = new Map<
+  string,
+  PromiseWithResolvers<null>
+>();
+
+/* -------------------------------------------------------------------------- */
+
+const moduleCache: ModuleExport = { vue };
+
+/* -------------------------------------------------------------------------- */
+
+const { pathname }: { pathname: string } = new URL(document.baseURI);
+
+/* -------------------------------------------------------------------------- */
+
+const history: RouterHistory = createWebHistory(pathname);
+
+/* -------------------------------------------------------------------------- */
+
+const routes: RouteRecordRaw[] = [];
+
+/* -------------------------------------------------------------------------- */
+
+const router: Router = createRouter({ history, routes, scrollBehavior });
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const scroll: Ref<boolean> = ref(true);
+
+/* -------------------------------------------------------------------------- */
+
+const paused: Ref<boolean> = ref(true);
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const a: ComputedRef<null | TPage> = computed(
+  () =>
+    pages.value.find(({ id }) => id === router.currentRoute.value.name) ?? null,
+);
+
+/* -------------------------------------------------------------------------- */
+
+const that: ComputedRef<null | TPage> = computed(
+  () =>
+    (router.currentRoute.value.path === "/"
+      ? a.value?.$children[0]
+      : a.value) ?? null,
+);
+
+/* -------------------------------------------------------------------------- */
+
+const siblings: ComputedRef<TPage[]> = computed(
+  () => that.value?.siblings ?? [],
+);
+
+/* -------------------------------------------------------------------------- */
+
+const $siblings: ComputedRef<TPage[]> = computed(() =>
+  siblings.value.filter(({ enabled }) => enabled),
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const promiseWithResolvers: <T>() => PromiseWithResolvers<T> = <T>() => {
   let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
   let reject: PromiseWithResolvers<T>["reject"] | undefined;
   const promise = new Promise<T>((res, rej) => {
     resolve = res;
     reject = rej;
   });
-  return { promise, reject, resolve };
+  return { promise, reject, resolve } as PromiseWithResolvers<T>;
 };
-const moduleCache = { vue };
-const handleModule = async (
+
+/* -------------------------------------------------------------------------- */
+
+const handleModule: (
+  type: string,
+  getContentData: File["getContentData"],
+  path: AbstractPath,
+  options: Options,
+) => Promise<ContentData | null | undefined> = async (
   type: string,
   getContentData: File["getContentData"],
   path: AbstractPath,
@@ -58,18 +172,31 @@ const handleModule = async (
       return undefined;
   }
 };
-const log = (type: keyof Console, ...args: string[]) => {
-  (window.console[type] as (...optionalParams: string[]) => void)(
-    ...args.map((value) => decodeURIComponent(value)),
-  );
+
+/* -------------------------------------------------------------------------- */
+
+const log: Options["log"] = (type, ...args) => {
+  (
+    window.console[type as keyof Console] as (
+      ...optionalParams: string[]
+    ) => void
+  )(...args.map((value: string) => decodeURIComponent(value)));
 };
-const addStyle = (styles: string, id?: string) => {
-  useStyleTag(styles, { id });
+
+/* -------------------------------------------------------------------------- */
+
+const addStyle: Options["addStyle"] = (styles, id) => {
+  useStyleTag(styles, { ...(id && { id }) });
 };
-export const getAsyncComponent = ({ id }: TPage) => {
-  const abstractPath = `${id ?? v4()}.vue`;
+
+/* -------------------------------------------------------------------------- */
+
+const getAsyncComponent: ({ id }: TPage) => Promise<object> = ({
+  id = v4(),
+}) => {
+  const abstractPath = `${id}.vue`;
   promises.set(id, promiseWithResolvers());
-  const getFile = async (filePath: string) => {
+  const getFile: Options["getFile"] = async (filePath: string) => {
     const { imports } = importmap;
     switch (true) {
       case filePath === abstractPath:
@@ -110,29 +237,10 @@ export const getAsyncComponent = ({ id }: TPage) => {
     } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
 };
-const { pathname } = new URL(document.baseURI);
-const history: RouterHistory = createWebHistory(pathname);
-const routes: RouteRecordRaw[] = [];
-export const scroll = ref(true);
-let onScroll: RouterScrollBehavior | undefined;
-const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
-  onScroll && onScroll(to, from, savedPosition);
-export const router: Router = createRouter({ history, routes, scrollBehavior });
-router.beforeEach(({ path }) =>
-  path !== decodeURI(path) ? decodeURI(path) : undefined,
-);
-export const a = computed(() =>
-  pages.value.find(({ id }) => id === router.currentRoute.value.name),
-);
-export const that = computed(() =>
-  router.currentRoute.value.path === "/" ? a.value?.$children[0] : a.value,
-);
-const siblings = computed(() => that.value?.siblings ?? []);
-export const $siblings = computed(() =>
-  siblings.value.filter(({ enabled }) => enabled),
-);
-export const paused = ref(true);
-export const setScroll: (runtime: RuntimeContext) => void = ({
+
+/* -------------------------------------------------------------------------- */
+
+const setScroll: (runtime: RuntimeContext) => void = ({
   extractAll,
   toggleObserver,
 }) => {
@@ -140,14 +248,10 @@ export const setScroll: (runtime: RuntimeContext) => void = ({
     paused.value = true;
     toggleObserver(false);
     {
-      const [{ promise }] = promises.values();
+      const [{ promise = null } = {}] = promises.values();
       await promise;
     }
-    await Promise.all(
-      [...promises.values()].map(
-        ({ promise }) => promise as Promise<undefined>,
-      ),
-    );
+    await Promise.all([...promises.values()].map(({ promise }) => promise));
     await extractAll();
     toggleObserver(true);
     paused.value = false;
@@ -176,8 +280,38 @@ export const setScroll: (runtime: RuntimeContext) => void = ({
     });
   };
 };
-export const resolve = ({ id }: TPage | undefined = {} as TPage) => {
-  (promises.get(id) as PromiseWithResolvers<undefined> | undefined)?.resolve(
-    undefined,
-  );
+
+/* -------------------------------------------------------------------------- */
+
+const resolve: ({ id }: TPage) => void = ({ id } = {} as TPage) => {
+  if (id) promises.get(id)?.resolve(null);
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+router.beforeEach(({ path }) =>
+  path !== decodeURI(path) ? decodeURI(path) : undefined,
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                   Exports                                  */
+/* -------------------------------------------------------------------------- */
+
+export {
+  $siblings,
+  a,
+  behavior,
+  getAsyncComponent,
+  paused,
+  promises,
+  resolve,
+  router,
+  scroll,
+  setScroll,
+  that,
+  threshold,
+};
+
+/* -------------------------------------------------------------------------- */
