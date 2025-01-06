@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
 import type { Preset } from "@unocss/core";
 import type { RuntimeOptions } from "@unocss/runtime";
 import type { TImportmap, TPage } from "@vues3/shared";
@@ -16,22 +20,30 @@ import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.css";
 
-window.console.info(
-  "⛵",
-  "vueS3",
-  `ver:${__APP_VERSION__}`,
-  "https://vues3.com",
-);
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const id = computed(() => router.currentRoute.value.name);
+
+/* -------------------------------------------------------------------------- */
+/*                               Initialization                               */
+/* -------------------------------------------------------------------------- */
+
 window.app = createApp(vueApp as Component);
 window.app.use(createHead());
-const id = computed(() => router.currentRoute.value.name);
 window.app.provide("id", readonly(id));
-const initRouter = (async () => {
-  const [{ imports }, [page]] = await Promise.all(
+
+/* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const initRouter: Promise<void> = (async () => {
+  const [{ imports }, [page = {} as TPage]] = await Promise.all(
     ["index.importmap", "index.json"].map(async (value, index) => {
       const response = await fetch(value);
       return (
-        response.ok ? response : new Response(index ? "[{}]" : "{}")
+        response.ok ? response : new Response(index ? "[]" : "{}")
       ).json();
     }) as unknown as [TImportmap, TPage[]],
   );
@@ -63,7 +75,12 @@ const initRouter = (async () => {
           name,
           "",
         );
-        router.addRoute({ ...(loc && { alias }), children, component, path });
+        router.addRoute({
+          ...(alias && loc ? { alias } : { undefined }),
+          children,
+          component,
+          path,
+        });
       }
     });
   }
@@ -72,7 +89,16 @@ const initRouter = (async () => {
   const name = "404";
   router.addRoute({ component, name, path });
 })();
-const rootElement = () => document.getElementById("app") as Element;
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const rootElement: RuntimeOptions["rootElement"] = () =>
+  document.getElementById("app") ?? undefined;
+
+/* -------------------------------------------------------------------------- */
+
 const ready: RuntimeOptions["ready"] = async (runtime) => {
   const { toggleObserver } = runtime;
   setScroll(runtime);
@@ -82,6 +108,11 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   toggleObserver(true);
   return false;
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
 (async () => {
   const response = await fetch("fonts.json");
   const fonts = getFonts(
@@ -95,3 +126,12 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   );
   await initUnocssRuntime({ defaults, ready, rootElement });
 })().catch(() => {});
+
+window.console.info(
+  "⛵",
+  "vueS3",
+  `ver:${__APP_VERSION__}`,
+  "https://vues3.com",
+);
+
+/* -------------------------------------------------------------------------- */
