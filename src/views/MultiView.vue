@@ -29,7 +29,7 @@ import type { UseScrollOptions } from "@vueuse/core";
 import type { ComputedRef, Ref } from "vue";
 import type { Router } from "vue-router";
 
-import { deep, pages } from "@vues3/shared";
+import { deep, pages, consoleError } from "@vues3/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
@@ -119,7 +119,7 @@ const onStop: UseScrollOptions["onStop"] = () => {
             )?.[0] ??
             first.id);
       scroll.value = false;
-      router.push({ name }).catch(() => {});
+      router.push({ name }).catch(consoleError);
     }
   }
 };
