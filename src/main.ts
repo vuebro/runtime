@@ -12,7 +12,14 @@ import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
-import { customFetch, data, getFonts, importmap, pages } from "@vues3/shared";
+import {
+  customFetch,
+  data,
+  getFonts,
+  importmap,
+  pages,
+  consoleError,
+} from "@vues3/shared";
 import { computed, createApp, nextTick, readonly } from "vue";
 
 import defaults from "../uno.config";
@@ -125,7 +132,7 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
     }) as Preset,
   );
   await initUnocssRuntime({ defaults, ready, rootElement });
-})().catch(() => {});
+})().catch(consoleError);
 
 window.console.info(
   "⛵",
