@@ -1,9 +1,17 @@
 <template>
   <router-view v-slot="{ Component }">
-    <component :id="pages[0].id" :is="Component"></component>
+    <component :id="pages[0]?.id" :is="Component"></component>
   </router-view>
 </template>
 <script setup lang="ts">
+/* -------------------------------------------------------------------------- */
+/*                                   Imports                                  */
+/* -------------------------------------------------------------------------- */
+
+import type { Link } from "@unhead/vue";
+import type { TPage } from "@vues3/shared";
+import type { ComputedRef, Ref } from "vue";
+import type { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import type { MetaFlat } from "zhead";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
@@ -12,46 +20,82 @@ import { pages } from "@vues3/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
-const a = computed(
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
+/* -------------------------------------------------------------------------- */
+
+const route: RouteLocationNormalizedLoadedGeneric = useRoute();
+
+/* -------------------------------------------------------------------------- */
+/*                                  Computed                                  */
+/* -------------------------------------------------------------------------- */
+
+const a: ComputedRef<null | TPage> = computed(
   () => pages.value.find(({ id }) => id === route.name) ?? null,
 );
-const canonical = computed(() =>
+
+/* -------------------------------------------------------------------------- */
+
+const ogUrl: ComputedRef<string | undefined> = computed(() =>
   a.value?.to === null || a.value === null
     ? undefined
     : `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
 );
-const ogImage = () =>
-  a.value?.images
-    .filter(({ url }) => url)
-    .map(({ alt, url }) => ({
-      alt,
-      url: url ? `${window.location.origin}/${url}` : "",
-    }));
-const favicon = ref();
-const link = [
-  [favicon, "icon", "icon"],
-  [canonical, "canonical"],
-].map(([href, rel, key]) => ({ href, key, rel }));
-useHead({ link });
-const title = () => a.value?.title ?? "";
-const ogTitle = () => a.value?.title;
-const description = () => a.value?.description;
-const ogDescription = () => a.value?.description;
-const ogType = () => a.value?.type as MetaFlat["ogType"];
-const ogUrl = canonical;
-const keywords = () => a.value?.keywords.join();
-useSeoMeta({
-  description,
-  keywords,
-  ogDescription,
-  ogImage,
-  ogTitle,
-  ogType,
-  ogUrl,
-  title,
-});
-watch(a, async (value) => {
+
+/* -------------------------------------------------------------------------- */
+/*                                 References                                 */
+/* -------------------------------------------------------------------------- */
+
+const favicon: Ref<string> = ref("");
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+function description(): null | string {
+  return a.value?.description ?? null;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function keywords(): null | string {
+  return a.value?.keywords.join() ?? null;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ogDescription(): null | string {
+  return a.value?.description ?? null;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ogImage(): TPage["images"] {
+  return (
+    a.value?.images
+      .filter(({ url }) => url)
+      .map(({ alt = "", url }) => ({
+        alt,
+        url: url ? `${window.location.origin}/${url}` : "",
+      })) ?? []
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ogTitle(): null | string {
+  return a.value?.title ?? null;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ogType(): MetaFlat["ogType"] | null {
+  return a.value?.type ? (a.value.type as MetaFlat["ogType"]) : null;
+}
+
+/* -------------------------------------------------------------------------- */
+
+async function setIcon(value: null | TPage): Promise<void> {
   let href = "/favicon.ico";
   if (value?.icon) {
     const icon = iconExists(value.icon)
@@ -63,5 +107,45 @@ watch(a, async (value) => {
     }
   }
   favicon.value = href;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function title(): string {
+  return a.value?.title ?? "";
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
+const link: Link<object>[] = [
+  [favicon, "icon", "icon"],
+  [ogUrl, "canonical"],
+].map(([href, rel, key]) => ({ href, key, rel }));
+
+/* -------------------------------------------------------------------------- */
+/*                                    Main                                    */
+/* -------------------------------------------------------------------------- */
+
+useHead({ link });
+
+/* -------------------------------------------------------------------------- */
+
+useSeoMeta({
+  description,
+  keywords,
+  ogDescription,
+  ogImage,
+  ogTitle,
+  ogType,
+  ogUrl,
+  title,
 });
+
+/* -------------------------------------------------------------------------- */
+
+watch(a, setIcon);
+
+/* -------------------------------------------------------------------------- */
 </script>
