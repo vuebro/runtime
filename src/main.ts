@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 import type { Preset } from "@unocss/core";
-import type { RuntimeOptions } from "@unocss/runtime";
+import type { RuntimeContext } from "@unocss/runtime";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Component } from "vue";
 import type { RouteRecordRaw } from "vue-router";
@@ -38,11 +38,17 @@ const id = computed(() => router.currentRoute.value.name);
 /* -------------------------------------------------------------------------- */
 
 window.app = createApp(vueApp as Component);
+
+/* -------------------------------------------------------------------------- */
+
 window.app.use(createHead());
+
+/* -------------------------------------------------------------------------- */
+
 window.app.provide("id", readonly(id));
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 const initRouter: Promise<void> = (async () => {
@@ -101,12 +107,13 @@ const initRouter: Promise<void> = (async () => {
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const rootElement: RuntimeOptions["rootElement"] = () =>
-  document.getElementById("app") ?? undefined;
+function rootElement(): Element | undefined {
+  return document.getElementById("app") ?? undefined;
+}
 
 /* -------------------------------------------------------------------------- */
 
-const ready: RuntimeOptions["ready"] = async (runtime) => {
+async function ready(runtime: RuntimeContext): Promise<false> {
   const { toggleObserver } = runtime;
   setScroll(runtime);
   await initRouter;
@@ -114,7 +121,7 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   window.app.mount(rootElement());
   toggleObserver(true);
   return false;
-};
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
@@ -133,6 +140,8 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   );
   await initUnocssRuntime({ defaults, ready, rootElement });
 })().catch(consoleError);
+
+/* -------------------------------------------------------------------------- */
 
 window.console.info(
   "⛵",
