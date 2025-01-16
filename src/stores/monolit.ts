@@ -13,6 +13,7 @@ import type {
   Options,
 } from "vue3-sfc-loader";
 import type {
+  RouteLocationNormalizedGeneric,
   Router,
   RouteRecordRaw,
   RouterHistory,
@@ -59,12 +60,22 @@ const top = 0;
 const left = 0;
 
 /* -------------------------------------------------------------------------- */
+/*                                    Maps                                    */
+/* -------------------------------------------------------------------------- */
 
 const promises: Map<string, PromiseWithResolvers<null>> = new Map<
   string,
   PromiseWithResolvers<null>
 >();
 
+/* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
+const routes: RouteRecordRaw[] = [];
+
+/* -------------------------------------------------------------------------- */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 const moduleCache: ModuleExport = { vue };
@@ -76,10 +87,6 @@ const { pathname }: { pathname: string } = new URL(document.baseURI);
 /* -------------------------------------------------------------------------- */
 
 const history: RouterHistory = createWebHistory(pathname);
-
-/* -------------------------------------------------------------------------- */
-
-const routes: RouteRecordRaw[] = [];
 
 /* -------------------------------------------------------------------------- */
 
@@ -141,17 +148,34 @@ const promiseWithResolvers: <T>() => PromiseWithResolvers<T> = <T>() => {
 
 /* -------------------------------------------------------------------------- */
 
-const handleModule: (
+const log: Options["log"] = (type, ...args) => {
+  (
+    window.console[type as keyof Console] as (
+      ...optionalParams: string[]
+    ) => void
+  )(...args.map((value: string) => decodeURIComponent(value)));
+};
+
+/* -------------------------------------------------------------------------- */
+
+function addStyle(style: string, id: string | undefined): void {
+  useStyleTag(style, { ...(id && { id }) });
+}
+
+/* -------------------------------------------------------------------------- */
+
+function guard({ path }: RouteLocationNormalizedGeneric): string | undefined {
+  return path !== decodeURI(path) ? decodeURI(path) : undefined;
+}
+
+/* -------------------------------------------------------------------------- */
+
+async function handleModule(
   type: string,
   getContentData: File["getContentData"],
   path: AbstractPath,
   options: Options,
-) => Promise<ContentData | null | undefined> = async (
-  type: string,
-  getContentData: File["getContentData"],
-  path: AbstractPath,
-  options: Options,
-) => {
+): Promise<ContentData | null | undefined> {
   switch (type) {
     case ".css":
       options.addStyle(
@@ -171,29 +195,11 @@ const handleModule: (
     default:
       return undefined;
   }
-};
+}
 
 /* -------------------------------------------------------------------------- */
 
-const log: Options["log"] = (type, ...args) => {
-  (
-    window.console[type as keyof Console] as (
-      ...optionalParams: string[]
-    ) => void
-  )(...args.map((value: string) => decodeURIComponent(value)));
-};
-
-/* -------------------------------------------------------------------------- */
-
-const addStyle: Options["addStyle"] = (styles, id) => {
-  useStyleTag(styles, { ...(id && { id }) });
-};
-
-/* -------------------------------------------------------------------------- */
-
-const getAsyncComponent: ({ id }: TPage) => Promise<object> = ({
-  id = v4(),
-}) => {
+function module({ id = v4() }: TPage): Promise<object> {
   const abstractPath = `${id}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile: Options["getFile"] = async (filePath: string) => {
@@ -236,14 +242,11 @@ const getAsyncComponent: ({ id }: TPage) => Promise<object> = ({
       moduleCache,
     } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
-};
+}
 
 /* -------------------------------------------------------------------------- */
 
-const setScroll: (runtime: RuntimeContext) => void = ({
-  extractAll,
-  toggleObserver,
-}) => {
+function setScroll({ extractAll, toggleObserver }: RuntimeContext): void {
   const all = async () => {
     paused.value = true;
     toggleObserver(false);
@@ -256,8 +259,8 @@ const setScroll: (runtime: RuntimeContext) => void = ({
     toggleObserver(true);
     paused.value = false;
   };
-  onScroll = async ({ name }) => {
-    return new Promise((resolve) => {
+  onScroll = async ({ name }) =>
+    new Promise((resolve) => {
       if (name) {
         all().then(
           () => {
@@ -278,8 +281,7 @@ const setScroll: (runtime: RuntimeContext) => void = ({
         );
       } else resolve(false);
     });
-  };
-};
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -291,9 +293,7 @@ const resolve: ({ id }: TPage) => void = ({ id } = {} as TPage) => {
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-router.beforeEach(({ path }) =>
-  path !== decodeURI(path) ? decodeURI(path) : undefined,
-);
+router.beforeEach(guard);
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
@@ -303,7 +303,7 @@ export {
   $siblings,
   a,
   behavior,
-  getAsyncComponent,
+  module,
   paused,
   promises,
   resolve,
