@@ -22,7 +22,7 @@ import type { ComputedRef } from "vue";
 import { v4 } from "uuid";
 import { computed, inject, onUpdated } from "vue";
 
-import { getAsyncComponent, promises, resolve, that } from "../stores/monolit";
+import { module, promises, resolve, that } from "../stores/monolit";
 
 /* -------------------------------------------------------------------------- */
 /*                                 Properties                                 */
@@ -50,16 +50,22 @@ const is: ComputedRef<null | Promise<object>> = computed(() => {
   const [[key, value] = []] = promises;
   promises.clear();
   if (key && value) promises.set(key, value);
-  return the.value && getAsyncComponent(the.value);
+  return the.value && module(the.value);
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+function runResolve(): void {
+  if (id && the.value) resolve(the.value);
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-onUpdated(() => {
-  if (id && the.value) resolve(the.value);
-});
+onUpdated(runResolve);
 
 /* -------------------------------------------------------------------------- */
 </script>
