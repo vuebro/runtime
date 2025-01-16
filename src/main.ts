@@ -13,12 +13,12 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import {
+  consoleError,
   customFetch,
   data,
   getFonts,
   importmap,
   pages,
-  consoleError,
 } from "@vues3/shared";
 import { computed, createApp, nextTick, readonly } from "vue";
 
@@ -46,6 +46,14 @@ window.app.use(createHead());
 /* -------------------------------------------------------------------------- */
 
 window.app.provide("id", readonly(id));
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+function rootElement(): Element | undefined {
+  return document.getElementById("app") ?? undefined;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                   Objects                                  */
@@ -105,12 +113,6 @@ const initRouter: Promise<void> = (async () => {
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-function rootElement(): Element | undefined {
-  return document.getElementById("app") ?? undefined;
-}
-
 /* -------------------------------------------------------------------------- */
 
 async function ready(runtime: RuntimeContext): Promise<false> {
