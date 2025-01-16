@@ -25,11 +25,10 @@
 /* -------------------------------------------------------------------------- */
 
 import type { TPage } from "@vues3/shared";
-import type { UseScrollOptions } from "@vueuse/core";
 import type { ComputedRef, Ref } from "vue";
 import type { Router } from "vue-router";
 
-import { deep, pages, consoleError } from "@vues3/shared";
+import { consoleError, deep, pages } from "@vues3/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
@@ -38,7 +37,7 @@ import { useRouter } from "vue-router";
 import {
   $siblings,
   behavior,
-  getAsyncComponent,
+  module,
   paused,
   promises,
   resolve,
@@ -48,7 +47,7 @@ import {
 } from "../stores/monolit";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Constants                                 */
+/*                                   Arrays                                   */
 /* -------------------------------------------------------------------------- */
 
 const stops: (() => void)[] = [];
@@ -64,7 +63,7 @@ const templates: ComputedRef<object> = computed(() => {
     if (key && value) promises.set(key, value);
   }
   return Object.fromEntries(
-    $siblings.value.map((value) => [value.id, getAsyncComponent(value)]),
+    $siblings.value.map((value) => [value.id, module(value)]),
   ) as object;
 });
 
@@ -87,7 +86,7 @@ const $intersecting: Ref<Map<string, boolean>> = ref(
 );
 
 /* -------------------------------------------------------------------------- */
-/*                                 Composables                                */
+/*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 const router: Router = useRouter();
@@ -96,12 +95,40 @@ const router: Router = useRouter();
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const template: ({ id }: TPage) => object = ({ id }) =>
-  templates.value[id as keyof object];
+const callback: IntersectionObserverCallback = ([
+  { isIntersecting, target: { id } = {} } = {},
+] = []) => {
+  $intersecting.value = new Map(intersecting.value);
+  if (id && isIntersecting !== undefined)
+    intersecting.value.set(id, isIntersecting);
+};
 
 /* -------------------------------------------------------------------------- */
 
-const onStop: UseScrollOptions["onStop"] = () => {
+function clearStops(): void {
+  stops.forEach((stop: () => void) => {
+    stop();
+  });
+  stops.length = 0;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function initStops(value: HTMLElement[]): void {
+  clearStops();
+  setTimeout(() => {
+    value.forEach((target) => {
+      const { stop } = useIntersectionObserver(target, callback, {
+        threshold,
+      });
+      stops.push(stop);
+    });
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+
+function onStop(): void {
   if (!paused.value && that.value && $siblings.value.length) {
     const { scrollX, scrollY } = window;
     const [first] = $siblings.value;
@@ -122,26 +149,13 @@ const onStop: UseScrollOptions["onStop"] = () => {
       router.push({ name }).catch(consoleError);
     }
   }
-};
+}
 
 /* -------------------------------------------------------------------------- */
 
-const callback: IntersectionObserverCallback = ([
-  { isIntersecting, target: { id } = {} } = {},
-] = []) => {
-  $intersecting.value = new Map(intersecting.value);
-  if (id && isIntersecting !== undefined)
-    intersecting.value.set(id, isIntersecting);
-};
-
-/* -------------------------------------------------------------------------- */
-
-const clearStops: () => void = () => {
-  stops.forEach((stop: () => void) => {
-    stop();
-  });
-  stops.length = 0;
-};
+function template({ id }: TPage): object {
+  return templates.value[id as keyof object];
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
@@ -149,21 +163,11 @@ const clearStops: () => void = () => {
 
 useScroll(window, { behavior, onStop });
 
-watch(
-  refs,
-  (value) => {
-    clearStops();
-    setTimeout(() => {
-      value.forEach((target) => {
-        const { stop } = useIntersectionObserver(target, callback, {
-          threshold,
-        });
-        stops.push(stop);
-      });
-    });
-  },
-  { deep },
-);
+/* -------------------------------------------------------------------------- */
+
+watch(refs, initStops, { deep });
+
+/* -------------------------------------------------------------------------- */
 
 onUnmounted(clearStops);
 
