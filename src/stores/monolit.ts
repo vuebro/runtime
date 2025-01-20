@@ -35,13 +35,6 @@ import { createRouter, createWebHistory } from "vue-router";
 let onScroll: RouterScrollBehavior | undefined;
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
-  onScroll && onScroll(to, from, savedPosition);
-
-/* -------------------------------------------------------------------------- */
 /*                                  Constants                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -75,6 +68,17 @@ const promises: Map<string, PromiseWithResolvers<null>> = new Map<
 const routes: RouteRecordRaw[] = [];
 
 /* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
+  onScroll && onScroll(to, from, savedPosition);
+
+/* -------------------------------------------------------------------------- */
+
+const isEnabled = ({ enabled }: TPage): boolean => enabled;
+
+/* -------------------------------------------------------------------------- */
 /*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -103,40 +107,65 @@ const scroll: Ref<boolean> = ref(true);
 const paused: Ref<boolean> = ref(true);
 
 /* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const isCurrentRouterName = ({ id }: TPage): boolean =>
+  id === router.currentRoute.value.name;
+
+/* -------------------------------------------------------------------------- */
+
+const getA = (): null | TPage => pages.value.find(isCurrentRouterName) ?? null;
+
+/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const a: ComputedRef<null | TPage> = computed(
-  () =>
-    pages.value.find(({ id }) => id === router.currentRoute.value.name) ?? null,
-);
-
-/* -------------------------------------------------------------------------- */
-
-const that: ComputedRef<null | TPage> = computed(
-  () =>
-    (router.currentRoute.value.path === "/"
-      ? a.value?.$children[0]
-      : a.value) ?? null,
-);
-
-/* -------------------------------------------------------------------------- */
-
-const siblings: ComputedRef<TPage[]> = computed(
-  () => that.value?.siblings ?? [],
-);
-
-/* -------------------------------------------------------------------------- */
-
-const $siblings: ComputedRef<TPage[]> = computed(() =>
-  siblings.value.filter(({ enabled }) => enabled),
-);
+const a: ComputedRef<null | TPage> = computed(getA);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const promiseWithResolvers: <T>() => PromiseWithResolvers<T> = <T>() => {
+const getThat = (): null | TPage =>
+  (router.currentRoute.value.path === "/" ? a.value?.$children[0] : a.value) ??
+  null;
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const that: ComputedRef<null | TPage> = computed(getThat);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const getSiblings = (): TPage[] => that.value?.siblings ?? [];
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const siblings: ComputedRef<TPage[]> = computed(getSiblings);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const get$siblings = (): TPage[] => siblings.value.filter(isEnabled);
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const $siblings: ComputedRef<TPage[]> = computed(get$siblings);
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const promiseWithResolvers = <T>(): PromiseWithResolvers<T> => {
   let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
   let reject: PromiseWithResolvers<T>["reject"] | undefined;
   const promise = new Promise<T>((res, rej) => {
@@ -148,12 +177,16 @@ const promiseWithResolvers: <T>() => PromiseWithResolvers<T> = <T>() => {
 
 /* -------------------------------------------------------------------------- */
 
+const decode = (value: string): string => decodeURIComponent(value);
+
+/* -------------------------------------------------------------------------- */
+
 const log: Options["log"] = (type, ...args) => {
   (
     window.console[type as keyof Console] as (
       ...optionalParams: string[]
     ) => void
-  )(...args.map((value: string) => decodeURIComponent(value)));
+  )(...args.map(decode));
 };
 
 /* -------------------------------------------------------------------------- */
@@ -245,7 +278,7 @@ const module = ({ id = v4() }: TPage): Promise<object> => {
 /* -------------------------------------------------------------------------- */
 
 const setScroll = ({ extractAll, toggleObserver }: RuntimeContext): void => {
-  const all = async () => {
+  const all = async (): Promise<void> => {
     paused.value = true;
     toggleObserver(false);
     {
@@ -283,7 +316,7 @@ const setScroll = ({ extractAll, toggleObserver }: RuntimeContext): void => {
 
 /* -------------------------------------------------------------------------- */
 
-const resolve: ({ id }: TPage) => void = ({ id } = {} as TPage) => {
+const resolve = ({ id }: TPage = {} as TPage): void => {
   if (id) promises.get(id)?.resolve(null);
 };
 
