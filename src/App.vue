@@ -52,50 +52,38 @@ const favicon: Ref<string> = ref("");
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-function description(): null | string {
-  return a.value?.description ?? null;
-}
+const description = (): null | string => a.value?.description ?? null;
 
 /* -------------------------------------------------------------------------- */
 
-function keywords(): null | string {
-  return a.value?.keywords.join() ?? null;
-}
+const keywords = (): null | string => a.value?.keywords.join() ?? null;
 
 /* -------------------------------------------------------------------------- */
 
-function ogDescription(): null | string {
-  return a.value?.description ?? null;
-}
+const ogDescription = (): null | string => a.value?.description ?? null;
 
 /* -------------------------------------------------------------------------- */
 
-function ogImage(): TPage["images"] {
-  return (
-    a.value?.images
-      .filter(({ url }) => url)
-      .map(({ alt = "", url }) => ({
-        alt,
-        url: url ? `${window.location.origin}/${url}` : "",
-      })) ?? []
-  );
-}
+const ogImage = (): TPage["images"] =>
+  a.value?.images
+    .filter(({ url }) => url)
+    .map(({ alt = "", url }) => ({
+      alt,
+      url: url ? `${window.location.origin}/${url}` : "",
+    })) ?? [];
 
 /* -------------------------------------------------------------------------- */
 
-function ogTitle(): null | string {
-  return a.value?.title ?? null;
-}
+const ogTitle = (): null | string => a.value?.title ?? null;
 
 /* -------------------------------------------------------------------------- */
 
-function ogType(): MetaFlat["ogType"] | null {
-  return a.value?.type ? (a.value.type as MetaFlat["ogType"]) : null;
-}
+const ogType = (): MetaFlat["ogType"] | null =>
+  a.value?.type ? (a.value.type as MetaFlat["ogType"]) : null;
 
 /* -------------------------------------------------------------------------- */
 
-async function setIcon(value: null | TPage): Promise<void> {
+const setIcon = async (value: null | TPage): Promise<void> => {
   let href = "/favicon.ico";
   if (value?.icon) {
     const icon = iconExists(value.icon)
@@ -107,13 +95,11 @@ async function setIcon(value: null | TPage): Promise<void> {
     }
   }
   favicon.value = href;
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function title(): string {
-  return a.value?.title ?? "";
-}
+const title = (): string => a.value?.title ?? "";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Arrays                                   */
