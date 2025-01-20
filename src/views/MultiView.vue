@@ -105,16 +105,16 @@ const callback: IntersectionObserverCallback = ([
 
 /* -------------------------------------------------------------------------- */
 
-function clearStops(): void {
+const clearStops = (): void => {
   stops.forEach((stop: () => void) => {
     stop();
   });
   stops.length = 0;
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function initStops(value: HTMLElement[]): void {
+const initStops = (value: HTMLElement[]): void => {
   clearStops();
   setTimeout(() => {
     value.forEach((target) => {
@@ -124,11 +124,11 @@ function initStops(value: HTMLElement[]): void {
       stops.push(stop);
     });
   });
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function onStop(): void {
+const onStop = (): void => {
   if (!paused.value && that.value && $siblings.value.length) {
     const { scrollX, scrollY } = window;
     const [first] = $siblings.value;
@@ -149,13 +149,11 @@ function onStop(): void {
       router.push({ name }).catch(consoleError);
     }
   }
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function template({ id }: TPage): object {
-  return templates.value[id as keyof object];
-}
+const template = ({ id }: TPage): object => templates.value[id as keyof object];
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
