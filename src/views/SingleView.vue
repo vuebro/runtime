@@ -3,11 +3,7 @@
     <component
       :id="the?.id"
       :is
-      @vue:mounted="
-        () => {
-          if (the) resolve(the);
-        }
-      "
+      @vue:mounted="if (the) resolve(the);"
     ></component>
   </div>
 </template>
@@ -37,21 +33,17 @@ const { id }: { id: string | undefined } = defineProps<{ id?: string }>();
 const pages: null | Record<string, TPage> = inject("pages") ?? null;
 
 /* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const getThe = (): null | TPage =>
+  id ? (pages?.[id as keyof object] ?? null) : that.value;
+
+/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const the: ComputedRef<null | TPage> = computed(() =>
-  id ? (pages?.[id as keyof object] ?? null) : that.value,
-);
-
-/* -------------------------------------------------------------------------- */
-
-const is: ComputedRef<null | Promise<object>> = computed(() => {
-  const [[key, value] = []] = promises;
-  promises.clear();
-  if (key && value) promises.set(key, value);
-  return the.value && module(the.value);
-});
+const the: ComputedRef<null | TPage> = computed(getThe);
 
 /* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
@@ -60,6 +52,21 @@ const is: ComputedRef<null | Promise<object>> = computed(() => {
 const runResolve = (): void => {
   if (id && the.value) resolve(the.value);
 };
+
+/* -------------------------------------------------------------------------- */
+
+const getIs = (): null | Promise<object> => {
+  const [[key, value] = []] = promises;
+  promises.clear();
+  if (key && value) promises.set(key, value);
+  return the.value && module(the.value);
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                Computations                                */
+/* -------------------------------------------------------------------------- */
+
+const is: ComputedRef<null | Promise<object>> = computed(getIs);
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
