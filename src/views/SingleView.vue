@@ -57,9 +57,9 @@ const is: ComputedRef<null | Promise<object>> = computed(() => {
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-function runResolve(): void {
+const runResolve = (): void => {
   if (id && the.value) resolve(the.value);
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
