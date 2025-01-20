@@ -51,9 +51,8 @@ window.app.provide("id", readonly(id));
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-function rootElement(): Element | undefined {
-  return document.getElementById("app") ?? undefined;
-}
+const rootElement = (): Element | undefined =>
+  document.getElementById("app") ?? undefined;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Objects                                  */
@@ -115,7 +114,7 @@ const initRouter: Promise<void> = (async () => {
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-async function ready(runtime: RuntimeContext): Promise<false> {
+const ready = async (runtime: RuntimeContext): Promise<false> => {
   const { toggleObserver } = runtime;
   setScroll(runtime);
   await initRouter;
@@ -123,7 +122,7 @@ async function ready(runtime: RuntimeContext): Promise<false> {
   window.app.mount(rootElement());
   toggleObserver(true);
   return false;
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
