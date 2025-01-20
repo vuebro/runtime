@@ -232,15 +232,14 @@ const module = ({ id = v4() }: TPage): Promise<object> => {
       }
     }
   };
-  return defineAsyncComponent((async () => {
-    return loadModule(abstractPath, {
+  return defineAsyncComponent((async () =>
+    loadModule(abstractPath, {
       addStyle,
       getFile,
       handleModule,
       log,
       moduleCache,
-    } as unknown as Options);
-  }) as AsyncComponentLoader<Promise<object>>);
+    } as unknown as Options)) as AsyncComponentLoader<Promise<object>>);
 };
 
 /* -------------------------------------------------------------------------- */
