@@ -12,6 +12,7 @@
     "plugin:@typescript-eslint/stylistic-type-checked",
     "plugin:vue/vue3-strongly-recommended",
     "plugin:perfectionist/recommended-natural-legacy",
+    "plugin:sonarjs/recommended-legacy",
     "plugin:prettier/recommended"
   ],
   "plugins": ["eslint-plugin-tsdoc"],
