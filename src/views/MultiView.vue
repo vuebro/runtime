@@ -11,11 +11,7 @@
     <component
       :id="the.id"
       :is="template(the)"
-      @vue:mounted="
-        () => {
-          resolve(the);
-        }
-      "
+      @vue:mounted="resolve(the)"
     ></component>
   </div>
 </template>
@@ -53,25 +49,42 @@ import {
 const stops: (() => void)[] = [];
 
 /* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const getEntry = (value: TPage): [string | undefined, Promise<object>] => [
+  value.id,
+  module(value),
+];
+
+/* -------------------------------------------------------------------------- */
+
+const getTemplates = (): object => {
+  const [[key, value] = []] = promises;
+  promises.clear();
+  if (key && value) promises.set(key, value);
+  return Object.fromEntries($siblings.value.map(getEntry)) as object;
+};
+
+/* -------------------------------------------------------------------------- */
+
+const getIntersectItem = ({ id = v4() }: TPage): [string, false] => [id, false];
+
+/* -------------------------------------------------------------------------- */
+
+const getIntersecting = (): Map<string, false> =>
+  new Map($siblings.value.map(getIntersectItem));
+
+/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const templates: ComputedRef<object> = computed(() => {
-  {
-    const [[key, value] = []] = promises;
-    promises.clear();
-    if (key && value) promises.set(key, value);
-  }
-  return Object.fromEntries(
-    $siblings.value.map((value) => [value.id, module(value)]),
-  ) as object;
-});
+const templates: ComputedRef<object> = computed(getTemplates);
 
 /* -------------------------------------------------------------------------- */
 
-const intersecting: ComputedRef<Map<string, boolean>> = computed(
-  () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
-);
+const intersecting: ComputedRef<Map<string, boolean>> =
+  computed(getIntersecting);
 
 /* -------------------------------------------------------------------------- */
 /*                                 References                                 */
@@ -105,11 +118,24 @@ const callback: IntersectionObserverCallback = ([
 
 /* -------------------------------------------------------------------------- */
 
+const runStop = (stop: () => void): void => {
+  stop();
+};
+
+/* -------------------------------------------------------------------------- */
+
 const clearStops = (): void => {
-  stops.forEach((stop: () => void) => {
-    stop();
-  });
+  stops.forEach(runStop);
   stops.length = 0;
+};
+
+/* -------------------------------------------------------------------------- */
+
+const addStop = (target: HTMLElement): void => {
+  const { stop } = useIntersectionObserver(target, callback, {
+    threshold,
+  });
+  stops.push(stop);
 };
 
 /* -------------------------------------------------------------------------- */
@@ -117,14 +143,13 @@ const clearStops = (): void => {
 const initStops = (value: HTMLElement[]): void => {
   clearStops();
   setTimeout(() => {
-    value.forEach((target) => {
-      const { stop } = useIntersectionObserver(target, callback, {
-        threshold,
-      });
-      stops.push(stop);
-    });
+    value.forEach(addStop);
   });
 };
+
+/* -------------------------------------------------------------------------- */
+
+const isValue = ([, value]: [string, boolean]): boolean => value;
 
 /* -------------------------------------------------------------------------- */
 
@@ -138,12 +163,8 @@ const onStop = (): void => {
       const name =
         !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
           ? root.id
-          : ([...intersecting.value.entries()].find(
-              ([, value]) => value,
-            )?.[0] ??
-            [...$intersecting.value.entries()].find(
-              ([, value]) => value,
-            )?.[0] ??
+          : ([...intersecting.value.entries()].find(isValue)?.[0] ??
+            [...$intersecting.value.entries()].find(isValue)?.[0] ??
             first.id);
       scroll.value = false;
       router.push({ name }).catch(consoleError);
