@@ -158,24 +158,23 @@ const log: Options["log"] = (type, ...args) => {
 
 /* -------------------------------------------------------------------------- */
 
-function addStyle(style: string, id: string | undefined): void {
+const addStyle = (style: string, id: string | undefined): void => {
   useStyleTag(style, { ...(id && { id }) });
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function guard({ path }: RouteLocationNormalizedGeneric): string | undefined {
-  return path !== decodeURI(path) ? decodeURI(path) : undefined;
-}
+const guard = ({ path }: RouteLocationNormalizedGeneric): string | undefined =>
+  path !== decodeURI(path) ? decodeURI(path) : undefined;
 
 /* -------------------------------------------------------------------------- */
 
-async function handleModule(
+const handleModule = async (
   type: string,
   getContentData: File["getContentData"],
   path: AbstractPath,
   options: Options,
-): Promise<ContentData | null | undefined> {
+): Promise<ContentData | null | undefined> => {
   switch (type) {
     case ".css":
       options.addStyle(
@@ -195,11 +194,11 @@ async function handleModule(
     default:
       return undefined;
   }
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function module({ id = v4() }: TPage): Promise<object> {
+const module = ({ id = v4() }: TPage): Promise<object> => {
   const abstractPath = `${id}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile: Options["getFile"] = async (filePath: string) => {
@@ -242,11 +241,11 @@ function module({ id = v4() }: TPage): Promise<object> {
       moduleCache,
     } as unknown as Options);
   }) as AsyncComponentLoader<Promise<object>>);
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
-function setScroll({ extractAll, toggleObserver }: RuntimeContext): void {
+const setScroll = ({ extractAll, toggleObserver }: RuntimeContext): void => {
   const all = async () => {
     paused.value = true;
     toggleObserver(false);
@@ -281,7 +280,7 @@ function setScroll({ extractAll, toggleObserver }: RuntimeContext): void {
         );
       } else resolve(false);
     });
-}
+};
 
 /* -------------------------------------------------------------------------- */
 
