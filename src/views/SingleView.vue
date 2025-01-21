@@ -30,49 +30,32 @@ const { id }: { id: string | undefined } = defineProps<{ id?: string }>();
 /*                                 Injections                                 */
 /* -------------------------------------------------------------------------- */
 
-const pages: null | Record<string, TPage> = inject("pages") ?? null;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getThe = (): null | TPage =>
-  id ? (pages?.[id as keyof object] ?? null) : that.value;
+const pages: Record<string, TPage> | undefined = inject("pages");
 
 /* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const the: ComputedRef<null | TPage> = computed(getThe);
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const runResolve = (): void => {
-  if (id && the.value) resolve(the.value);
-};
+const the: ComputedRef<TPage | undefined> = computed(() =>
+  id ? pages?.[id as keyof object] : that.value,
+);
 
 /* -------------------------------------------------------------------------- */
 
-const getIs = (): null | Promise<object> => {
+const is: ComputedRef<Promise<object> | undefined> = computed(() => {
   const [[key, value] = []] = promises;
   promises.clear();
   if (key && value) promises.set(key, value);
   return the.value && module(the.value);
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const is: ComputedRef<null | Promise<object>> = computed(getIs);
+});
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
-onUpdated(runResolve);
+onUpdated(() => {
+  if (id && the.value) resolve(the.value);
+});
 
 /* -------------------------------------------------------------------------- */
 </script>
