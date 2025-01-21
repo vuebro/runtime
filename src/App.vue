@@ -27,35 +27,20 @@ import { useRoute } from "vue-router";
 const route: RouteLocationNormalizedLoadedGeneric = useRoute();
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const isRouteName = ({ id }: TPage): boolean => id === route.name;
-
-/* -------------------------------------------------------------------------- */
-
-const getA = (): null | TPage => pages.value.find(isRouteName) ?? null;
-
-/* -------------------------------------------------------------------------- */
 /*                                  Computed                                  */
 /* -------------------------------------------------------------------------- */
 
-const a: ComputedRef<null | TPage> = computed(getA);
+const a: ComputedRef<TPage | undefined> = computed(() =>
+  pages.value.find(({ id }) => id === route.name),
+);
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
 
-const getOgUrl = (): string | undefined => {
-  if (a.value?.to === null || a.value?.to === undefined) return undefined;
-  return `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`;
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  Computed                                  */
-/* -------------------------------------------------------------------------- */
-
-const ogUrl: ComputedRef<string | undefined> = computed(getOgUrl);
+const ogUrl: ComputedRef<string | undefined> = computed(
+  () =>
+    a.value?.to &&
+    `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
+);
 
 /* -------------------------------------------------------------------------- */
 /*                                 References                                 */
@@ -64,56 +49,57 @@ const ogUrl: ComputedRef<string | undefined> = computed(getOgUrl);
 const favicon: Ref<string> = ref("");
 
 /* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
+const link: Link<object>[] = [
+  [favicon, "icon", "icon"],
+  [ogUrl, "canonical"],
+].map(([href, rel, key]) => ({ href, key, rel }));
+
+/* -------------------------------------------------------------------------- */
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const description = (): null | string => a.value?.description ?? null;
+const description = (): string | undefined => a.value?.description ?? undefined;
 
 /* -------------------------------------------------------------------------- */
 
-const keywords = (): null | string => a.value?.keywords.join() ?? null;
+const keywords = (): string | undefined => a.value?.keywords.join();
 
 /* -------------------------------------------------------------------------- */
 
-const ogDescription = (): null | string => a.value?.description ?? null;
-
-/* -------------------------------------------------------------------------- */
-
-const isUrl = ({ url }: { url: string }): string => url;
-
-/* -------------------------------------------------------------------------- */
-
-const addOrigin = ({
-  alt = "",
-  url,
-}: {
-  alt?: string;
-  url: string;
-}): {
-  alt: string;
-  url: string;
-} => ({
-  alt,
-  url: url ? `${window.location.origin}/${url}` : "",
-});
+const ogDescription = (): string | undefined =>
+  a.value?.description ?? undefined;
 
 /* -------------------------------------------------------------------------- */
 
 const ogImage = (): TPage["images"] =>
-  a.value?.images.filter(isUrl).map(addOrigin) ?? [];
+  a.value?.images
+    .filter(({ url }) => url)
+    .map(({ alt = "", url }) => ({
+      alt,
+      url: url ? `${window.location.origin}/${url}` : "",
+    })) ?? [];
 
 /* -------------------------------------------------------------------------- */
 
-const ogTitle = (): null | string => a.value?.title ?? null;
+const ogTitle = (): string | undefined => a.value?.title;
 
 /* -------------------------------------------------------------------------- */
 
-const ogType = (): MetaFlat["ogType"] | null =>
-  a.value?.type ? (a.value.type as MetaFlat["ogType"]) : null;
+const ogType = (): MetaFlat["ogType"] | undefined =>
+  a.value?.type ? (a.value.type as MetaFlat["ogType"]) : undefined;
 
 /* -------------------------------------------------------------------------- */
 
-const setIcon = async (value: null | TPage): Promise<void> => {
+const title = (): string => a.value?.title ?? "";
+
+/* -------------------------------------------------------------------------- */
+/*                                   Watches                                  */
+/* -------------------------------------------------------------------------- */
+
+watch(a, async (value) => {
   let href = "/favicon.ico";
   if (value?.icon) {
     const icon = iconExists(value.icon)
@@ -125,26 +111,7 @@ const setIcon = async (value: null | TPage): Promise<void> => {
     }
   }
   favicon.value = href;
-};
-
-/* -------------------------------------------------------------------------- */
-
-const title = (): string => a.value?.title ?? "";
-
-/* -------------------------------------------------------------------------- */
-
-const toLink = ([href, rel, key]:
-  | (ComputedRef<string | undefined> | string)[]
-  | (Ref<string> | string)[]): Link<object> => ({ href, key, rel });
-
-/* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
-
-const link: Link<object>[] = [
-  [favicon, "icon", "icon"],
-  [ogUrl, "canonical"],
-].map(toLink);
+});
 
 /* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
@@ -164,10 +131,6 @@ useSeoMeta({
   ogUrl,
   title,
 });
-
-/* -------------------------------------------------------------------------- */
-
-watch(a, setIcon);
 
 /* -------------------------------------------------------------------------- */
 </script>
