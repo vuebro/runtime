@@ -49,42 +49,23 @@ import {
 const stops: (() => void)[] = [];
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getEntry = (value: TPage): [string | undefined, Promise<object>] => [
-  value.id,
-  module(value),
-];
-
-/* -------------------------------------------------------------------------- */
-
-const getTemplates = (): object => {
-  const [[key, value] = []] = promises;
-  promises.clear();
-  if (key && value) promises.set(key, value);
-  return Object.fromEntries($siblings.value.map(getEntry)) as object;
-};
-
-/* -------------------------------------------------------------------------- */
-
-const getIntersectItem = ({ id = v4() }: TPage): [string, false] => [id, false];
-
-/* -------------------------------------------------------------------------- */
-
-const getIntersecting = (): Map<string, false> =>
-  new Map($siblings.value.map(getIntersectItem));
-
-/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const templates: ComputedRef<object> = computed(getTemplates);
+const templates: ComputedRef<object> = computed(() => {
+  const [[key, value] = []] = promises;
+  promises.clear();
+  if (key && value) promises.set(key, value);
+  return Object.fromEntries(
+    $siblings.value.map((page) => [page.id, module(page)]),
+  ) as object;
+});
 
 /* -------------------------------------------------------------------------- */
 
-const intersecting: ComputedRef<Map<string, boolean>> =
-  computed(getIntersecting);
+const intersecting: ComputedRef<Map<string, boolean>> = computed(
+  () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
+);
 
 /* -------------------------------------------------------------------------- */
 /*                                 References                                 */
@@ -108,48 +89,12 @@ const router: Router = useRouter();
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const callback: IntersectionObserverCallback = ([
-  { isIntersecting, target: { id } = {} } = {},
-] = []) => {
-  $intersecting.value = new Map(intersecting.value);
-  if (id && isIntersecting !== undefined)
-    intersecting.value.set(id, isIntersecting);
-};
-
-/* -------------------------------------------------------------------------- */
-
-const runStop = (stop: () => void): void => {
-  stop();
-};
-
-/* -------------------------------------------------------------------------- */
-
 const clearStops = (): void => {
-  stops.forEach(runStop);
+  stops.forEach((stop) => {
+    stop();
+  });
   stops.length = 0;
 };
-
-/* -------------------------------------------------------------------------- */
-
-const addStop = (target: HTMLElement): void => {
-  const { stop } = useIntersectionObserver(target, callback, {
-    threshold,
-  });
-  stops.push(stop);
-};
-
-/* -------------------------------------------------------------------------- */
-
-const initStops = (value: HTMLElement[]): void => {
-  clearStops();
-  setTimeout(() => {
-    value.forEach(addStop);
-  });
-};
-
-/* -------------------------------------------------------------------------- */
-
-const isValue = ([, value]: [string, boolean]): boolean => value;
 
 /* -------------------------------------------------------------------------- */
 
@@ -163,8 +108,12 @@ const onStop = (): void => {
       const name =
         !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
           ? root.id
-          : ([...intersecting.value.entries()].find(isValue)?.[0] ??
-            [...$intersecting.value.entries()].find(isValue)?.[0] ??
+          : ([...intersecting.value.entries()].find(
+              ([, value]) => value,
+            )?.[0] ??
+            [...$intersecting.value.entries()].find(
+              ([, value]) => value,
+            )?.[0] ??
             first.id);
       scroll.value = false;
       router.push({ name }).catch(consoleError);
@@ -177,14 +126,36 @@ const onStop = (): void => {
 const template = ({ id }: TPage): object => templates.value[id as keyof object];
 
 /* -------------------------------------------------------------------------- */
+/*                                   Watches                                  */
+/* -------------------------------------------------------------------------- */
+
+watch(
+  refs,
+  (value) => {
+    clearStops();
+    setTimeout(() => {
+      value.forEach((target) => {
+        const { stop } = useIntersectionObserver(
+          target,
+          ([{ isIntersecting, target: { id } = {} } = {}] = []) => {
+            $intersecting.value = new Map(intersecting.value);
+            if (id && isIntersecting !== undefined)
+              intersecting.value.set(id, isIntersecting);
+          },
+          { threshold },
+        );
+        stops.push(stop);
+      });
+    });
+  },
+  { deep },
+);
+
+/* -------------------------------------------------------------------------- */
 /*                                    Main                                    */
 /* -------------------------------------------------------------------------- */
 
 useScroll(window, { behavior, onStop });
-
-/* -------------------------------------------------------------------------- */
-
-watch(refs, initStops, { deep });
 
 /* -------------------------------------------------------------------------- */
 
