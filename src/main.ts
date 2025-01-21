@@ -6,7 +6,7 @@ import type { Preset } from "@unocss/core";
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Component } from "vue";
-import type { RouteRecordNameGeneric, RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 
 import { createHead } from "@unhead/vue";
 import presetWebFonts from "@unocss/preset-web-fonts";
@@ -28,17 +28,10 @@ import { router, setScroll } from "./stores/monolit";
 import "./style.css";
 
 /* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const getCurrentRouteName = (): RouteRecordNameGeneric =>
-  router.currentRoute.value.name;
-
-/* -------------------------------------------------------------------------- */
 /*                                Computations                                */
 /* -------------------------------------------------------------------------- */
 
-const id = computed(getCurrentRouteName);
+const id = computed(() => router.currentRoute.value.name);
 
 /* -------------------------------------------------------------------------- */
 /*                               Initialization                               */
@@ -63,26 +56,6 @@ const rootElement = (): Element | undefined =>
 
 /* -------------------------------------------------------------------------- */
 
-const getResponse = async (
-  value: string,
-  index: number,
-): Promise<TImportmap | TPage[]> => {
-  const response = await fetch(value);
-  const body = index ? "[]" : "{}";
-  return (response.ok ? response : new Response(body)).json() as Promise<
-    TImportmap | TPage[]
-  >;
-};
-
-/* -------------------------------------------------------------------------- */
-
-const getEntry = (value: TPage): [string | undefined, TPage] => [
-  value.id,
-  value,
-];
-
-/* -------------------------------------------------------------------------- */
-
 const getChildren = (
   component: RouteRecordRaw["component"],
   name: RouteRecordRaw["name"],
@@ -90,56 +63,49 @@ const getChildren = (
 ) => [{ component, name, path }] as RouteRecordRaw[];
 
 /* -------------------------------------------------------------------------- */
-
-const addRoute = ({
-  along,
-  id: name,
-  loc,
-  parent,
-  path: relative,
-}: TPage): void => {
-  const component = () => import("./views/SingleView.vue");
-  if (relative !== null) {
-    const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
-    const alias = loc
-      ?.replaceAll(" ", "_")
-      .replace(/^\/?/, "/")
-      .replace(/\/?$/, "/");
-    const children = getChildren(
-      (parent?.along ?? along)
-        ? () => import("./views/MultiView.vue")
-        : component,
-      name,
-      "",
-    );
-    router.addRoute({
-      ...(alias && loc ? { alias } : { undefined }),
-      children,
-      component,
-      path,
-    });
-  }
-};
-
-/* -------------------------------------------------------------------------- */
 /*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
 const initRouter: Promise<void> = (async () => {
   const [{ imports }, [page = {} as TPage]] = await Promise.all(
-    ["index.importmap", "index.json"].map(getResponse) as [
-      Promise<TImportmap>,
-      Promise<TPage[]>,
-    ],
+    ["index.importmap", "index.json"].map(async (value, index) => {
+      const response = await fetch(value);
+      const body = index ? "[]" : "{}";
+      return (response.ok ? response : new Response(body)).json() as Promise<
+        TImportmap | TPage[]
+      >;
+    }) as [Promise<TImportmap>, Promise<TPage[]>],
   );
   importmap.imports = imports;
   data.push(page);
   await nextTick();
   window.app.provide(
     "pages",
-    readonly(Object.fromEntries(pages.value.map(getEntry))),
+    readonly(Object.fromEntries(pages.value.map((value) => [value.id, value]))),
   );
-  pages.value.forEach(addRoute);
+  pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
+    const component = () => import("./views/SingleView.vue");
+    if (relative !== undefined) {
+      const path = relative.replace(/^\/?/, "/").replace(/\/?$/, "/");
+      const alias = loc
+        ?.replaceAll(" ", "_")
+        .replace(/^\/?/, "/")
+        .replace(/\/?$/, "/");
+      const children = getChildren(
+        (parent?.along ?? along)
+          ? () => import("./views/MultiView.vue")
+          : component,
+        name,
+        "",
+      );
+      router.addRoute({
+        ...(alias && loc ? { alias } : { undefined }),
+        children,
+        component,
+        path,
+      });
+    }
+  });
   const path = "/:pathMatch(.*)*";
   const component = () => import("./views/NotFoundView.vue");
   const name = "404";
@@ -184,7 +150,7 @@ window.console.info(
   "⛵",
   "vueS3",
   `ver:${__APP_VERSION__}`,
-  "https://vues3.com",
+  "https://github.com/vues3",
 );
 
 /* -------------------------------------------------------------------------- */
