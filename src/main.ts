@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 import type { Preset } from "@unocss/core";
-import type { RuntimeContext } from "@unocss/runtime";
+import type { RuntimeOptions } from "@unocss/runtime";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Component } from "vue";
 import type { RouteRecordRaw } from "vue-router";
@@ -51,7 +51,7 @@ window.app.provide("id", readonly(id));
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const rootElement = (): Element | undefined =>
+const rootElement: RuntimeOptions["rootElement"] = () =>
   document.getElementById("app") ?? undefined;
 
 /* -------------------------------------------------------------------------- */
@@ -116,7 +116,7 @@ const initRouter: Promise<void> = (async () => {
 /*                                  Functions                                 */
 /* -------------------------------------------------------------------------- */
 
-const ready = async (runtime: RuntimeContext): Promise<false> => {
+const ready: RuntimeOptions["ready"] = async (runtime) => {
   const { toggleObserver } = runtime;
   setScroll(runtime);
   await initRouter;
