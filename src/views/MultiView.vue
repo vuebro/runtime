@@ -126,7 +126,7 @@ const onStop = (): void => {
 const template = ({ id }: TPage): object => templates.value[id as keyof object];
 
 /* -------------------------------------------------------------------------- */
-/*                                   Watches                                  */
+/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
