@@ -24,22 +24,60 @@ import { version } from "vue";
 const base = "./";
 
 /* -------------------------------------------------------------------------- */
+
+const manifest = true;
+
+/* -------------------------------------------------------------------------- */
+
+const app = fileURLToPath(new URL("..", import.meta.url));
+
+/* -------------------------------------------------------------------------- */
+
+const dest = "assets";
+
+/* -------------------------------------------------------------------------- */
+
+const src = "./node_modules/vue/dist/vue.esm-browser.prod.js";
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
+
+const manualChunks = (id: string) =>
+  id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, "");
+
+/* -------------------------------------------------------------------------- */
+
+const rename: RenameFunc = (fileName, fileExtension) =>
+  `${fileName}-${version}.${fileExtension}`;
+
+/* -------------------------------------------------------------------------- */
+/*                                   Arrays                                   */
+/* -------------------------------------------------------------------------- */
+
+const external = ["vue"];
+
+/* -------------------------------------------------------------------------- */
+
+const targets = [{ dest, rename, src }];
+
+/* -------------------------------------------------------------------------- */
+
+const plugins: PluginOption[] = [vue(), viteStaticCopy({ targets })];
+
+/* -------------------------------------------------------------------------- */
 /*                                   Objects                                  */
 /* -------------------------------------------------------------------------- */
 
-const build: BuildOptions = (() => {
-  const manifest = true;
-  const rollupOptions: RollupOptions = (() => {
-    const output = (() => {
-      const manualChunks = (id: string) =>
-        id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, "");
-      return { manualChunks };
-    })();
-    const external = ["vue"];
-    return { external, output };
-  })();
-  return { manifest, rollupOptions };
-})();
+const output = { manualChunks };
+
+/* -------------------------------------------------------------------------- */
+
+const rollupOptions: RollupOptions = { external, output };
+
+/* -------------------------------------------------------------------------- */
+
+const build: BuildOptions = { manifest, rollupOptions };
 
 /* -------------------------------------------------------------------------- */
 
@@ -50,28 +88,11 @@ const define = {
 
 /* -------------------------------------------------------------------------- */
 
-const resolve: UserConfig["resolve"] = (() => {
-  const alias: AliasOptions = (() => {
-    const app = fileURLToPath(new URL("..", import.meta.url));
-    return { "@": ".", app };
-  })();
-  return { alias };
-})();
+const alias: AliasOptions = { "@": ".", app };
 
 /* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
 
-const plugins: PluginOption[] = (() => {
-  const targets = (() => {
-    const dest = "assets";
-    const src = "./node_modules/vue/dist/vue.esm-browser.prod.js";
-    const rename: RenameFunc = (fileName, fileExtension) =>
-      `${fileName}-${version}.${fileExtension}`;
-    return [{ dest, rename, src }];
-  })();
-  return [vue(), viteStaticCopy({ targets })];
-})();
+const resolve: UserConfig["resolve"] = { alias };
 
 /* -------------------------------------------------------------------------- */
 /*                                   Exports                                  */
