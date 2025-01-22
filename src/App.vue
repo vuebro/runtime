@@ -96,7 +96,7 @@ const ogType = (): MetaFlat["ogType"] | undefined =>
 const title = (): string => a.value?.title ?? "";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Watches                                  */
+/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(a, async (value) => {
