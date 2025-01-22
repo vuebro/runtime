@@ -81,7 +81,7 @@ const moduleCache: ModuleExport = { vue };
 
 /* -------------------------------------------------------------------------- */
 
-const { pathname }: { pathname: string } = new URL(document.baseURI);
+const { pathname }: URL = new URL(document.baseURI);
 
 /* -------------------------------------------------------------------------- */
 
@@ -153,7 +153,7 @@ const log: Options["log"] = (type, ...args) => {
 
 /* -------------------------------------------------------------------------- */
 
-const addStyle = (style: string, id: string | undefined): void => {
+const addStyle: Options["addStyle"] = (style, id) => {
   useStyleTag(style, { ...(id && { id }) });
 };
 
