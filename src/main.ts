@@ -15,9 +15,9 @@ import initUnocssRuntime from "@unocss/runtime";
 import {
   consoleError,
   customFetch,
-  data,
   getFonts,
   importmap,
+  nodes,
   pages,
 } from "@vues3/shared";
 import { computed, createApp, nextTick, readonly } from "vue";
@@ -77,7 +77,7 @@ const initRouter: Promise<void> = (async () => {
     }) as [Promise<TImportmap>, Promise<TPage[]>],
   );
   importmap.imports = imports;
-  data.push(page);
+  nodes.push(page);
   await nextTick();
   window.app.provide(
     "pages",
