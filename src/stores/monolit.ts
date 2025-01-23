@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 import type { RuntimeContext } from "@unocss/runtime";
-import type { TPage } from "@vues3/shared";
+import type { TImportmap, TPage } from "@vues3/shared";
 import type { AsyncComponentLoader, ComputedRef, Ref } from "vue";
 import type {
   AbstractPath,
@@ -187,30 +187,29 @@ const handleModule = async (
 };
 
 /* -------------------------------------------------------------------------- */
+/*                                  Constants                                 */
+/* -------------------------------------------------------------------------- */
+
+const type = "js";
+
+/* -------------------------------------------------------------------------- */
+/*                                  Functions                                 */
+/* -------------------------------------------------------------------------- */
 
 const module = ({ id = v4() }: TPage): Promise<object> => {
   const abstractPath = `${id}.vue`;
   promises.set(id, promiseWithResolvers());
   const getFile: Options["getFile"] = async (filePath: string) => {
-    const { imports } = importmap;
+    const { imports }: TImportmap = importmap;
+    const getContentData: File["getContentData"] = () =>
+      import(filePath) as Promise<ContentData>;
+    const fileName: string | undefined = filePath.split("/").pop();
     switch (true) {
       case filePath === abstractPath:
         return (await fetch(`./pages/${filePath}`)).text();
-      case Object.keys(imports).some((value) => filePath.startsWith(value)): {
-        // const fileName = filePath.split("/").pop();
-        // const ext = fileName?.split(".").pop();
-        // let type = ext === fileName ? "" : ext;
-        const getContentData: File["getContentData"] = () =>
-          import(
-            filePath
-            // type === "css" ? { with: { type } } : undefined
-          ) as Promise<ContentData>;
-        // type = type === "css" ? type : "js";
-        const type = "js";
+      case Object.keys(imports).some((value) => filePath.startsWith(value)):
         return { getContentData, type };
-      }
-      default: {
-        const fileName = filePath.split("/").pop();
+      default:
         return (
           await fetch(
             fileName === fileName?.split(".").pop()
@@ -218,7 +217,6 @@ const module = ({ id = v4() }: TPage): Promise<object> => {
               : filePath,
           )
         ).text();
-      }
     }
   };
   return defineAsyncComponent((async () =>
