@@ -20,7 +20,7 @@
     "@unocss/reset": "^65.4.3",
     "@unocss/runtime": "^65.4.3",
     "@vitejs/plugin-vue": "^5.2.1",
-    "@vues3/shared": "^0.3.34",
+    "@vues3/shared": "^0.3.35",
     "@vueuse/core": "^12.5.0",
     "uuid": "^11.0.5",
     "vite": "^6.0.11",
