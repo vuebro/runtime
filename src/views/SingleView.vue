@@ -8,41 +8,19 @@
   </div>
 </template>
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { TPage } from "@vues3/shared";
-import type { ComputedRef } from "vue";
-
 import { v4 } from "uuid";
 import { computed, inject, onUpdated } from "vue";
 
 import { module, promises, resolve, that } from "../stores/monolit";
 
 /* -------------------------------------------------------------------------- */
-/*                                 Properties                                 */
-/* -------------------------------------------------------------------------- */
 
-const { id }: { id: string | undefined } = defineProps<{ id?: string }>();
+const { id } = defineProps<{ id?: string }>();
 
-/* -------------------------------------------------------------------------- */
-/*                                 Injections                                 */
-/* -------------------------------------------------------------------------- */
+const pages = inject("pages"),
+  the = computed(() => (id ? pages?.[id as keyof object] : that.value));
 
-const pages: Record<string, TPage> | undefined = inject("pages");
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const the: ComputedRef<TPage | undefined> = computed(() =>
-  id ? pages?.[id as keyof object] : that.value,
-);
-
-/* -------------------------------------------------------------------------- */
-
-const is: ComputedRef<Promise<object> | undefined> = computed(() => {
+const is = computed(() => {
   const [[key, value] = []] = promises;
   promises.clear();
   if (key && value) promises.set(key, value);
@@ -50,12 +28,8 @@ const is: ComputedRef<Promise<object> | undefined> = computed(() => {
 });
 
 /* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
 
 onUpdated(() => {
   if (id && the.value) resolve(the.value);
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
