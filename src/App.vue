@@ -4,14 +4,6 @@
   </router-view>
 </template>
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
-import type { Link } from "@unhead/vue";
-import type { TPage } from "@vues3/shared";
-import type { ComputedRef, Ref } from "vue";
-import type { RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import type { MetaFlat } from "zhead";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
@@ -21,82 +13,36 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
 
-const route: RouteLocationNormalizedLoadedGeneric = useRoute();
+const route = useRoute();
 
-/* -------------------------------------------------------------------------- */
-/*                                  Computed                                  */
-/* -------------------------------------------------------------------------- */
+const a = computed(() => pages.value.find(({ id }) => id === route.name)),
+  favicon = ref(""),
+  ogUrl = computed(
+    () =>
+      a.value?.to &&
+      `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
+  ),
+  link = [
+    [favicon, "icon", "icon"],
+    [ogUrl, "canonical"],
+  ].map(([href, rel, key]) => ({ href, key, rel }));
 
-const a: ComputedRef<TPage | undefined> = computed(() =>
-  pages.value.find(({ id }) => id === route.name),
-);
+const description = () => a.value?.description ?? undefined,
+  keywords = () => a.value?.keywords.join(),
+  ogDescription = () => a.value?.description ?? undefined,
+  ogImage = () =>
+    a.value?.images
+      .filter(({ url }) => url)
+      .map(({ alt = "", url }) => ({
+        alt,
+        url: url ? `${window.location.origin}/${url}` : "",
+      })) ?? [],
+  ogTitle = () => a.value?.title,
+  ogType = () =>
+    a.value?.type ? (a.value.type as MetaFlat["ogType"]) : undefined,
+  title = () => a.value?.title ?? "";
 
-/* -------------------------------------------------------------------------- */
-
-const ogUrl: ComputedRef<string | undefined> = computed(
-  () =>
-    a.value?.to &&
-    `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const favicon: Ref<string> = ref("");
-
-/* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
-
-const link: Link<object>[] = [
-  [favicon, "icon", "icon"],
-  [ogUrl, "canonical"],
-].map(([href, rel, key]) => ({ href, key, rel }));
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const description = (): string | undefined => a.value?.description ?? undefined;
-
-/* -------------------------------------------------------------------------- */
-
-const keywords = (): string | undefined => a.value?.keywords.join();
-
-/* -------------------------------------------------------------------------- */
-
-const ogDescription = (): string | undefined =>
-  a.value?.description ?? undefined;
-
-/* -------------------------------------------------------------------------- */
-
-const ogImage = (): TPage["images"] =>
-  a.value?.images
-    .filter(({ url }) => url)
-    .map(({ alt = "", url }) => ({
-      alt,
-      url: url ? `${window.location.origin}/${url}` : "",
-    })) ?? [];
-
-/* -------------------------------------------------------------------------- */
-
-const ogTitle = (): string | undefined => a.value?.title;
-
-/* -------------------------------------------------------------------------- */
-
-const ogType = (): MetaFlat["ogType"] | undefined =>
-  a.value?.type ? (a.value.type as MetaFlat["ogType"]) : undefined;
-
-/* -------------------------------------------------------------------------- */
-
-const title = (): string => a.value?.title ?? "";
-
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(a, async (value) => {
@@ -113,13 +59,7 @@ watch(a, async (value) => {
   favicon.value = href;
 });
 
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
 useHead({ link });
-
-/* -------------------------------------------------------------------------- */
 
 useSeoMeta({
   description,
@@ -131,6 +71,4 @@ useSeoMeta({
   ogUrl,
   title,
 });
-
-/* -------------------------------------------------------------------------- */
 </script>
