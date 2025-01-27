@@ -16,13 +16,7 @@
   </div>
 </template>
 <script setup lang="ts">
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
-
 import type { TPage } from "@vues3/shared";
-import type { ComputedRef, Ref } from "vue";
-import type { Router } from "vue-router";
 
 import { consoleError, deep, pages } from "@vues3/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
@@ -43,90 +37,53 @@ import {
 } from "../stores/monolit";
 
 /* -------------------------------------------------------------------------- */
-/*                                   Arrays                                   */
-/* -------------------------------------------------------------------------- */
 
-const stops: (() => void)[] = [];
-
-/* -------------------------------------------------------------------------- */
-/*                                Computations                                */
-/* -------------------------------------------------------------------------- */
-
-const templates: ComputedRef<object> = computed(() => {
-  const [[key, value] = []] = promises;
-  promises.clear();
-  if (key && value) promises.set(key, value);
-  return Object.fromEntries(
-    $siblings.value.map((page) => [page.id, module(page)]),
-  ) as object;
-});
-
-/* -------------------------------------------------------------------------- */
-
-const intersecting: ComputedRef<Map<string, boolean>> = computed(
-  () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                 References                                 */
-/* -------------------------------------------------------------------------- */
-
-const refs: Ref<HTMLElement[]> = ref([]);
-
-/* -------------------------------------------------------------------------- */
-
-const $intersecting: Ref<Map<string, boolean>> = ref(
-  new Map(intersecting.value),
-);
-
-/* -------------------------------------------------------------------------- */
-/*                                   Objects                                  */
-/* -------------------------------------------------------------------------- */
-
-const router: Router = useRouter();
-
-/* -------------------------------------------------------------------------- */
-/*                                  Functions                                 */
-/* -------------------------------------------------------------------------- */
-
-const clearStops = (): void => {
-  stops.forEach((stop) => {
-    stop();
+const intersecting = computed(
+    () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
+  ),
+  $intersecting = ref(new Map(intersecting.value)),
+  refs = ref([]),
+  router = useRouter(),
+  stops: (() => void)[] = [],
+  templates = computed(() => {
+    const [[key, value] = []] = promises;
+    promises.clear();
+    if (key && value) promises.set(key, value);
+    return Object.fromEntries(
+      $siblings.value.map((page) => [page.id, module(page)]),
+    ) as object;
   });
-  stops.length = 0;
-};
 
-/* -------------------------------------------------------------------------- */
-
-const onStop = (): void => {
-  if (!paused.value && that.value && $siblings.value.length) {
-    const { scrollX, scrollY } = window;
-    const [first] = $siblings.value;
-    const [root] = pages.value;
-    if (root && first) {
-      const { $children: [{ id } = {}] = [] } = root;
-      const name =
-        !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
-          ? root.id
-          : ([...intersecting.value.entries()].find(
-              ([, value]) => value,
-            )?.[0] ??
-            [...$intersecting.value.entries()].find(
-              ([, value]) => value,
-            )?.[0] ??
-            first.id);
-      scroll.value = false;
-      router.push({ name }).catch(consoleError);
+const clearStops = () => {
+    stops.forEach((stop) => {
+      stop();
+    });
+    stops.length = 0;
+  },
+  onStop = () => {
+    if (!paused.value && that.value && $siblings.value.length) {
+      const { scrollX, scrollY } = window;
+      const [first] = $siblings.value;
+      const [root] = pages.value;
+      if (root && first) {
+        const { $children: [{ id } = {}] = [] } = root;
+        const name =
+          !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
+            ? root.id
+            : ([...intersecting.value.entries()].find(
+                ([, value]) => value,
+              )?.[0] ??
+              [...$intersecting.value.entries()].find(
+                ([, value]) => value,
+              )?.[0] ??
+              first.id);
+        scroll.value = false;
+        router.push({ name }).catch(consoleError);
+      }
     }
-  }
-};
+  },
+  template = ({ id }: TPage) => templates.value[id as keyof object];
 
-/* -------------------------------------------------------------------------- */
-
-const template = ({ id }: TPage): object => templates.value[id as keyof object];
-
-/* -------------------------------------------------------------------------- */
-/*                                  Watchers                                  */
 /* -------------------------------------------------------------------------- */
 
 watch(
@@ -151,15 +108,7 @@ watch(
   { deep },
 );
 
-/* -------------------------------------------------------------------------- */
-/*                                    Main                                    */
-/* -------------------------------------------------------------------------- */
-
 useScroll(window, { behavior, onStop });
 
-/* -------------------------------------------------------------------------- */
-
 onUnmounted(clearStops);
-
-/* -------------------------------------------------------------------------- */
 </script>
