@@ -13,7 +13,7 @@ import eslintrc from "./.eslintrc.json";
 
 const compat = new FlatCompat(),
   extraFileExtensions = [".vue"],
-  ignores = ["*.d.ts", "**/dist", "eslint.config.js"],
+  ignores = ["**/dist", "**/eslint.config.js"],
   projectService = true,
   tsconfigRootDir = import.meta.dirname,
   parserOptions = {
@@ -29,6 +29,13 @@ const compat = new FlatCompat(),
   rules = {
     "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-use-before-define": "error",
+    "import-x/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: ["**/eslint.config.js", "**/vite.config.ts"],
+        optionalDependencies: false,
+      },
+    ],
     "no-shadow": "off",
     "no-use-before-define": "off",
   };
