@@ -46,7 +46,7 @@ const id = computed(() => router.currentRoute.value.name),
     importmap.imports = imports;
     nodes.push(page);
     await nextTick();
-    window.app.provide("pages", readonly(atlas));
+    window.app.provide("pages", atlas.value);
     pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
       const component = () => import("./views/SingleView.vue");
       if (relative !== undefined) {
