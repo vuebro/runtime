@@ -19,7 +19,7 @@
     "@unocss/preset-web-fonts": "^65.4.3",
     "@unocss/reset": "^65.4.3",
     "@unocss/runtime": "^65.4.3",
-    "@vues3/shared": "^0.4.0",
+    "@vues3/shared": "^0.4.1",
     "@vueuse/core": "^12.5.0",
     "uuid": "^11.0.5",
     "vue": "^3.5.13",
