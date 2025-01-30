@@ -9,6 +9,7 @@ import webFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import {
+  atlas,
   consoleError,
   customFetch,
   getFonts,
@@ -45,12 +46,7 @@ const id = computed(() => router.currentRoute.value.name),
     importmap.imports = imports;
     nodes.push(page);
     await nextTick();
-    window.app.provide(
-      "pages",
-      readonly(
-        Object.fromEntries(pages.value.map((value) => [value.id, value])),
-      ),
-    );
+    window.app.provide("pages", readonly(atlas));
     pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
       const component = () => import("./views/SingleView.vue");
       if (relative !== undefined) {
