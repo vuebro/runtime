@@ -1,4 +1,3 @@
-import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
 import eslintPluginImportX from "eslint-plugin-import-x";
 import perfectionist from "eslint-plugin-perfectionist";
@@ -7,13 +6,11 @@ import pluginVue from "eslint-plugin-vue";
 import tseslint, { configs, parser } from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
 
-import eslintrc from "./.eslintrc.json";
-
 /* -------------------------------------------------------------------------- */
 
-const compat = new FlatCompat(),
-  extraFileExtensions = [".vue"],
-  ignores = ["**/dist", "**/eslint.config.js"],
+const extraFileExtensions = [".vue"],
+  files = ["**/*.js"],
+  ignores = ["**/dist"],
   projectService = true,
   tsconfigRootDir = import.meta.dirname,
   parserOptions = {
@@ -22,10 +19,7 @@ const compat = new FlatCompat(),
     projectService,
     tsconfigRootDir,
   },
-  languageOptions = {
-    parser: vueParser,
-    parserOptions,
-  },
+  languageOptions = { parser: vueParser, parserOptions },
   rules = {
     "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-use-before-define": "error",
@@ -46,12 +40,12 @@ export default tseslint.config(
   { ignores },
   { rules },
   { languageOptions },
-  ...compat.config(eslintrc),
   eslint.configs.recommended,
   eslintPluginImportX.flatConfigs.recommended,
   eslintPluginImportX.flatConfigs.typescript,
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
+  { extends: [configs.disableTypeChecked], files },
   ...pluginVue.configs["flat/strongly-recommended"],
   perfectionist.configs["recommended-natural"],
   eslintPluginPrettierRecommended,
