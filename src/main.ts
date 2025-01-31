@@ -17,7 +17,7 @@ import {
   nodes,
   pages,
 } from "@vues3/shared";
-import { computed, createApp, nextTick, readonly } from "vue";
+import { computed, createApp, nextTick, readonly, shallowReadonly } from "vue";
 
 import defaults from "../uno.config";
 import vueApp from "./App.vue";
@@ -46,8 +46,8 @@ const id = computed(() => router.currentRoute.value.name),
     importmap.imports = imports;
     nodes.push(page);
     await nextTick();
-    window.app.provide("pages", atlas.value);
-    pages.value.forEach(({ along, id: name, loc, parent, path: relative }) => {
+    window.app.provide("pages", shallowReadonly(atlas));
+    pages.value.forEach(({ flat, id: name, loc, parent, path: relative }) => {
       const component = () => import("./views/SingleView.vue");
       if (relative !== undefined) {
         const alias = loc
@@ -55,7 +55,7 @@ const id = computed(() => router.currentRoute.value.name),
             .replace(/^\/?/, "/")
             .replace(/\/?$/, "/"),
           children = getChildren(
-            (parent?.along ?? along)
+            (parent?.flat ?? flat)
               ? () => import("./views/MultiView.vue")
               : component,
             name,
