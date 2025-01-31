@@ -105,6 +105,6 @@ window.app.provide("id", readonly(id));
 window.console.info(
   "⛵",
   "vueS3",
-  `ver:${__APP_VERSION__}`,
+  `ver.: ${__APP_VERSION__}`,
   "https://github.com/vues3",
 );
