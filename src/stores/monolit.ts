@@ -152,7 +152,7 @@ const addStyle: Options["addStyle"] = (style, id) => {
               res(
                 scroll.value && {
                   behavior,
-                  ...(that.value?.parent?.along && that.value.index
+                  ...(that.value?.parent?.flat && that.value.index
                     ? { el }
                     : { left, top }),
                 },
