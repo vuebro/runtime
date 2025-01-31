@@ -8,8 +8,9 @@
   </div>
 </template>
 <script setup lang="ts">
+import { atlas } from "@vues3/shared";
 import { v4 } from "uuid";
-import { computed, inject, onUpdated } from "vue";
+import { computed, onUpdated } from "vue";
 
 import { module, promises, resolve, that } from "../stores/monolit";
 
@@ -17,8 +18,7 @@ import { module, promises, resolve, that } from "../stores/monolit";
 
 const { id } = defineProps<{ id?: string }>();
 
-const pages = inject("pages"),
-  the = computed(() => (id ? pages?.[id as keyof object] : that.value));
+const the = computed(() => (id ? atlas[id as keyof object] : that.value));
 
 const is = computed(() => {
   const [[key, value] = []] = promises;
