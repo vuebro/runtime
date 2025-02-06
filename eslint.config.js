@@ -22,6 +22,7 @@ const extraFileExtensions = [".vue"],
   },
   languageOptions = { parser: vueParser, parserOptions },
   rules = {
+    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-use-before-define": "error",
     "import-x/no-extraneous-dependencies": [
       "error",
@@ -30,6 +31,7 @@ const extraFileExtensions = [".vue"],
         optionalDependencies: false,
       },
     ],
+    "no-shadow": "off",
     "no-use-before-define": "off",
   };
 
