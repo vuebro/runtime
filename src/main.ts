@@ -12,7 +12,6 @@ import {
   atlas,
   consoleError,
   customFetch,
-  getFonts,
   importmap,
   nodes,
   pages,
@@ -95,8 +94,10 @@ window.app.provide("id", readonly(id));
 
 (async () => {
   const response = await fetch("fonts.json"),
-    fonts = getFonts(
-      (await (response.ok ? response : new Response("[]")).json()) as string[],
+    fonts = Object.fromEntries(
+      (
+        (await (response.ok ? response : new Response("[]")).json()) as string[]
+      ).map((value) => [value.toLowerCase().replaceAll(" ", "_"), value]),
     );
   defaults.presets.push(webFonts({ customFetch, fonts }) as Preset);
   await initUnocssRuntime({ defaults, ready, rootElement });
