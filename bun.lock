@@ -15,7 +15,7 @@
         "@unocss/preset-web-fonts": "^65.4.3",
         "@unocss/reset": "^65.4.3",
         "@unocss/runtime": "^65.4.3",
-        "@vues3/shared": "^0.4.7",
+        "@vues3/shared": "^0.4.8",
         "@vueuse/core": "^12.5.0",
         "uuid": "^11.0.5",
         "vue": "^3.5.13",
@@ -529,7 +529,7 @@
 
     "@vues3/flat-json-tree": ["@vues3/flat-json-tree@0.5.1", "", { "dependencies": { "@vueuse/core": "12.5.0", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-2fB7GzGl5T02dGEzDQwnX/dI8LHnN0iPy19c5kFeF2+BaJSEeAzxJ2kP+5KGS6UcphdQ6CfOxMKNACQM+xVZew=="],
 
-    "@vues3/shared": ["@vues3/shared@0.4.8", "", { "dependencies": { "@vues3/flat-json-tree": "^0.5.1", "ajv": "^8.17.1", "ajv-keywords": "^5.1.0", "json-schema-to-ts": "^3.1.1", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-IVQZadZitc8gmqsD5o/BxnlIUBlEFuR3jmQKgTdAox+hv2jnXlca9cfUPsSSXSZKO6P8YS55M3N76Ilgh/kYjg=="],
+    "@vues3/shared": ["@vues3/shared@0.4.9", "", { "dependencies": { "@vues3/flat-json-tree": "^0.5.1", "ajv": "^8.17.1", "ajv-keywords": "^5.1.0", "json-schema-to-ts": "^3.1.1", "uuid": "^11.0.5", "vue": "^3.5.13" } }, "sha512-oxDFx+lkllbBrzsGq1EeaFDj4lw9M7YtolnASNwxYZk7DzxfFs36mcWG7LxMsxDwhhLAf7Brr3psvadxpzYQAQ=="],
 
     "@vueuse/core": ["@vueuse/core@12.5.0", "", { "dependencies": { "@types/web-bluetooth": "^0.0.20", "@vueuse/metadata": "12.5.0", "@vueuse/shared": "12.5.0", "vue": "^3.5.13" } }, "sha512-GVyH1iYqNANwcahAx8JBm6awaNgvR/SwZ1fjr10b8l1HIgDp82ngNbfzJUgOgWEoxjL+URAggnlilAEXwCOZtg=="],
 
