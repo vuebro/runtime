@@ -12,7 +12,7 @@ import {
   atlas,
   consoleError,
   customFetch,
-  getFonts,
+  getFontsObjectFromArray,
   importmap,
   nodes,
   pages,
@@ -95,7 +95,7 @@ window.app.provide("id", readonly(id));
 
 (async () => {
   const response = await fetch("fonts.json"),
-    fonts = getFonts(
+    fonts = getFontsObjectFromArray(
       (await (response.ok ? response : new Response("[]")).json()) as string[],
     );
   defaults.presets.push(webFonts({ customFetch, fonts }) as Preset);
