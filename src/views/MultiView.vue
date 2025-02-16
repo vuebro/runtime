@@ -1,16 +1,16 @@
 <template>
   <div
-    :class="the.class"
+    v-for="the in $siblings"
     :id="the.id ?? v4()"
     :key="the.id ?? v4()"
-    :role="the.id === that?.id ? 'main' : 'section'"
     ref="refs"
+    :class="the.class"
+    :role="the.id === that?.id ? 'main' : 'section'"
     un-cloak
-    v-for="the in $siblings"
   >
     <component
-      :id="the.id"
       :is="template(the)"
+      :id="the.id"
       @vue:mounted="resolve(the)"
     ></component>
   </div>
