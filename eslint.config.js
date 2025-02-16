@@ -44,7 +44,7 @@ export default tseslint.config(
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
   { extends: [configs.disableTypeChecked], files },
-  ...pluginVue.configs["flat/strongly-recommended"],
+  ...pluginVue.configs["flat/recommended"],
   sonarjs.recommended,
   perfectionist.configs["recommended-natural"],
   eslintPluginPrettierRecommended,
