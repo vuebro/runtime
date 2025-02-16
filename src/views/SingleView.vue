@@ -1,8 +1,8 @@
 <template>
-  <div :class="the?.class" :id="the?.id ?? v4()" un-cloak v-if="the?.enabled">
+  <div v-if="the?.enabled" :id="the?.id ?? v4()" :class="the?.class" un-cloak>
     <component
-      :id="the?.id"
       :is
+      :id="the?.id"
       @vue:mounted="if (the) resolve(the);"
     ></component>
   </div>
