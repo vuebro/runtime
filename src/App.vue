@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component }">
-    <component :id="pages[0]?.id" :is="Component"></component>
+    <component :is="Component" :id="pages[0]?.id"></component>
   </router-view>
 </template>
 <script setup lang="ts">
