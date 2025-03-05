@@ -4,6 +4,7 @@ import perfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import { configs as sonarjs } from "eslint-plugin-sonarjs";
 import pluginVue from "eslint-plugin-vue";
+import { browser } from "globals";
 import tseslint, { configs, parser } from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
 
@@ -11,6 +12,7 @@ import vueParser from "vue-eslint-parser";
 
 const extraFileExtensions = [".vue"],
   files = ["**/*.js"],
+  globals = { ...browser },
   ignores = ["**/dist"],
   projectService = true,
   tsconfigRootDir = import.meta.dirname,
@@ -20,7 +22,7 @@ const extraFileExtensions = [".vue"],
     projectService,
     tsconfigRootDir,
   },
-  languageOptions = { parser: vueParser, parserOptions },
+  languageOptions = { globals, parser: vueParser, parserOptions },
   rules = {
     "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
     "import-x/no-extraneous-dependencies": [
