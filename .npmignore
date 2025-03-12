@@ -4,8 +4,9 @@ public/
 src/
 .prettierrc.json
 bun.lock
-eslint.config.ts
+eslint.config.js
 index.html
 tsconfig.json
 uno.config.ts
 vite.config.ts
+!/dist/index.html
