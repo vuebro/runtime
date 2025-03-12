@@ -1,1 +1,11 @@
-node_modules
+.github/
+.vscode/
+public/
+src/
+.prettierrc.json
+bun.lock
+eslint.config.ts
+index.html
+tsconfig.json
+uno.config.ts
+vite.config.ts
