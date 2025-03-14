@@ -23,15 +23,11 @@ import defaults from "../uno.config";
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.css";
-
-/* -------------------------------------------------------------------------- */
-
 const getChildren = (
   component: RouteRecordRaw["component"],
   name: RouteRecordRaw["name"],
   path: RouteRecordRaw["path"],
 ) => [{ component, name, path }] as RouteRecordRaw[];
-
 const id = computed(() => router.currentRoute.value.name),
   initRouter = (async () => {
     const [{ imports }, [page = {} as TPage]] = await Promise.all(
@@ -75,7 +71,6 @@ const id = computed(() => router.currentRoute.value.name),
       path = "/:pathMatch(.*)*";
     router.addRoute({ component, name, path });
   })();
-
 const rootElement = () => document.getElementById("app") ?? undefined;
 const ready: RuntimeOptions["ready"] = async (runtime) => {
   const { toggleObserver } = runtime;
@@ -86,13 +81,9 @@ const ready: RuntimeOptions["ready"] = async (runtime) => {
   toggleObserver(true);
   return false;
 };
-
-/* -------------------------------------------------------------------------- */
-
 window.app = createApp(vueApp as Component);
 window.app.use(createHead());
 window.app.provide("id", readonly(id));
-
 (async () => {
   const response = await fetch("fonts.json"),
     fonts = getFontsObjectFromArray(
@@ -101,7 +92,6 @@ window.app.provide("id", readonly(id));
   defaults.presets.push(webFonts({ customFetch, fonts }) as Preset);
   await initUnocssRuntime({ defaults, ready, rootElement });
 })().catch(consoleError);
-
 window.console.info(
   "⛵",
   "vueS3",
