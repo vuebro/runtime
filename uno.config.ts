@@ -5,9 +5,6 @@ import icons from "@unocss/preset-icons/browser";
 import tagify from "@unocss/preset-tagify";
 import typography from "@unocss/preset-typography";
 import wind3 from "@unocss/preset-wind3";
-
-/* -------------------------------------------------------------------------- */
-
 const cdn = "https://cdn.jsdelivr.net/npm/",
   presets: Preset[] = [
     wind3(),
@@ -16,7 +13,4 @@ const cdn = "https://cdn.jsdelivr.net/npm/",
     tagify(),
     attributify(),
   ];
-
-/* -------------------------------------------------------------------------- */
-
 export default { presets };
