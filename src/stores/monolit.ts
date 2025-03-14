@@ -16,13 +16,7 @@ import * as vue from "vue";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { loadModule } from "vue3-sfc-loader";
 import { createRouter, createWebHistory } from "vue-router";
-
-/* -------------------------------------------------------------------------- */
-
 let onScroll: RouterScrollBehavior | undefined;
-
-/* -------------------------------------------------------------------------- */
-
 const behavior = "smooth",
   left = 0,
   moduleCache: ModuleExport = { vue },
@@ -48,7 +42,6 @@ const siblings = computed(() => that.value?.siblings ?? []);
 const $siblings = computed(() =>
   siblings.value.filter(({ enabled }) => enabled),
 );
-
 const promiseWithResolvers = <T>() => {
   let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
   let reject: PromiseWithResolvers<T>["reject"] | undefined;
@@ -58,7 +51,6 @@ const promiseWithResolvers = <T>() => {
   });
   return { promise, reject, resolve } as PromiseWithResolvers<T>;
 };
-
 const addStyle: Options["addStyle"] = (style, id) => {
     useStyleTag(style, { ...(id && { id }) });
   },
@@ -166,15 +158,9 @@ const addStyle: Options["addStyle"] = (style, id) => {
         } else res(false);
       });
   };
-
-/* -------------------------------------------------------------------------- */
-
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
 );
-
-/* -------------------------------------------------------------------------- */
-
 export {
   $siblings,
   a,
