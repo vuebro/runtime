@@ -35,9 +35,6 @@ import {
   that,
   threshold,
 } from "../stores/monolit";
-
-/* -------------------------------------------------------------------------- */
-
 const intersecting = computed(
     () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
   ),
@@ -53,7 +50,6 @@ const intersecting = computed(
       $siblings.value.map((page) => [page.id, module(page)]),
     ) as object;
   });
-
 const clearStops = () => {
     stops.forEach((stop) => {
       stop();
@@ -83,9 +79,6 @@ const clearStops = () => {
     }
   },
   template = ({ id }: TPage) => templates.value[id as keyof object];
-
-/* -------------------------------------------------------------------------- */
-
 watch(
   refs,
   (value) => {
@@ -107,8 +100,6 @@ watch(
   },
   { deep },
 );
-
 useScroll(window, { behavior, onStop });
-
 onUnmounted(clearStops);
 </script>
