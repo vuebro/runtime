@@ -7,9 +7,6 @@ import pluginVue from "eslint-plugin-vue";
 import { browser } from "globals";
 import tseslint, { configs, parser } from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
-
-/* -------------------------------------------------------------------------- */
-
 const extraFileExtensions = [".vue"],
   files = ["**/*.js"],
   globals = { ...browser },
@@ -33,9 +30,6 @@ const extraFileExtensions = [".vue"],
       },
     ],
   };
-
-/* -------------------------------------------------------------------------- */
-
 export default tseslint.config(
   { ignores },
   { rules },
