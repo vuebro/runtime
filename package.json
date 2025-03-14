@@ -1,6 +1,6 @@
 {
   "name": "@vues3/runtime",
-  "version": "0.1.66",
+  "version": "0.1.67",
   "type": "module",
   "scripts": {
     "lint": "bun --bun eslint .",
