@@ -1,13 +1,7 @@
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TPage } from "@vues3/shared";
 import type { AsyncComponentLoader } from "vue";
-import type {
-  AbstractPath,
-  File,
-  ModuleExport,
-  Options,
-} from "vue3-sfc-loader";
-import type { RouteRecordRaw, RouterScrollBehavior } from "vue-router";
+import type { RouterScrollBehavior } from "vue-router";
 
 import { importmap, pages } from "@vues3/shared";
 import { useStyleTag } from "@vueuse/core";
@@ -15,26 +9,31 @@ import { v4 } from "uuid";
 import * as vue from "vue";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { loadModule } from "vue3-sfc-loader";
+import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 let onScroll: RouterScrollBehavior | undefined;
-const behavior = "smooth",
-  left = 0,
-  moduleCache: ModuleExport = { vue },
-  paused = ref(true),
-  promises = new Map<string, PromiseWithResolvers<undefined>>(),
-  scroll = ref(true),
-  threshold = 0.1,
-  top = 0;
-
 const { pathname } = new URL(document.baseURI);
-const history = createWebHistory(pathname),
-  routes: RouteRecordRaw[] = [],
-  scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) =>
+const router = createRouter({
+  history: createWebHistory(pathname),
+  routes: [],
+  scrollBehavior: (to, from, savedPosition) =>
     onScroll && onScroll(to, from, savedPosition),
-  router = createRouter({ history, routes, scrollBehavior });
+});
 const a = computed(() =>
     pages.value.find(({ id }) => id === router.currentRoute.value.name),
   ),
+  paused = ref(true),
+  promises = new Map<string, PromiseWithResolvers<undefined>>(),
+  promiseWithResolvers = <T>() => {
+    let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
+    let reject: PromiseWithResolvers<T>["reject"] | undefined;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, reject, resolve } as PromiseWithResolvers<T>;
+  },
+  scroll = ref(true),
   that = computed(() =>
     router.currentRoute.value.path === "/" ? a.value?.$children[0] : a.value,
   );
@@ -42,82 +41,64 @@ const siblings = computed(() => that.value?.siblings ?? []);
 const $siblings = computed(() =>
   siblings.value.filter(({ enabled }) => enabled),
 );
-const promiseWithResolvers = <T>() => {
-  let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
-  let reject: PromiseWithResolvers<T>["reject"] | undefined;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, reject, resolve } as PromiseWithResolvers<T>;
-};
-const addStyle: Options["addStyle"] = (style, id) => {
-    useStyleTag(style, { ...(id && { id }) });
-  },
-  handleModule = async (
-    type: string,
-    getContentData: File["getContentData"],
-    path: AbstractPath,
-    options: Options,
-  ) => {
-    switch (type) {
-      case ".css":
-        options.addStyle(
-          (await getContentData(false)) as string,
-          path.toString(),
-        );
-        return null;
-      // case "css": {
-      //   const { default: css } = (await getContentData(false)) as unknown as {
-      //     default: CSSStyleSheet;
-      //   };
-      //   document.adoptedStyleSheets = [...document.adoptedStyleSheets, css];
-      //   return null;
-      // }
-      case "js":
-        return getContentData(false);
-      default:
-        return undefined;
-    }
-  },
-  log: Options["log"] = (type, ...args) => {
-    (
-      window.console[type as keyof Console] as (
-        ...optionalParams: string[]
-      ) => void
-    )(...args.map((value: string) => decodeURIComponent(value)));
-  },
-  module = ({ id = v4() }) => {
-    const type = "js";
-    const abstractPath = `${id}.vue`;
+const module = ({ id = v4() }) => {
     promises.set(id, promiseWithResolvers());
-    const getFile = async (filePath: string) => {
-      const { imports } = importmap;
-      const getContentData = () => import(filePath);
-      const fileName = filePath.split("/").pop();
-      switch (true) {
-        case filePath === abstractPath:
-          return (await fetch(`./pages/${filePath}`)).text();
-        case Object.keys(imports).some((value) => filePath.startsWith(value)):
-          return { getContentData, type };
-        default:
-          return (
-            await fetch(
-              fileName === fileName?.split(".").pop()
-                ? `${filePath}.js`
-                : filePath,
-            )
-          ).text();
-      }
-    };
     return defineAsyncComponent((async () =>
-      loadModule(abstractPath, {
-        addStyle,
-        getFile,
-        handleModule,
-        log,
-        moduleCache,
-      } as unknown as Options)) as AsyncComponentLoader<Promise<object>>);
+      loadModule(`${id}.vue`, {
+        addStyle: (style, id) => {
+          useStyleTag(style, { ...(id && { id }) });
+        },
+        getFile: async (filePath: string) => {
+          const { imports } = importmap;
+          const fileName = filePath.split("/").pop();
+          switch (true) {
+            case filePath === `${id}.vue`:
+              return (await fetch(`./pages/${filePath}`)).text();
+            case Object.keys(imports).some((value) =>
+              filePath.startsWith(value),
+            ):
+              return { getContentData: () => import(filePath), type: "js" };
+            default:
+              return (
+                await fetch(
+                  fileName === fileName?.split(".").pop()
+                    ? `${filePath}.js`
+                    : filePath,
+                )
+              ).text();
+          }
+        },
+        // @ts-expect-error ModuleHandler isn't have an undefined in the promise
+        handleModule: async (type, getContentData, path, options) => {
+          switch (type) {
+            case ".css":
+              options.addStyle(
+                (await getContentData(false)) as string,
+                path.toString(),
+              );
+              return null;
+            // case "css": {
+            //   const { default: css } = (await getContentData(false)) as unknown as {
+            //     default: CSSStyleSheet;
+            //   };
+            //   document.adoptedStyleSheets = [...document.adoptedStyleSheets, css];
+            //   return null;
+            // }
+            case "js":
+              return getContentData(false);
+            default:
+              return undefined;
+          }
+        },
+        log: (type, ...args) => {
+          (
+            window.console[type as keyof Console] as (
+              ...optionalParams: string[]
+            ) => void
+          )(...args.map((value: string) => decodeURIComponent(value)));
+        },
+        moduleCache: { vue, "vue-router": vueRouter },
+      })) as AsyncComponentLoader<Promise<object>>);
   },
   resolve = ({ id } = {} as TPage) => {
     if (id) promises.get(id)?.resolve(undefined);
@@ -143,10 +124,10 @@ const addStyle: Options["addStyle"] = (style, id) => {
               const el = `#${String(name)}`;
               res(
                 scroll.value && {
-                  behavior,
+                  behavior: "smooth",
                   ...(that.value?.parent?.flat && that.value.index
                     ? { el }
-                    : { left, top }),
+                    : { left: 0, top: 0 }),
                 },
               );
               scroll.value = true;
@@ -164,7 +145,6 @@ router.beforeEach(({ path }) =>
 export {
   $siblings,
   a,
-  behavior,
   module,
   paused,
   promises,
@@ -173,5 +153,4 @@ export {
   scroll,
   setScroll,
   that,
-  threshold,
 };
