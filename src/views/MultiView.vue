@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import type { TPage } from "@vues3/shared";
 
-import { consoleError, deep, pages } from "@vues3/shared";
+import { consoleError, pages } from "@vues3/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
@@ -26,14 +26,12 @@ import { useRouter } from "vue-router";
 
 import {
   $siblings,
-  behavior,
   module,
   paused,
   promises,
   resolve,
   scroll,
   that,
-  threshold,
 } from "../stores/monolit";
 const intersecting = computed(
     () => new Map($siblings.value.map(({ id = v4() }) => [id, false])),
@@ -56,7 +54,31 @@ const clearStops = () => {
     });
     stops.length = 0;
   },
-  onStop = () => {
+  template = ({ id }: TPage) => templates.value[id as keyof object];
+watch(
+  refs,
+  (value) => {
+    clearStops();
+    setTimeout(() => {
+      value.forEach((target) => {
+        const { stop } = useIntersectionObserver(
+          target,
+          ([{ isIntersecting, target: { id } = {} } = {}] = []) => {
+            $intersecting.value = new Map(intersecting.value);
+            if (id && isIntersecting !== undefined)
+              intersecting.value.set(id, isIntersecting);
+          },
+          { threshold: 0.1 },
+        );
+        stops.push(stop);
+      });
+    });
+  },
+  { deep: true },
+);
+useScroll(window, {
+  behavior: "smooth",
+  onStop: () => {
     if (!paused.value && that.value && $siblings.value.length) {
       const { scrollX, scrollY } = window;
       const [first] = $siblings.value;
@@ -78,28 +100,6 @@ const clearStops = () => {
       }
     }
   },
-  template = ({ id }: TPage) => templates.value[id as keyof object];
-watch(
-  refs,
-  (value) => {
-    clearStops();
-    setTimeout(() => {
-      value.forEach((target) => {
-        const { stop } = useIntersectionObserver(
-          target,
-          ([{ isIntersecting, target: { id } = {} } = {}] = []) => {
-            $intersecting.value = new Map(intersecting.value);
-            if (id && isIntersecting !== undefined)
-              intersecting.value.set(id, isIntersecting);
-          },
-          { threshold },
-        );
-        stops.push(stop);
-      });
-    });
-  },
-  { deep },
-);
-useScroll(window, { behavior, onStop });
+});
 onUnmounted(clearStops);
 </script>
