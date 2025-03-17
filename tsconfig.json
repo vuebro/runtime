@@ -3,6 +3,7 @@
     "allowJs": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "baseUrl": ".",
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
@@ -12,10 +13,15 @@
     "noEmit": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
+    "paths": {
+      "vue3-sfc-loader": [
+        "node_modules/vue3-sfc-loader/dist/types/vue3-esm/index.d.ts"
+      ]
+    },
     "resolveJsonModule": true,
-    "resolvePackageJsonExports": false,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "types": ["vite/client"]
   }
 }
