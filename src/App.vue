@@ -11,40 +11,14 @@ import { useHead, useSeoMeta } from "@unhead/vue";
 import { pages } from "@vues3/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-
-/* -------------------------------------------------------------------------- */
-
 const route = useRoute();
-
 const a = computed(() => pages.value.find(({ id }) => id === route.name)),
   favicon = ref(""),
   ogUrl = computed(
     () =>
       a.value?.to &&
       `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
-  ),
-  link = [
-    [favicon, "icon", "icon"],
-    [ogUrl, "canonical"],
-  ].map(([href, rel, key]) => ({ href, key, rel }));
-
-const description = () => a.value?.description ?? undefined,
-  keywords = () => a.value?.keywords.join(),
-  ogDescription = () => a.value?.description ?? undefined,
-  ogImage = () =>
-    a.value?.images
-      .filter(({ url }) => url)
-      .map(({ alt = "", url }) => ({
-        alt,
-        url: url ? `${window.location.origin}/${url}` : "",
-      })) ?? [],
-  ogTitle = () => a.value?.title,
-  ogType = () =>
-    a.value?.type ? (a.value.type as MetaFlat["ogType"]) : undefined,
-  title = () => a.value?.title ?? "";
-
-/* -------------------------------------------------------------------------- */
-
+  );
 watch(a, async (value) => {
   let href = "/favicon.ico";
   if (value?.icon) {
@@ -58,17 +32,27 @@ watch(a, async (value) => {
   }
   favicon.value = href;
 });
-
-useHead({ link });
-
+useHead({
+  link: [
+    [favicon, "icon", "icon"],
+    [ogUrl, "canonical"],
+  ].map(([href, rel, key]) => ({ href, key, rel })),
+});
 useSeoMeta({
-  description,
-  keywords,
-  ogDescription,
-  ogImage,
-  ogTitle,
-  ogType,
+  description: () => a.value?.description ?? undefined,
+  keywords: () => a.value?.keywords.join(),
+  ogDescription: () => a.value?.description ?? undefined,
+  ogImage: () =>
+    a.value?.images
+      .filter(({ url }) => url)
+      .map(({ alt = "", url }) => ({
+        alt,
+        url: url ? `${window.location.origin}/${url}` : "",
+      })) ?? [],
+  ogTitle: () => a.value?.title,
+  ogType: () =>
+    a.value?.type ? (a.value.type as MetaFlat["ogType"]) : undefined,
   ogUrl,
-  title,
+  title: () => a.value?.title ?? "",
 });
 </script>
