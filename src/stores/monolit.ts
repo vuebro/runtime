@@ -68,7 +68,7 @@ const module = ({ id = v4() }) => {
               ).text();
           }
         },
-        // @ts-expect-error ModuleHandler isn't have an undefined in the promise
+        // @ts-expect-error  Type 'undefined' is not assignable to type 'ModuleExport'
         handleModule: async (type, getContentData, path, options) => {
           switch (type) {
             case ".css":
