@@ -3,13 +3,6 @@ import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
-const targets = {
-  vue: (await import("vue/package.json", { with: { type: "json" } })).default
-    .version,
-  "vue-router": (
-    await import("vue-router/package.json", { with: { type: "json" } })
-  ).default.version,
-};
 export default defineConfig({
   base: "./",
   build: {
@@ -29,7 +22,13 @@ export default defineConfig({
   plugins: [
     vue(),
     viteStaticCopy({
-      targets: Object.entries(targets).map(([key, value]) => ({
+      targets: Object.entries({
+        vue: (await import("vue/package.json", { with: { type: "json" } }))
+          .default.version,
+        "vue-router": (
+          await import("vue-router/package.json", { with: { type: "json" } })
+        ).default.version,
+      }).map(([key, value]) => ({
         dest: "assets",
         rename: (fileName: string, fileExtension: string) =>
           `${fileName}-${value}.${fileExtension}`,
