@@ -3,7 +3,13 @@ import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
-import { dependencies } from "./package.json";
+const targets = {
+  vue: (await import("vue/package.json", { with: { type: "json" } })).default
+    .version,
+  "vue-router": (
+    await import("vue-router/package.json", { with: { type: "json" } })
+  ).default.version,
+};
 export default defineConfig({
   base: "./",
   build: {
@@ -23,11 +29,11 @@ export default defineConfig({
   plugins: [
     vue(),
     viteStaticCopy({
-      targets: ["vue", "vue-router"].map((value) => ({
+      targets: Object.entries(targets).map(([key, value]) => ({
         dest: "assets",
         rename: (fileName: string, fileExtension: string) =>
-          `${fileName}-${dependencies[value as keyof typeof dependencies].replace(/^\^/, "")}.${fileExtension}`,
-        src: `./node_modules/${value}/dist/${value}.esm-browser.prod.js`,
+          `${fileName}-${value}.${fileExtension}`,
+        src: `./node_modules/${key}/dist/${key}.esm-browser.prod.js`,
       })),
     }),
   ],
