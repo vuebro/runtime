@@ -2,6 +2,7 @@ import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import { version } from "vue";
 
 export default defineConfig({
   base: "./",
@@ -23,8 +24,7 @@ export default defineConfig({
     vue(),
     viteStaticCopy({
       targets: Object.entries({
-        vue: (await import("vue/package.json", { with: { type: "json" } }))
-          .default.version,
+        vue: version,
         "vue-router": (
           await import("vue-router/package.json", { with: { type: "json" } })
         ).default.version,
