@@ -4,7 +4,7 @@
   </router-view>
 </template>
 <script setup lang="ts">
-import type { MetaFlat } from "zhead";
+import type { MetaFlat } from "unhead/types";
 
 import { getIcon, iconExists, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
