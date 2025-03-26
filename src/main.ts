@@ -2,7 +2,7 @@ import type { Preset } from "@unocss/core";
 import type { TImportmap, TPage } from "@vues3/shared";
 import type { Component } from "vue";
 
-import { createHead } from "@unhead/vue";
+import { createHead } from "@unhead/vue/client";
 import webFonts from "@unocss/preset-web-fonts";
 import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
