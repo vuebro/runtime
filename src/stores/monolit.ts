@@ -4,11 +4,11 @@ import type { AsyncComponentLoader } from "vue";
 import type { RouterScrollBehavior } from "vue-router";
 
 import { importmap, pages } from "@vues3/shared";
+import { loadModule } from "@vues3/vue3-sfc-loader";
 import { useStyleTag } from "@vueuse/core";
 import { v4 } from "uuid";
 import * as vue from "vue";
 import { computed, defineAsyncComponent, ref } from "vue";
-import { loadModule } from "vue3-sfc-loader";
 import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 let onScroll: RouterScrollBehavior | undefined;
