@@ -1,5 +1,5 @@
 import eslint from "@eslint/js";
-import eslintPluginImportX from "eslint-plugin-import-x";
+import { flatConfigs } from "eslint-plugin-import-x";
 import perfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import pluginVue from "eslint-plugin-vue";
@@ -33,8 +33,8 @@ export default tseslint.config(
     },
   },
   eslint.configs.recommended,
-  eslintPluginImportX.flatConfigs.recommended,
-  eslintPluginImportX.flatConfigs.typescript,
+  flatConfigs.recommended,
+  flatConfigs.typescript,
   configs.strictTypeChecked,
   configs.stylisticTypeChecked,
   ...pluginVue.configs["flat/recommended"],
