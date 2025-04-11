@@ -22,6 +22,7 @@ const router = createRouter({
 const a = computed(() =>
     pages.value.find(({ id }) => id === router.currentRoute.value.name),
   ),
+  behavior: ScrollOptions["behavior"] = "smooth",
   paused = ref(true),
   promises = new Map<string, PromiseWithResolvers<undefined>>(),
   promiseWithResolvers = <T>() => {
@@ -104,40 +105,26 @@ const module = ({ id = v4() }) => {
     if (id) promises.get(id)?.resolve(undefined);
   },
   setScroll = ({ extractAll, toggleObserver }: RuntimeContext) => {
-    const all = async () => {
-      paused.value = true;
-      toggleObserver(false);
-      {
+    onScroll = async ({ name }) => {
+      if (name) {
+        paused.value = true;
+        toggleObserver(false);
         const [{ promise } = {}] = promises.values();
         await promise;
-      }
-      await Promise.all([...promises.values()].map(({ promise }) => promise));
-      await extractAll();
-      toggleObserver(true);
-      paused.value = false;
+        await Promise.all([...promises.values()].map(({ promise }) => promise));
+        await extractAll();
+        toggleObserver(true);
+        const routerScrollBehavior = scroll.value && {
+          behavior,
+          ...(that.value?.parent?.flat && that.value.index
+            ? { el: `#${String(name)}` }
+            : { left: 0, top: 0 }),
+        };
+        paused.value = false;
+        scroll.value = true;
+        return routerScrollBehavior;
+      } else return false;
     };
-    onScroll = async ({ name }) =>
-      new Promise((res) => {
-        if (name) {
-          all().then(
-            () => {
-              const el = `#${String(name)}`;
-              res(
-                scroll.value && {
-                  behavior: "smooth",
-                  ...(that.value?.parent?.flat && that.value.index
-                    ? { el }
-                    : { left: 0, top: 0 }),
-                },
-              );
-              scroll.value = true;
-            },
-            () => {
-              res(false);
-            },
-          );
-        } else res(false);
-      });
   };
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
