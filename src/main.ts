@@ -37,12 +37,8 @@ const initRouter = (async () => {
   window.app.provide("pages", atlas);
   pages.value.forEach(({ flat, id: name, loc, parent, path: relative }) => {
     if (relative !== undefined) {
-      const alias = loc
-        ?.replaceAll(" ", "_")
-        .replace(/^\/?/, "/")
-        .replace(/\/?$/, "/");
       router.addRoute({
-        ...(alias && loc ? { alias } : { undefined }),
+        ...(loc ? { alias: loc } : { undefined }),
         children: [
           {
             component:
