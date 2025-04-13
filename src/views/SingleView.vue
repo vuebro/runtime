@@ -3,6 +3,7 @@
     <component
       :is
       :id="the?.id"
+      un-cloak
       @vue:mounted="if (the) resolve(the);"
     ></component>
   </div>
