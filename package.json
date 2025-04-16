@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^4.3.0",
-    "@unhead/vue": "^2.0.5",
+    "@unhead/vue": "^2.0.6",
     "@unocss/core": "^66.0.0",
     "@unocss/preset-attributify": "^66.0.0",
     "@unocss/preset-icons": "^66.0.0",
@@ -19,13 +19,13 @@
     "@unocss/preset-wind3": "^66.0.0",
     "@unocss/reset": "^66.0.0",
     "@unocss/runtime": "^66.0.0",
-    "@vues3/shared": "^0.5.2",
+    "@vues3/shared": "^0.5.3",
     "@vueuse/core": "^13.1.0",
     "globals": "^16.0.0",
     "uuid": "^11.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
-    "@vues3/vue3-sfc-loader": "^0.9.19"
+    "@vues3/vue3-sfc-loader": "^0.9.20"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
