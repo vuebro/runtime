@@ -55,40 +55,18 @@ const module = ({ id = v4() }) => {
           switch (true) {
             case filePath === `${id}.vue`:
               return (await fetch(`./pages/${filePath}`)).text();
+            case ["js", "mjs"].includes(fileName?.split(".").pop() ?? ""):
             case Object.keys(imports).some((value) =>
               filePath.startsWith(value),
             ):
-              return { getContentData: () => import(filePath), type: "js" };
+              return { getContentData: () => import(filePath), type: ".js" };
+            case fileName === fileName?.split(".").pop():
+              return {
+                getContentData: () => import(`${filePath}.js`),
+                type: ".js",
+              };
             default:
-              return (
-                await fetch(
-                  fileName === fileName?.split(".").pop()
-                    ? `${filePath}.js`
-                    : filePath,
-                )
-              ).text();
-          }
-        },
-        // @ts-expect-error  Type 'undefined' is not assignable to type 'ModuleExport'
-        handleModule: async (type, getContentData, path, options) => {
-          switch (type) {
-            case ".css":
-              options.addStyle(
-                (await getContentData(false)) as string,
-                path.toString(),
-              );
-              return null;
-            // case "css": {
-            //   const { default: css } = (await getContentData(false)) as unknown as {
-            //     default: CSSStyleSheet;
-            //   };
-            //   document.adoptedStyleSheets = [...document.adoptedStyleSheets, css];
-            //   return null;
-            // }
-            case "js":
-              return getContentData(false);
-            default:
-              return undefined;
+              return (await fetch(filePath)).text();
           }
         },
         log: (type, ...args) => {
