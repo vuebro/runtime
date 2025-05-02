@@ -11,15 +11,7 @@ export default defineConfig({
     rollupOptions: {
       external: ["vue", "vue-router"],
       output: {
-        // manualChunks: (id) =>
-        //   id.split("node_modules/")[1]?.split("/")[0]?.replace(/^@/, ""),
-        manualChunks: (id) => {
-          const [first, second] =
-            id.split("node_modules/")[1]?.split("/") ?? [];
-          return (
-            first?.[0] === "@" && second ? `${first}-${second}` : first
-          )?.replace(/^@/, "");
-        },
+        manualChunks: { "vue-compiler-sfc": ["@vue/compiler-sfc"] },
       },
     },
   },
