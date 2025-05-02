@@ -1,16 +1,13 @@
 import type { RuntimeContext } from "@unocss/runtime";
 import type { TPage } from "@vues3/shared";
-import type { AsyncComponentLoader } from "vue";
 import type { RouterScrollBehavior } from "vue-router";
 
-import { importmap, pages } from "@vues3/shared";
-import { loadModule } from "@vues3/vue3-sfc-loader";
-import { useStyleTag } from "@vueuse/core";
+import loadModule from "@vues3/sfc-loader";
+import { pages } from "@vues3/shared";
 import { v4 } from "uuid";
-import * as vue from "vue";
 import { computed, defineAsyncComponent, ref } from "vue";
-import * as vueRouter from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
+
 let onScroll: RouterScrollBehavior | undefined;
 const { pathname } = new URL(document.baseURI);
 const router = createRouter({
@@ -44,40 +41,7 @@ const $siblings = computed(() =>
 );
 const module = ({ id = v4() }) => {
     promises.set(id, promiseWithResolvers());
-    return defineAsyncComponent((async () =>
-      loadModule(`${id}.vue`, {
-        addStyle: (style, id) => {
-          useStyleTag(style, { ...(id && { id }) });
-        },
-        getFile: async (filePath: string) => {
-          const { imports } = importmap;
-          const fileName = filePath.split("/").pop();
-          switch (true) {
-            case filePath === `${id}.vue`:
-              return (await fetch(`./pages/${filePath}`)).text();
-            case ["js", "mjs"].includes(fileName?.split(".").pop() ?? ""):
-            case Object.keys(imports).some((value) =>
-              filePath.startsWith(value),
-            ):
-              return { getContentData: () => import(filePath), type: ".js" };
-            case fileName === fileName?.split(".").pop():
-              return {
-                getContentData: () => import(`${filePath}.js`),
-                type: ".js",
-              };
-            default:
-              return (await fetch(filePath)).text();
-          }
-        },
-        log: (type, ...args) => {
-          (
-            window.console[type as keyof Console] as (
-              ...optionalParams: string[]
-            ) => void
-          )(...args.map((value: string) => decodeURIComponent(value)));
-        },
-        moduleCache: { vue, "vue-router": vueRouter },
-      })) as AsyncComponentLoader<Promise<object>>);
+    return defineAsyncComponent(async () => loadModule(`./pages/${id}.vue`));
   },
   resolve = ({ id } = {} as TPage) => {
     if (id) promises.get(id)?.resolve(undefined);
