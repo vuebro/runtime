@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import type { MetaFlat } from "unhead/types";
 
-import { getIcon, iconExists, loadIcon } from "@iconify/vue";
+import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
 import { pages } from "@vues3/shared";
 import { computed, ref, watch } from "vue";
@@ -22,7 +22,7 @@ const a = computed(() => pages.value.find(({ id }) => id === route.name)),
 watch(a, async (value) => {
   let href = "/favicon.ico";
   if (value?.icon) {
-    const icon = iconExists(value.icon)
+    const icon = iconLoaded(value.icon)
       ? getIcon(value.icon)
       : await loadIcon(value.icon);
     if (icon) {
