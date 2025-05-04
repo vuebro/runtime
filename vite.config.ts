@@ -19,8 +19,8 @@ export default defineConfig({
         //   )?.replace(/^@/, "");
         // },
         manualChunks: {
+          "compiler-sfc": ["@vue/compiler-sfc"],
           sucrase: ["sucrase"],
-          "vue-compiler-sfc": ["@vue/compiler-sfc"],
         },
       },
     },
