@@ -4,7 +4,6 @@ import type { Component } from "vue";
 
 import { createHead } from "@unhead/vue/client";
 import webFonts from "@unocss/preset-web-fonts";
-import "@unocss/reset/tailwind-compat.css";
 import initUnocssRuntime from "@unocss/runtime";
 import {
   atlas,
