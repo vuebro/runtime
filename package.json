@@ -17,7 +17,6 @@
     "@unocss/preset-typography": "^66.1.0",
     "@unocss/preset-web-fonts": "^66.1.0",
     "@unocss/preset-wind4": "^66.1.0",
-    "@unocss/reset": "^66.1.0",
     "@unocss/runtime": "^66.1.0",
     "@vues3/sfc-loader": "^1.2.3",
     "@vues3/shared": "^0.5.11",
