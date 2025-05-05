@@ -1,6 +1,5 @@
 import type { Preset } from "@unocss/core";
 import type { TImportmap, TPage } from "@vues3/shared";
-import type { Component } from "vue";
 
 import { createHead } from "@unhead/vue/client";
 import webFonts from "@unocss/preset-web-fonts";
@@ -20,6 +19,9 @@ import defaults from "../uno.config";
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.css";
+
+const app = createApp(vueApp);
+app.use(createHead());
 const initRouter = (async () => {
   const [{ imports }, [page = {} as TPage]] = await Promise.all(
     ["index.importmap", "index.json"].map(async (value, index) => {
@@ -33,7 +35,7 @@ const initRouter = (async () => {
   importmap.imports = imports;
   nodes.push(page);
   await nextTick();
-  window.app.provide("pages", atlas);
+  app.provide("pages", atlas);
   pages.value.forEach(({ flat, id: name, loc, parent, path: relative }) => {
     if (relative !== undefined) {
       const alias = loc
@@ -63,9 +65,6 @@ const initRouter = (async () => {
     path: "/:pathMatch(.*)*",
   });
 })();
-const rootElement = () => document.getElementById("app") ?? undefined;
-window.app = createApp(vueApp as Component);
-window.app.use(createHead());
 (async () => {
   const response = await fetch("fonts.json"),
     fonts = getFontsObjectFromArray(
@@ -78,12 +77,12 @@ window.app.use(createHead());
       const { toggleObserver } = runtime;
       setScroll(runtime);
       await initRouter;
-      window.app.use(router);
-      window.app.mount(rootElement());
+      app.use(router);
+      app.mount("#app");
       toggleObserver(true);
       return false;
     },
-    rootElement,
+    rootElement: () => document.getElementById("app") ?? undefined,
   });
 })().catch(consoleError);
 window.console.info(
