@@ -14,7 +14,7 @@ import { v4 } from "uuid";
 import { computed, onUpdated } from "vue";
 
 import { module, promises, resolve, that } from "../stores/monolit";
-const { id } = defineProps<{ id?: string }>();
+const { id = null } = defineProps<{ id?: string }>();
 const the = computed(() => (id ? atlas[id as keyof object] : that.value));
 const is = computed(() => {
   const [[key, value] = []] = promises;
