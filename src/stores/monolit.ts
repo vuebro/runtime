@@ -9,13 +9,16 @@ import { computed, defineAsyncComponent, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 let onScroll: RouterScrollBehavior | undefined;
+
 const { pathname } = new URL(document.baseURI);
+
 const router = createRouter({
   history: createWebHistory(pathname),
   routes: [],
   scrollBehavior: (to, from, savedPosition) =>
     onScroll && onScroll(to, from, savedPosition),
 });
+
 const a = computed(() =>
     pages.value.find(({ id }) => id === router.currentRoute.value.name),
   ),
@@ -35,10 +38,13 @@ const a = computed(() =>
   that = computed(() =>
     router.currentRoute.value.path === "/" ? a.value?.$children[0] : a.value,
   );
+
 const siblings = computed(() => that.value?.siblings ?? []);
+
 const $siblings = computed(() =>
   siblings.value.filter(({ enabled }) => enabled),
 );
+
 const module = ({ id = v4() }) => {
     promises.set(id, promiseWithResolvers());
     return defineAsyncComponent(async () => loadModule(`./pages/${id}.vue`));
@@ -68,9 +74,11 @@ const module = ({ id = v4() }) => {
       } else return false;
     };
   };
+
 router.beforeEach(({ path }) =>
   path !== decodeURI(path) ? decodeURI(path) : undefined,
 );
+
 export {
   $siblings,
   a,
