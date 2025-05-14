@@ -1,5 +1,5 @@
 import type { Preset } from "@unocss/core";
-import type { TImportmap, TPage } from "@vues3/shared";
+import type { TPage } from "@vues3/shared";
 
 import { createHead } from "@unhead/vue/client";
 import webFonts from "@unocss/preset-web-fonts";
@@ -9,7 +9,6 @@ import {
   consoleError,
   customFetch,
   getFontsObjectFromArray,
-  importmap,
   nodes,
   pages,
 } from "@vues3/shared";
@@ -20,45 +19,55 @@ import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.css";
 
-const app = createApp(vueApp);
+const app = createApp(vueApp),
+  jsonld = {
+    async get(this: TPage) {
+      if (this.id) {
+        try {
+          const response = await fetch(`./pages/${this.id}.jsonld`);
+          return response.ok ? ((await response.json()) as object) : undefined;
+        } catch {
+          return undefined;
+        }
+      }
+      return undefined;
+    },
+  };
 app.use(createHead());
 const initRouter = (async () => {
-  const [{ imports }, [page = {} as TPage]] = await Promise.all(
-    ["index.importmap", "index.json"].map(async (value, index) => {
-      const body = index ? "[]" : "{}",
-        response = await fetch(value);
-      return (response.ok ? response : new Response(body)).json() as Promise<
-        TImportmap | TPage[]
-      >;
-    }) as [Promise<TImportmap>, Promise<TPage[]>],
-  );
-  importmap.imports = imports;
+  const response = await fetch("index.json"),
+    [page = {} as TPage] = (await (
+      response.ok ? response : new Response("[]")
+    ).json()) as TPage[];
   nodes.push(page);
   await nextTick();
+  pages.value.forEach(
+    ({ flat, id: name, loc, parent, path: relative }, index, array) => {
+      Object.defineProperties(array[index], { jsonld });
+      if (relative !== undefined) {
+        const alias = loc
+          ?.replaceAll(" ", "_")
+          .replace(/^\/?/, "/")
+          .replace(/\/?$/, "/");
+        router.addRoute({
+          ...(alias && loc ? { alias } : { undefined }),
+          children: [
+            {
+              component:
+                (parent?.flat ?? flat)
+                  ? () => import("./views/MultiView.vue")
+                  : () => import("./views/SingleView.vue"),
+              name,
+              path: "",
+            },
+          ],
+          component: () => import("./views/SingleView.vue"),
+          path: relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
+        });
+      }
+    },
+  );
   app.provide("pages", atlas);
-  pages.value.forEach(({ flat, id: name, loc, parent, path: relative }) => {
-    if (relative !== undefined) {
-      const alias = loc
-        ?.replaceAll(" ", "_")
-        .replace(/^\/?/, "/")
-        .replace(/\/?$/, "/");
-      router.addRoute({
-        ...(alias && loc ? { alias } : { undefined }),
-        children: [
-          {
-            component:
-              (parent?.flat ?? flat)
-                ? () => import("./views/MultiView.vue")
-                : () => import("./views/SingleView.vue"),
-            name,
-            path: "",
-          },
-        ],
-        component: () => import("./views/SingleView.vue"),
-        path: relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
-      });
-    }
-  });
   router.addRoute({
     component: () => import("./views/NotFoundView.vue"),
     name: "404",
