@@ -17,9 +17,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { TPage } from "@vues3/shared";
+import type { TPage } from "@vuebro/shared";
 
-import { consoleError, pages } from "@vues3/shared";
+import { consoleError, pages } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
