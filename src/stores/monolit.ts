@@ -1,9 +1,9 @@
 import type { RuntimeContext } from "@unocss/runtime";
-import type { TPage } from "@vues3/shared";
+import type { TPage } from "@vuebro/shared";
 import type { RouterScrollBehavior } from "vue-router";
 
-import loadModule from "@vues3/sfc-loader";
-import { pages } from "@vues3/shared";
+import loadModule from "@vuebro/sfc-loader";
+import { pages } from "@vuebro/shared";
 import { v4 } from "uuid";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
