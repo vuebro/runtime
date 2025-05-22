@@ -4,12 +4,12 @@
   </router-view>
 </template>
 <script setup lang="ts">
-import type { TPage } from "@vues3/shared";
+import type { TPage } from "@vuebro/shared";
 import type { MetaFlat } from "unhead/types";
 
 import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { pages } from "@vues3/shared";
+import { pages } from "@vuebro/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
