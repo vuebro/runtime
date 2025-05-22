@@ -15,7 +15,7 @@ jobs:
         with:
           bun-version: latest
           registry-url: "https://registry.npmjs.org"
-          scope: "@vues3"
+          scope: "@vuebro"
       - run: bun install
       - run: bun run build
       - run: bun publish --access public
