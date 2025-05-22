@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { atlas } from "@vues3/shared";
+import { atlas } from "@vuebro/shared";
 import { v4 } from "uuid";
 import { computed, onUpdated } from "vue";
 
