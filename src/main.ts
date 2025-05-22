@@ -1,5 +1,5 @@
 import type { Preset } from "@unocss/core";
-import type { TPage } from "@vues3/shared";
+import type { TPage } from "@vuebro/shared";
 
 import { createHead } from "@unhead/vue/client";
 import webFonts from "@unocss/preset-web-fonts";
@@ -11,7 +11,7 @@ import {
   getFontsObjectFromArray,
   nodes,
   pages,
-} from "@vues3/shared";
+} from "@vuebro/shared";
 import { createApp, nextTick } from "vue";
 
 import defaults from "../uno.config";
@@ -96,7 +96,7 @@ const initRouter = (async () => {
 })().catch(consoleError);
 window.console.info(
   "⛵",
-  "vueS3",
+  "VueBro",
   `ver.: ${__APP_VERSION__}`,
-  "https://github.com/vues3",
+  "https://github.com/vuebro",
 );
