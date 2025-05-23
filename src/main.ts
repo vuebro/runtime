@@ -95,7 +95,7 @@ const initRouter = (async () => {
   });
 })().catch(consoleError);
 window.console.info(
-  "⛵",
+  "👊",
   "VueBro",
   `ver.: ${__APP_VERSION__}`,
   "https://github.com/vuebro",
