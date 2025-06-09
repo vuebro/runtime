@@ -53,7 +53,7 @@ const module = ({ id = v4() }) => {
     if (id) promises.get(id)?.resolve(undefined);
   },
   setScroll = ({ extractAll, toggleObserver }: RuntimeContext) => {
-    onScroll = async ({ name }) => {
+    onScroll = async ({ hash, name }) => {
       if (name) {
         paused.value = true;
         toggleObserver(false);
@@ -64,8 +64,8 @@ const module = ({ id = v4() }) => {
         toggleObserver(true);
         const routerScrollBehavior = scroll.value && {
           behavior,
-          ...(that.value?.parent?.flat && that.value.index
-            ? { el: `#${String(name)}` }
+          ...(hash || (that.value?.parent?.flat && that.value.index)
+            ? { el: hash || `#${String(name)}` }
             : { left: 0, top: 0 }),
         };
         paused.value = false;
