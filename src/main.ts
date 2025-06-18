@@ -41,32 +41,27 @@ const initRouter = (async () => {
     ).json()) as TPage[];
   nodes.push(page);
   await nextTick();
-  pages.value.forEach(
-    ({ flat, id: name, loc, parent, path: relative }, index, array) => {
-      Object.defineProperties(array[index], { jsonld });
-      if (relative !== undefined) {
-        const alias = loc
-          ?.replaceAll(" ", "_")
-          .replace(/^\/?/, "/")
-          .replace(/\/?$/, "/");
-        router.addRoute({
-          ...(alias && loc ? { alias } : { undefined }),
-          children: [
-            {
-              component:
-                (parent?.flat ?? flat)
-                  ? () => import("./views/MultiView.vue")
-                  : () => import("./views/SingleView.vue"),
-              name,
-              path: "",
-            },
-          ],
-          component: () => import("./views/SingleView.vue"),
-          path: relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
-        });
-      }
-    },
-  );
+  pages.value.forEach(({ id: name, loc, path: relative }, index, array) => {
+    Object.defineProperties(array[index], { jsonld });
+    if (relative !== undefined) {
+      const alias = loc
+        ?.replaceAll(" ", "_")
+        .replace(/^\/?/, "/")
+        .replace(/\/?$/, "/");
+      router.addRoute({
+        ...(alias && loc ? { alias } : { undefined }),
+        children: [
+          {
+            component: () => import("./views/PageView.vue"),
+            name,
+            path: "",
+          },
+        ],
+        component: () => import("./views/RootView.vue"),
+        path: relative.replace(/^\/?/, "/").replace(/\/?$/, "/"),
+      });
+    }
+  });
   app.provide("pages", atlas);
   router.addRoute({
     component: () => import("./views/NotFoundView.vue"),
@@ -94,9 +89,12 @@ const initRouter = (async () => {
     rootElement: () => document.getElementById("app") ?? undefined,
   });
 })().catch(consoleError);
-window.console.info(
-  "👊",
-  "VueBro",
-  `ver.: ${__APP_VERSION__}`,
+
+console.info(
+  "👊 VueBro",
+  "/",
+  "runtime ver.:",
+  __APP_VERSION__,
+  "/",
   "https://github.com/vuebro",
 );
