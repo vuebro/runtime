@@ -1,6 +1,6 @@
 {
   "name": "@vuebro/runtime",
-  "version": "0.3.7",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "lint": "eslint .",
