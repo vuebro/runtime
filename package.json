@@ -18,10 +18,10 @@
     "@unocss/preset-web-fonts": "^66.3.2",
     "@unocss/preset-wind4": "^66.3.2",
     "@unocss/runtime": "^66.3.2",
-    "@vuebro/sfc-loader": "^1.2.19",
-    "@vuebro/shared": "^0.6.1",
+    "@vuebro/sfc-loader": "^1.2.20",
+    "@vuebro/shared": "^0.6.2",
     "@vueuse/core": "^13.4.0",
-    "globals": "^16.2.0",
+    "globals": "^16.3.0",
     "uuid": "^11.1.0",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.30.0",
-    "@types/node": "^24.0.7",
+    "@types/node": "^24.0.8",
     "@vitejs/plugin-vue": "^6.0.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -39,10 +39,10 @@
     "eslint-plugin-vue": "^10.2.0",
     "jiti": "^2.4.2",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.35.0",
+    "typescript-eslint": "^8.35.1",
     "vite": "^7.0.0",
     "vite-plugin-static-copy": "^3.1.0",
-    "vue-eslint-parser": "^10.1.4",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.2.10"
   },
   "repository": {
