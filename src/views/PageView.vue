@@ -107,8 +107,10 @@ useScroll(window, {
                 ([, value]) => value,
               )?.[0] ??
               first.id);
-        scroll.value = false;
-        if (name !== route.name) router.push({ name }).catch(consoleError);
+        if (name !== route.name) {
+          scroll.value = false;
+          router.push({ name }).catch(consoleError);
+        }
       }
     }
   },
