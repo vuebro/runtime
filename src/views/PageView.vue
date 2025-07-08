@@ -21,7 +21,7 @@ import { consoleError, pages } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import {
   module,
@@ -33,6 +33,7 @@ import {
 } from "../stores/monolit";
 
 const refs = ref([]),
+  route = useRoute(),
   router = useRouter(),
   siblings = computed(() => that.value?.siblings ?? []),
   stops: (() => void)[] = [];
@@ -107,7 +108,7 @@ useScroll(window, {
               )?.[0] ??
               first.id);
         scroll.value = false;
-        router.push({ name }).catch(consoleError);
+        if (name !== route.name) router.push({ name }).catch(consoleError);
       }
     }
   },
