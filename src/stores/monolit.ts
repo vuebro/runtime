@@ -3,8 +3,7 @@ import type { TPage } from "@vuebro/shared";
 import type { RouterScrollBehavior } from "vue-router";
 
 import loadModule from "@vuebro/sfc-loader";
-import { atlas } from "@vuebro/shared";
-import { v4 } from "uuid";
+import { atlas, getId } from "@vuebro/shared";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -36,7 +35,7 @@ const paused = ref(true),
       : atlas[router.currentRoute.value.name as keyof object],
   );
 
-const module = ({ id = v4() }) => {
+const module = ({ id = getId() }) => {
     promises.set(id, promiseWithResolvers());
     return defineAsyncComponent(async () => loadModule(`./pages/${id}.vue`));
   },
