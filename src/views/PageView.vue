@@ -1,8 +1,8 @@
 <template>
   <div
     v-for="the in these"
-    :id="the.id ?? v4()"
-    :key="the.id ?? v4()"
+    :id="the.id ?? getId()"
+    :key="the.id ?? getId()"
     ref="refs"
     :class="the.class"
     :role="the.id === that?.id ? 'main' : 'section'"
@@ -17,9 +17,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { consoleError, pages } from "@vuebro/shared";
+import { consoleError, getId, pages } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
-import { v4 } from "uuid";
 import { computed, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -54,7 +53,7 @@ const $siblings = computed(() =>
   );
 
 const intersecting = computed(
-    () => new Map(these.value.map(({ id = v4() }) => [id, false])),
+    () => new Map(these.value.map(({ id = getId() }) => [id, false])),
   ),
   $intersecting = ref(new Map(intersecting.value)),
   templates = computed(() => {
