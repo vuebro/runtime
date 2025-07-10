@@ -1,5 +1,10 @@
 <template>
-  <div v-if="the?.enabled" :id="the?.id ?? v4()" :class="the?.class" un-cloak>
+  <div
+    v-if="the?.enabled"
+    :id="the?.id ?? getId()"
+    :class="the?.class"
+    un-cloak
+  >
     <component
       :is
       :id="the?.id"
@@ -9,8 +14,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { pages } from "@vuebro/shared";
-import { v4 } from "uuid";
+import { getId, pages } from "@vuebro/shared";
 import { computed } from "vue";
 
 import { module, resolve } from "../stores/monolit";
