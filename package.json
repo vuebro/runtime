@@ -19,7 +19,7 @@
     "@unocss/preset-wind4": "^66.3.3",
     "@unocss/runtime": "^66.3.3",
     "@vuebro/sfc-loader": "^1.2.25",
-    "@vuebro/shared": "^1.0.9",
+    "@vuebro/shared": "^1.0.10",
     "@vueuse/core": "^13.5.0",
     "globals": "^16.3.0",
     "vue": "^3.5.17",
