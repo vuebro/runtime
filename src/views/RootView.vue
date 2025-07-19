@@ -1,11 +1,13 @@
 <template>
   <div v-if="the?.enabled" :id="the?.id ?? uid()" :class="the?.class" un-cloak>
-    <component
-      :is
-      :id="the?.id"
-      un-cloak
-      @vue:mounted="resolve(the)"
-    ></component>
+    <Suspense>
+      <component
+        :is
+        :id="the?.id"
+        un-cloak
+        @vue:mounted="resolve(the)"
+      ></component>
+    </Suspense>
   </div>
 </template>
 <script setup lang="ts">
