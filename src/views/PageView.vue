@@ -8,12 +8,14 @@
     :role="the.id === that?.id ? 'main' : 'section'"
     un-cloak
   >
-    <component
-      :is="templates[the.id as keyof object]"
-      :id="the.id"
-      un-cloak
-      @vue:mounted="resolve(the)"
-    ></component>
+    <Suspense>
+      <component
+        :is="templates[the.id as keyof object]"
+        :id="the.id"
+        un-cloak
+        @vue:mounted="resolve(the)"
+      ></component>
+    </Suspense>
   </div>
 </template>
 <script setup lang="ts">
