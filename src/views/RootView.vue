@@ -1,14 +1,19 @@
 <template>
-  <div v-if="the?.enabled" :id="the?.id ?? uid()" :class="the?.class" un-cloak>
-    <Suspense>
+  <Suspense>
+    <div
+      v-if="the?.enabled"
+      :id="the?.id ?? uid()"
+      :class="the?.class"
+      un-cloak
+    >
       <component
         :is
         :id="the?.id"
         un-cloak
         @vue:mounted="resolve(the)"
       ></component>
-    </Suspense>
-  </div>
+    </div>
+  </Suspense>
 </template>
 <script setup lang="ts">
 import { pages, uid } from "@vuebro/shared";
