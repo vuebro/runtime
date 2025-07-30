@@ -1,22 +1,20 @@
 <template>
-  <Suspense>
-    <div
-      v-for="the in these"
-      :id="the.id ?? uid()"
-      :key="the.id ?? uid()"
-      ref="refs"
-      :class="the.class"
-      :role="the.id === that?.id ? 'main' : 'section'"
+  <div
+    v-for="the in these"
+    :id="the.id ?? uid()"
+    :key="the.id ?? uid()"
+    ref="refs"
+    :class="the.class"
+    :role="the.id === that?.id ? 'main' : 'section'"
+    un-cloak
+  >
+    <component
+      :is="templates[the.id as keyof object]"
+      :id="the.id"
       un-cloak
-    >
-      <component
-        :is="templates[the.id as keyof object]"
-        :id="the.id"
-        un-cloak
-        @vue:mounted="resolve(the)"
-      ></component>
-    </div>
-  </Suspense>
+      @vue:mounted="resolve(the)"
+    ></component>
+  </div>
 </template>
 <script setup lang="ts">
 import { consoleError, pages, uid } from "@vuebro/shared";
