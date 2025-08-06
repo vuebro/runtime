@@ -9,7 +9,7 @@ import {
   consoleError,
   customFetch,
   fonts,
-  fontsObject,
+  getFontsObjectFromArray,
   nodes,
   pages,
 } from "@vuebro/shared";
@@ -78,7 +78,7 @@ const initRouter = (async () => {
     ).json()) as string[]),
   );
   defaults.presets.push(
-    webFonts({ customFetch, fonts: fontsObject.value }) as Preset,
+    webFonts({ customFetch, fonts: getFontsObjectFromArray(fonts) }) as Preset,
   );
   await initUnocssRuntime({
     defaults,
