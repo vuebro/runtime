@@ -8,7 +8,8 @@ import {
   atlas,
   consoleError,
   customFetch,
-  getFontsObjectFromArray,
+  fonts,
+  fontsObject,
   nodes,
   pages,
 } from "@vuebro/shared";
@@ -70,11 +71,15 @@ const initRouter = (async () => {
   });
 })();
 (async () => {
-  const response = await fetch("fonts.json"),
-    fonts = getFontsObjectFromArray(
-      (await (response.ok ? response : new Response("[]")).json()) as string[],
-    );
-  defaults.presets.push(webFonts({ customFetch, fonts }) as Preset);
+  const response = await fetch("fonts.json");
+  fonts.push(
+    ...((await (
+      response.ok ? response : new Response("[]")
+    ).json()) as string[]),
+  );
+  defaults.presets.push(
+    webFonts({ customFetch, fonts: fontsObject.value }) as Preset,
+  );
   await initUnocssRuntime({
     defaults,
     ready: async (runtime) => {
@@ -91,10 +96,6 @@ const initRouter = (async () => {
 })().catch(consoleError);
 
 console.info(
-  "👊 VueBro",
-  "/",
-  "runtime ver.:",
+  "👊 VueBro / https://github.com/vuebro / runtime ver.:",
   __APP_VERSION__,
-  "/",
-  "https://github.com/vuebro",
 );
