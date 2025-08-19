@@ -63,7 +63,6 @@ const initRouter = (async () => {
       });
     }
   });
-  app.provide("pages", atlas);
   router.addRoute({
     component: () => import("./views/NotFoundView.vue"),
     name: "404",
@@ -86,7 +85,9 @@ const initRouter = (async () => {
       const { toggleObserver } = runtime;
       setScroll(runtime);
       await initRouter;
+      app.provide("pages", atlas);
       app.use(router);
+      await router.isReady();
       app.mount("#app");
       toggleObserver(true);
       return false;
