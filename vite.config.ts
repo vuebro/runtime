@@ -1,15 +1,18 @@
 import vue from "@vitejs/plugin-vue";
+import { createRequire } from "module";
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { version } from "vue";
+
+const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
+  require = createRequire(import.meta.url);
 
 export default defineConfig({
   base: "./",
   build: {
     manifest: true,
     rollupOptions: {
-      external: ["vue", "vue-router"],
+      external,
       output: {
         // manualChunks: (id) => {
         //   const [first, second] =
@@ -19,29 +22,31 @@ export default defineConfig({
         //   )?.replace(/^@/, "");
         // },
         manualChunks: {
-          "compiler-sfc": ["@vue/compiler-sfc"],
-          sucrase: ["sucrase"],
+          shared: ["@vuebro/shared"],
+          unocss: [
+            "@unocss/core",
+            "@unocss/preset-attributify",
+            "@unocss/preset-tagify",
+            "@unocss/preset-typography",
+            "@unocss/preset-web-fonts",
+            "@unocss/preset-wind4",
+            "@unocss/runtime",
+          ],
         },
       },
     },
   },
-  define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-    __VUE_PROD_DEVTOOLS__: true,
-  },
+  define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version) },
   plugins: [
-    vue(),
+    vue({ features: { prodDevtools: true } }),
     viteStaticCopy({
-      targets: Object.entries({
-        vue: version,
-        "vue-router": (
-          await import("vue-router/package.json", { with: { type: "json" } })
-        ).default.version,
-      }).map(([key, value]) => ({
+      targets: external.map((key) => ({
         dest: "assets",
         rename: (fileName: string, fileExtension: string) =>
-          `${fileName}-${value}.${fileExtension}`,
-        src: `./node_modules/${key}/dist/${key}.esm-browser.prod.js`,
+          `${fileName}-${
+            (require(`${key}/package.json`) as { version: string }).version
+          }.${fileExtension}`,
+        src: `./node_modules/${key}/dist/${key.split("/").pop() ?? ""}.esm-browser.prod.js`,
       })),
     }),
   ],
