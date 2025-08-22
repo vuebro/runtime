@@ -6,6 +6,7 @@ import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
+  isStaticEntry = true,
   require = createRequire(import.meta.url),
   targets = external.map((key, i) => ({
     dest: "assets",
@@ -63,7 +64,10 @@ export default defineConfig({
           JSON.stringify({
             ...JSON.parse(fs.readFileSync(path).toString()),
             ...Object.fromEntries(
-              targets.map(({ file, name, src }) => [src, { file, name }]),
+              targets.map(({ file, name, src }) => [
+                src,
+                { file, isStaticEntry, name },
+              ]),
             ),
           }),
         );
