@@ -26,6 +26,7 @@ export default defineConfig({
   base: "./",
   build: {
     manifest: true,
+    minify: "terser",
     rollupOptions: {
       external,
       output: {
