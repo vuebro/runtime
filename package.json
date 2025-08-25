@@ -18,11 +18,11 @@
     "@unocss/preset-web-fonts": "^66.4.2",
     "@unocss/preset-wind4": "^66.4.2",
     "@unocss/runtime": "^66.4.2",
-    "@vuebro/loader-sfc": "^1.5.4",
-    "@vuebro/shared": "^1.1.5",
+    "@vuebro/loader-sfc": "^1.5.5",
+    "@vuebro/shared": "^1.1.6",
     "@vueuse/core": "^13.7.0",
     "globals": "^16.3.0",
-    "vue": "^3.5.19",
+    "vue": "^3.5.20",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
