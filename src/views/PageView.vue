@@ -10,7 +10,7 @@
   >
     <component
       :is="templates[the.id as keyof object]"
-      :$id="the.id"
+      :guid="the.id"
       un-cloak
       @vue:mounted="resolve(the)"
     ></component>
