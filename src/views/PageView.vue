@@ -11,7 +11,6 @@
     <component
       :is="templates[the.id as keyof object]"
       :guid="the.id"
-      un-cloak
       @vue:mounted="resolve(the)"
     ></component>
   </div>
