@@ -8,7 +8,7 @@
     >
       <component
         :is
-        :$id="the?.id"
+        :guid="the?.id"
         un-cloak
         @vue:mounted="resolve(the)"
       ></component>
