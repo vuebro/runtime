@@ -6,5 +6,8 @@
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["typescript", "vue"],
   "typescript.tsdk": "node_modules/typescript/lib",
-  "git.followTagsWhenSync": true
+  "git.followTagsWhenSync": true,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
