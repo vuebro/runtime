@@ -6,7 +6,7 @@
       :class="the?.class"
       un-cloak
     >
-      <component :is :pageid="the?.id" @vue:mounted="resolve(the)"></component>
+      <component :is :pid="the?.id" @vue:mounted="resolve(the)"></component>
     </div>
   </Suspense>
 </template>
