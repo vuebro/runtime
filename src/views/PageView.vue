@@ -10,7 +10,7 @@
   >
     <component
       :is="templates[the.id as keyof object]"
-      :pageid="the.id"
+      :pid="the.id"
       @vue:mounted="resolve(the)"
     ></component>
   </div>
