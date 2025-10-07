@@ -37,7 +37,9 @@ const paused = ref(true),
 
 const module = ({ id = uid() }) => {
     promises.set(id, promiseWithResolvers());
-    return defineAsyncComponent(async () => loadModule(`./pages/${id}.vue`));
+    return defineAsyncComponent(async () =>
+      loadModule(`./pages/${id}.vue`, { script: { inlineTemplate: true } }),
+    );
   },
   resolve = ({ id } = {} as TPage) => {
     if (id) promises.get(id)?.resolve(undefined);
