@@ -18,7 +18,7 @@
     "@unocss/preset-web-fonts": "^66.5.2",
     "@unocss/preset-wind4": "^66.5.2",
     "@unocss/runtime": "^66.5.2",
-    "@vuebro/loader-sfc": "^2.2.1",
+    "@vuebro/loader-sfc": "^2.2.4",
     "@vuebro/shared": "^1.1.26",
     "@vueuse/core": "^13.9.0",
     "globals": "^16.4.0",
