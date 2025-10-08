@@ -9,5 +9,6 @@
   "git.followTagsWhenSync": true,
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "Codegeex.RepoIndex": true
 }
