@@ -6,13 +6,13 @@ import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
 import {
   atlas,
-  consoleError,
   customFetch,
   fonts,
   getFontsObjectFromArray,
   nodes,
   pages,
 } from "@vuebro/shared";
+import { consola } from "consola/browser";
 import { createApp, nextTick } from "vue";
 
 import defaults from "../uno.config";
@@ -94,9 +94,9 @@ const initRouter = (async () => {
     },
     rootElement: () => document.getElementById("app") ?? undefined,
   });
-})().catch(consoleError);
+})().catch(consola.error);
 
-console.info(
+consola.info(
   "👊 VueBro / https://github.com/vuebro / runtime ver.:",
   __APP_VERSION__,
 );

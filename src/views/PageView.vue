@@ -16,8 +16,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { consoleError, pages, uid } from "@vuebro/shared";
+import { pages, uid } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
+import { consola } from "consola/browser";
 import { computed, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -107,7 +108,7 @@ useScroll(window, {
               first.id);
         if (name !== route.name) {
           scroll.value = false;
-          router.push({ name }).catch(consoleError);
+          router.push({ name }).catch(consola.error);
         }
       }
     }
