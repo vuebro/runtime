@@ -31,8 +31,9 @@ const paused = ref(true),
   scroll = ref(true),
   that = computed(() =>
     router.currentRoute.value.path === "/"
-      ? atlas[router.currentRoute.value.name as keyof object]?.$children[0]
-      : atlas[router.currentRoute.value.name as keyof object],
+      ? atlas.value[router.currentRoute.value.name as keyof object]
+          ?.$children[0]
+      : atlas.value[router.currentRoute.value.name as keyof object],
   );
 
 const module = ({ id = uid() }) => {
