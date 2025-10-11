@@ -12,6 +12,7 @@ import {
   nodes,
   pages,
 } from "@vuebro/shared";
+import { toReactive } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { createApp, nextTick } from "vue";
 
@@ -85,7 +86,7 @@ const initRouter = (async () => {
       const { toggleObserver } = runtime;
       setScroll(runtime);
       await initRouter;
-      app.provide("pages", atlas);
+      app.provide("pages", toReactive(atlas));
       app.use(router);
       await router.isReady();
       app.mount("#app");
