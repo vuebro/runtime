@@ -7,20 +7,26 @@ import { atlas, uid } from "@vuebro/shared";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
+interface PromiseWithResolvers<T> {
+  promise: Promise<T>;
+  reject: (reason?: unknown) => void;
+  resolve: (value: PromiseLike<T> | T) => void;
+}
+
 let onScroll: RouterScrollBehavior | undefined;
 
 const { pathname } = new URL(document.baseURI);
 
 const paused = ref(true),
-  promises = new Map<string, PromiseWithResolvers<undefined>>(),
+  promises = new Map<string, PromiseWithResolvers<unknown>>(),
   promiseWithResolvers = <T>() => {
-    let resolve: PromiseWithResolvers<T>["resolve"] | undefined;
-    let reject: PromiseWithResolvers<T>["reject"] | undefined;
+    let resolve!: PromiseWithResolvers<T>["resolve"];
+    let reject!: PromiseWithResolvers<T>["reject"];
     const promise = new Promise<T>((res, rej) => {
       resolve = res;
       reject = rej;
     });
-    return { promise, reject, resolve } as PromiseWithResolvers<T>;
+    return { promise, reject, resolve };
   },
   router = createRouter({
     history: createWebHistory(pathname),
