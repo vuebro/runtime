@@ -1,21 +1,18 @@
 import vue from "@vitejs/plugin-vue";
-import { createRequire } from "module";
-import fs from "node:fs";
-import { fileURLToPath, URL } from "url";
+import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
-  isStaticEntry = true,
-  require = createRequire(import.meta.url),
   targets = external.map((key, i) => ({
     dest: "assets",
     file: "",
     name: key,
     rename(fileName: string, fileExtension: string) {
-      const file = `${fileName}-${
-        (require(`${key}/package.json`) as { version: string }).version
-      }.${fileExtension}`;
+      const { version } = JSON.parse(
+        readFileSync(`node_modules/${key}/package.json`).toString(),
+      ) as { version: string };
+      const file = `${fileName}-${version}.${fileExtension}`;
       if (targets[i]) targets[i].file = `${targets[i].dest}/${file}`;
       return file;
     },
@@ -26,7 +23,6 @@ export default defineConfig({
   base: "./",
   build: {
     manifest: true,
-    minify: "terser",
     rollupOptions: {
       external,
       output: {
@@ -53,21 +49,23 @@ export default defineConfig({
       },
     },
   },
-  define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version) },
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env["npm_package_version"]),
+  },
   plugins: [
-    vue({ features: { prodDevtools: true } }),
+    vue(),
     viteStaticCopy({ targets }),
     {
       closeBundle: () => {
         const path = "./dist/.vite/manifest.json";
-        fs.writeFileSync(
+        writeFileSync(
           path,
           JSON.stringify({
-            ...JSON.parse(fs.readFileSync(path).toString()),
+            ...JSON.parse(readFileSync(path).toString()),
             ...Object.fromEntries(
               targets.map(({ file, name, src }) => [
                 src,
-                { file, isStaticEntry, name },
+                { file, isStaticEntry: true, name },
               ]),
             ),
           }),
@@ -76,7 +74,4 @@ export default defineConfig({
       name: "manifest",
     },
   ],
-  resolve: {
-    alias: { "@": ".", app: fileURLToPath(new URL("..", import.meta.url)) },
-  },
 });
