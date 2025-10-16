@@ -47,7 +47,7 @@ const initRouter = (async () => {
     Object.defineProperties(array[index], { jsonld });
     if (relative !== undefined) {
       const alias = loc
-        ?.replaceAll(" ", "_")
+        ?.replace(/ /g, "_")
         .replace(/^\/?/, "/")
         .replace(/\/?$/, "/");
       router.addRoute({
