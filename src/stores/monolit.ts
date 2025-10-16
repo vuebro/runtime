@@ -46,28 +46,7 @@ const module = ({ id = uid() }) => {
     promises.set(id, promiseWithResolvers());
     return defineAsyncComponent(async () =>
       loadModule(`./pages/${id}.vue`, {
-        parseOptions: {
-          sourceMap: false,
-          templateParseOptions: { comments: false, prefixIdentifiers: true },
-        },
-        scriptOptions: {
-          hoistStatic: true,
-          inlineTemplate: true,
-          isProd: true,
-          sourceMap: false,
-          templateOptions: {
-            compilerOptions: {
-              cacheHandlers: true,
-              comments: false,
-              hoistStatic: true,
-              mode: "module",
-              prefixIdentifiers: true,
-              sourceMap: false,
-            },
-            isProd: true,
-            ssr: false,
-          },
-        },
+        scriptOptions: { inlineTemplate: true },
       }),
     );
   },
