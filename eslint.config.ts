@@ -16,6 +16,10 @@ import prettierConfigsRecommended from "eslint-plugin-prettier/recommended";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import vue from "eslint-plugin-vue";
 
+/* -------------------------------------------------------------------------- */
+/*                        Настройка eslint для проекта                        */
+/* -------------------------------------------------------------------------- */
+
 export default defineConfigWithVueTs(
   gitignore(),
   {
