@@ -2,8 +2,9 @@
 .vscode/
 public/
 src/
+.gitattributes
 .prettierrc.json
-eslint.config.js
+eslint.config.ts
 index.html
 tsconfig.json
 uno.config.ts
