@@ -5,7 +5,7 @@ import typography from "@unocss/preset-typography";
 import wind4 from "@unocss/preset-wind4";
 export default {
   presets: [
-    wind4({ preflights: { reset: true, theme: true } }),
+    wind4({ preflights: { reset: true } }),
     typography(),
     icons({ cdn: "https://cdn.jsdelivr.net/npm/" }),
     tagify(),
