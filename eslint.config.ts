@@ -14,7 +14,6 @@ import { configs as packageJsonConfigs } from "eslint-plugin-package-json";
 import perfectionist from "eslint-plugin-perfectionist";
 import prettierConfigsRecommended from "eslint-plugin-prettier/recommended";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
-import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
 import vue from "eslint-plugin-vue";
 
 export default defineConfigWithVueTs(
@@ -26,7 +25,6 @@ export default defineConfigWithVueTs(
       vueTsConfigs.strictTypeChecked,
       vueTsConfigs.stylisticTypeChecked,
       perfectionist.configs["recommended-natural"],
-      sonarjsConfigs.recommended,
       jsDoc.configs["flat/recommended"],
       regexpConfigs["flat/recommended"],
     ],
