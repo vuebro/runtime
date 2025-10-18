@@ -1,4 +1,3 @@
-import type { Preset } from "@unocss/core";
 import type { TPage } from "@vuebro/shared";
 
 import { createHead } from "@unhead/vue/client";
@@ -6,7 +5,6 @@ import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
 import {
   atlas,
-  customFetch,
   fonts,
   getFontsObjectFromArray,
   nodes,
@@ -77,9 +75,7 @@ const initRouter = (async () => {
       response.ok ? response : new Response("[]")
     ).json()) as string[]),
   );
-  defaults.presets.push(
-    webFonts({ customFetch, fonts: getFontsObjectFromArray(fonts) }) as Preset,
-  );
+  defaults.presets.push(webFonts({ fonts: getFontsObjectFromArray(fonts) }));
   await initUnocssRuntime({
     defaults,
     ready: async (runtime) => {
