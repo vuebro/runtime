@@ -1,35 +1,50 @@
-import type { ConfigWithExtendsArray } from "@eslint/config-helpers";
-
-import eslint from "@eslint/js";
+import js from "@eslint/js";
+import json from "@eslint/json";
+import markdown from "@eslint/markdown";
+import {
+  defineConfigWithVueTs,
+  vueTsConfigs,
+} from "@vue/eslint-config-typescript";
 import gitignore from "eslint-config-flat-gitignore";
-import { flatConfigs } from "eslint-plugin-import-x";
+import { configs as deMorganConfigs } from "eslint-plugin-de-morgan";
+import { configs as dependConfigs } from "eslint-plugin-depend";
+import { flatConfigs as importXConfigs } from "eslint-plugin-import-x";
+import jsDoc from "eslint-plugin-jsdoc";
+import { configs as packageJsonConfigs } from "eslint-plugin-package-json";
 import perfectionist from "eslint-plugin-perfectionist";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import pluginVue from "eslint-plugin-vue";
-import { defineConfig } from "eslint/config";
-import globals from "globals";
-import { configs, parser } from "typescript-eslint";
-import vueParser from "vue-eslint-parser";
+import prettierConfigsRecommended from "eslint-plugin-prettier/recommended";
+import { configs as regexpConfigs } from "eslint-plugin-regexp";
+import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
+import vue from "eslint-plugin-vue";
 
-export default defineConfig(
+export default defineConfigWithVueTs(
   gitignore(),
   {
+    extends: [
+      js.configs.recommended,
+      vue.configs["flat/recommended"],
+      vueTsConfigs.strictTypeChecked,
+      vueTsConfigs.stylisticTypeChecked,
+      perfectionist.configs["recommended-natural"],
+      sonarjsConfigs.recommended,
+      jsDoc.configs["flat/recommended"],
+      regexpConfigs["flat/recommended"],
+    ],
+    files: ["**/*.{ts,vue}"],
     languageOptions: {
-      globals: globals.browser,
-      parser: vueParser,
       parserOptions: {
-        extraFileExtensions: [".vue"],
-        parser,
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["eslint.config.ts", "vite.config.ts"],
+        },
       },
     },
   },
-  eslint.configs.recommended,
-  flatConfigs.recommended as ConfigWithExtendsArray,
-  flatConfigs.typescript as ConfigWithExtendsArray,
-  configs.strictTypeChecked,
-  configs.stylisticTypeChecked,
-  pluginVue.configs["flat/recommended"],
-  perfectionist.configs["recommended-natural"],
-  eslintPluginPrettierRecommended,
+  deMorganConfigs.recommended,
+  importXConfigs.recommended,
+  importXConfigs.typescript,
+  dependConfigs["flat/recommended"],
+  json.configs.recommended,
+  markdown.configs.recommended,
+  packageJsonConfigs.recommended,
+  prettierConfigsRecommended,
 );
