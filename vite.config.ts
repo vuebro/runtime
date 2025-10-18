@@ -74,5 +74,4 @@ export default defineConfig({
       name: "manifest",
     },
   ],
-  resolve: { alias: { "@": "./src" } },
 });
