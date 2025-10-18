@@ -3,7 +3,6 @@
 public/
 src/
 .prettierrc.json
-bun.lock
 eslint.config.js
 index.html
 tsconfig.json
