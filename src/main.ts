@@ -1,8 +1,8 @@
 import type { TPage } from "@vuebro/shared";
 
 import { createHead } from "@unhead/vue/client";
-import webFonts from "@unocss/preset-web-fonts";
 import initUnocssRuntime from "@unocss/runtime";
+import presets from "@vuebro/configs/uno/presets";
 import {
   atlas,
   fonts,
@@ -14,7 +14,6 @@ import { toReactive } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { createApp, nextTick } from "vue";
 
-import defaults from "../uno.config";
 import vueApp from "./App.vue";
 import { router, setScroll } from "./stores/monolit";
 import "./style.css";
@@ -75,9 +74,15 @@ const initRouter = (async () => {
       response.ok ? response : new Response("[]")
     ).json()) as string[]),
   );
-  defaults.presets.push(webFonts({ fonts: getFontsObjectFromArray(fonts) }));
   await initUnocssRuntime({
-    defaults,
+    defaults: {
+      presets: presets({
+        webFontsOptions: {
+          fonts: getFontsObjectFromArray(fonts),
+          provider: "fontsource",
+        },
+      }),
+    },
     ready: async (runtime) => {
       const { toggleObserver } = runtime;
       setScroll(runtime);
