@@ -39,7 +39,6 @@ export default mergeConfig(
           manualChunks: {
             shared: ["@vuebro/shared"],
             unocss: [
-              "@unocss/core",
               "@unocss/preset-attributify",
               "@unocss/preset-tagify",
               "@unocss/preset-typography",
