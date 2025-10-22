@@ -29,7 +29,7 @@
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.4",
-    "@vuebro/configs": "^1.1.30",
+    "@vuebro/configs": "^1.1.32",
     "@vuebro/loader-sfc": "^2.3.9",
     "@vuebro/shared": "^1.1.38",
     "@vueuse/core": "^14.0.0",
