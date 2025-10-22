@@ -1,7 +1,6 @@
-<template>
-  <router-view v-slot="{ Component }">
-    <component :is="Component" :id="pages[0]?.id"></component>
-  </router-view>
+<template lang="pug">
+router-view(v-slot="{ Component }")
+  component(:is="Component", :id="pages[0]?.id")
 </template>
 <script setup lang="ts">
 import type { TPage } from "@vuebro/shared";
