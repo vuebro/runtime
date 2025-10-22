@@ -77,10 +77,7 @@ const initRouter = (async () => {
   await initUnocssRuntime({
     defaults: {
       presets: presets({
-        webFontsOptions: {
-          fonts: getFontsObjectFromArray(fonts),
-          provider: "fontsource",
-        },
+        webFontsOptions: { fonts: getFontsObjectFromArray(fonts) },
       }),
     },
     ready: async (runtime) => {
