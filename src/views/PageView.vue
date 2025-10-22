@@ -1,19 +1,18 @@
-<template>
-  <div
-    v-for="the in these"
-    :id="the.id ?? uid()"
-    :key="the.id ?? uid()"
-    ref="refs"
-    :class="the.class"
-    :role="the.id === that?.id ? 'main' : 'section'"
-    un-cloak
-  >
-    <component
-      :is="templates[the.id as keyof object]"
-      :pid="the.id"
-      @vue:mounted="resolve(the)"
-    ></component>
-  </div>
+<template lang="pug">
+div(
+  v-for="the in these",
+  :id="the.id ?? uid()",
+  :key="the.id ?? uid()",
+  ref="refs",
+  :class="the.class",
+  :role="the.id === that?.id ? 'main' : 'section'",
+  un-cloak
+)
+  component(
+    :is="templates[the.id as keyof object]",
+    :pid="the.id",
+    @vue:mounted="resolve(the)"
+  )
 </template>
 <script setup lang="ts">
 import { pages, uid } from "@vuebro/shared";
