@@ -29,9 +29,8 @@
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.4",
-    "@vuebro/configs": "^1.1.32",
-    "@vuebro/loader-sfc": "^2.3.9",
-    "@vuebro/shared": "^1.1.38",
+    "@vuebro/loader-sfc": "^2.3.11",
+    "@vuebro/shared": "^1.1.40",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
     "vue": "^3.5.22",
@@ -39,9 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
-    "eslint": "^9.38.0",
-    "unocss": "^66.5.4",
-    "vite": "^7.1.11",
+    "@vuebro/configs": "^1.1.35",
     "vite-plugin-static-copy": "^3.1.4"
   }
 }
