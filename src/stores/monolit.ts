@@ -3,7 +3,8 @@ import type { TPage } from "@vuebro/shared";
 import type { RouterScrollBehavior } from "vue-router";
 
 import loadModule from "@vuebro/loader-sfc";
-import { atlas, uid } from "@vuebro/shared";
+import { atlas } from "@vuebro/shared";
+import uid from "uuid-random";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 

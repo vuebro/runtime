@@ -1,8 +1,8 @@
 <template lang="pug">
 div(
   v-for="the in these",
-  :id="the.id ?? uid()",
-  :key="the.id ?? uid()",
+  :id="the.id",
+  :key="the.id",
   ref="refs",
   :class="the.class",
   :role="the.id === that?.id ? 'main' : 'section'",
@@ -10,12 +10,12 @@ div(
 )
   component(
     :is="templates[the.id as keyof object]",
-    :pid="the.id",
+    :id="the.id",
     @vue:mounted="resolve(the)"
   )
 </template>
 <script setup lang="ts">
-import { pages, uid } from "@vuebro/shared";
+import { pages } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { computed, onUnmounted, ref, watch } from "vue";
@@ -52,7 +52,7 @@ const $siblings = computed(() =>
   );
 
 const intersecting = computed(
-    () => new Map(these.value.map(({ id = uid() }) => [id, false])),
+    () => new Map(these.value.map(({ id }) => [id, false])),
   ),
   $intersecting = ref(new Map(intersecting.value)),
   templates = computed(() => {
