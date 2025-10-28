@@ -15,23 +15,22 @@ div(
   )
 </template>
 <script setup lang="ts">
-import { pages } from "@vuebro/shared";
+import { atlas, pages } from "@vuebro/shared";
 import { useIntersectionObserver, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { computed, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import {
-  module,
-  paused,
-  promises,
-  resolve,
-  scroll,
-  that,
-} from "../stores/monolit";
+import { module, pause, promises, resolve, scroll } from "@/stores/monolit";
+
+const route = useRoute(),
+  that = computed(() =>
+    route.path === "/"
+      ? atlas.value[route.name as keyof object]?.$children[0]
+      : atlas.value[route.name as keyof object],
+  );
 
 const refs = ref([]),
-  route = useRoute(),
   router = useRouter(),
   siblings = computed(() => that.value?.siblings ?? []),
   stops: (() => void)[] = [];
@@ -61,7 +60,7 @@ const intersecting = computed(
     if (key && value) promises.set(key, value);
     return Object.fromEntries(
       these.value.map((page) => [page.id, module(page)]),
-    ) as object;
+    );
   });
 
 watch(
@@ -89,7 +88,7 @@ watch(
 useScroll(window, {
   behavior: "smooth",
   onStop: () => {
-    if (!paused.value) {
+    if (!pause.value) {
       const { scrollX, scrollY } = window;
       const [first] = these.value;
       const [root] = pages.value;
