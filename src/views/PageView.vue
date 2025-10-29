@@ -10,7 +10,7 @@ div(
 )
   component(
     :is="templates[the.id as keyof object]",
-    :id="the.id",
+    :pid="the.id",
     @vue:mounted="resolve(the)"
   )
 </template>

@@ -1,7 +1,7 @@
 <template lang="pug">
 Suspense
   div(v-if="the?.enabled", :id="the?.id", :class="the?.class", un-cloak)
-    component(:is, :id="the?.id", @vue:mounted="resolve(the)")
+    component(:is, :pid="the?.id", @vue:mounted="resolve(the)")
 </template>
 <script setup lang="ts">
 import { pages } from "@vuebro/shared";
