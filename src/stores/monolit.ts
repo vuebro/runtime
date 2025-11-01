@@ -1,8 +1,9 @@
-import type { TPage } from "@vuebro/shared";
+import type { RouteRecordNameGeneric } from "vue-router";
 
 import loadModule from "@vuebro/loader-sfc";
-import uid from "uuid-random";
-import { defineAsyncComponent, ref } from "vue";
+import { atlas, pages } from "@vuebro/shared";
+import { useArrayFilter } from "@vueuse/core";
+import { computed, defineAsyncComponent, ref } from "vue";
 
 interface PromiseWithResolvers<T> {
   promise: Promise<T>;
@@ -10,7 +11,13 @@ interface PromiseWithResolvers<T> {
   resolve: (value: PromiseLike<T> | T) => void;
 }
 
-const pause = ref(true),
+const intersecting = new Map<string, boolean | undefined>(),
+  module = (id: string) =>
+    defineAsyncComponent(async () =>
+      loadModule(`./pages/${id}.vue`, {
+        scriptOptions: { inlineTemplate: true },
+      }),
+    ),
   promises = new Map<string, PromiseWithResolvers<unknown>>(),
   promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];
@@ -21,18 +28,30 @@ const pause = ref(true),
     });
     return { promise, reject, resolve };
   },
-  scroll = ref(true);
+  root = promiseWithResolvers(),
+  routeName = ref<RouteRecordNameGeneric>(),
+  scrollLock = ref(false),
+  that = computed(() =>
+    routeName.value === pages.value[0]?.id
+      ? pages.value[0]?.$children[0]
+      : atlas.value[routeName.value as keyof object],
+  ),
+  these = computed(() =>
+    that.value === undefined || that.value.parent?.flat
+      ? (that.value?.siblings ?? [])
+      : [that.value],
+  );
 
-const module = ({ id = uid() }) => {
-    promises.set(id, promiseWithResolvers());
-    return defineAsyncComponent(async () =>
-      loadModule(`./pages/${id}.vue`, {
-        scriptOptions: { inlineTemplate: true },
-      }),
-    );
-  },
-  resolve = ({ id } = {} as TPage) => {
-    if (id) promises.get(id)?.resolve(undefined);
-  };
+const $these = useArrayFilter(these, ({ enabled }) => enabled);
 
-export { module, pause, promises, resolve, scroll };
+export {
+  $these,
+  intersecting,
+  module,
+  promises,
+  promiseWithResolvers,
+  root,
+  routeName,
+  scrollLock,
+  that,
+};
