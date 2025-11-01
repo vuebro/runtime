@@ -1,3 +1,11 @@
+/**
+ * @module main
+ * @file Main entry point for the VueBro runtime application. This file
+ *   initializes the Vue app, sets up routing, and configures UnoCSS runtime. It
+ *   handles page loading, font loading, scroll behavior, and intersection
+ *   observer functionality.
+ */
+
 import { createHead } from "@unhead/vue/client";
 import initUnocssRuntime from "@unocss/runtime";
 import presets from "@vuebro/configs/uno/presets";
@@ -22,12 +30,23 @@ import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
 import rootView from "@/views/RootView.vue";
 
+/**
+ * Fetches the initial page data and fonts configuration from JSON files.
+ *
+ * @type {Array} An Array containing the first page and fonts array
+ */
 const [[page = {}], fonts] = (
     await Promise.all(
       ["index", "fonts"].map((file) => fetching(`${file}.json`)),
     )
   ).map((value) => value ?? []),
+  /**
+   * The Vue application instance
+   *
+   * @type {import("vue").App}
+   */
   app = createApp(vueApp),
+  /** The pathname from the document's base URI */
   { pathname } = new URL(document.baseURI);
 
 consola.info(
@@ -37,6 +56,9 @@ consola.info(
 
 nodes.push(page);
 
+/**
+ * Initialize UnoCSS runtime with the provided presets and font configurations
+ */
 await initUnocssRuntime({
   defaults: {
     presets: presets({
@@ -51,6 +73,16 @@ await initUnocssRuntime({
       },
     }),
   },
+  /**
+   * Called when UnoCSS runtime is ready Sets up the Vue Router with scroll
+   * behavior and intersection observer tracking
+   *
+   * @param {object} root0 - The runtime API object
+   * @param {() => Promise<void>} root0.extractAll - Function to extract all CSS
+   * @param {(enabled: boolean) => void} root0.toggleObserver - Function to
+   *   toggle observer
+   * @returns {boolean} Always returns false
+   */
   ready: ({ extractAll, toggleObserver }) => {
     let scrollLock = false;
 
@@ -78,6 +110,14 @@ await initUnocssRuntime({
             }),
           { component: notFoundView, name: "404", path: "/:pathMatch(.*)*" },
         ],
+        /**
+         * Defines scroll behavior when navigating between routes
+         *
+         * @param {object} to - The target route
+         * @param {string} to.hash - The hash of the target route
+         * @param {string} to.name - The name of the target route
+         * @returns {object | false} Scroll position object or false
+         */
         scrollBehavior: async ({ hash, name }) => {
           if (name) {
             routeName.value = name;
@@ -108,7 +148,12 @@ await initUnocssRuntime({
           return false;
         },
       }),
+      /** Scroll position tracking using VueUse */
       { x, y } = useScroll(window, {
+        /**
+         * Callback executed when scrolling stops Updates the route based on the
+         * visible component
+         */
         onStop: () => {
           const [first] = $these.value,
             [root] = pages.value;
@@ -128,6 +173,13 @@ await initUnocssRuntime({
         },
       });
 
+    /**
+     * Global navigation guard to decode URI paths if needed
+     *
+     * @param {object} to - The target route
+     * @param {string} to.path - The path of the target route
+     * @returns {string | undefined} Decoded path or undefined
+     */
     router.beforeEach(({ path }) =>
       path !== decodeURI(path) ? decodeURI(path) : undefined,
     );
@@ -136,7 +188,16 @@ await initUnocssRuntime({
 
     return false;
   },
+  /**
+   * Returns the root element for the application
+   *
+   * @returns {HTMLElement | null} The root app element or null if not found
+   */
   rootElement: () => document.getElementById("app") ?? undefined,
 });
 
+/**
+ * Mounts the Vue application to the DOM after setting up the head and providing
+ * page data
+ */
 app.use(createHead()).provide("pages", toReactive(atlas)).mount("#app");
