@@ -26,13 +26,16 @@
   },
   "prettier": "@vuebro/configs/prettierrc",
   "dependencies": {
+    "@iconify/utils": "^3.0.2",
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.4",
     "@vuebro/loader-sfc": "^2.3.16",
-    "@vuebro/shared": "^1.1.44",
+    "@vuebro/shared": "^1.1.45",
+    "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
+    "ofetch": "^1.5.1",
     "uuid-random": "^1.3.2",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
@@ -40,7 +43,7 @@
   "devDependencies": {
     "@types/node": "^24.9.2",
     "@vuebro/configs": "^1.1.53",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.0",
     "unocss": "^66.5.4",
     "vite": "^7.1.12",
     "vite-plugin-static-copy": "^3.1.4"
