@@ -1,117 +1,50 @@
 <template lang="pug">
 div(
-  v-for="the in these",
-  :id="the.id",
-  :key="the.id",
-  ref="refs",
-  :class="the.class",
-  :role="the.id === that?.id ? 'main' : 'section'",
-  un-cloak
+  v-for="[id, is] in templates",
+  :id,
+  :key="id",
+  v-intersection-observer="[([{isIntersecting}={}])=>{intersecting.set(id,isIntersecting)},{threshold:0.1}]",
+  un-cloak,
+  :class="atlas[id]?.class"
 )
-  component(
-    :is="templates[the.id as keyof object]",
-    :pid="the.id",
-    @vue:mounted="resolve(the)"
-  )
+  component(:is, :id="id", @vue:mounted="promises.get(id)?.resolve(undefined)")
 </template>
+
 <script setup lang="ts">
-import { atlas, pages } from "@vuebro/shared";
-import { useIntersectionObserver, useScroll } from "@vueuse/core";
-import { consola } from "consola/browser";
-import { computed, onUnmounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { atlas } from "@vuebro/shared";
+import { vIntersectionObserver } from "@vueuse/components";
+import { computed, onUnmounted, watch } from "vue";
 
-import { module, pause, promises, resolve, scroll } from "@/stores/monolit";
+import {
+  $these,
+  intersecting,
+  module,
+  promises,
+  promiseWithResolvers,
+} from "@/stores/monolit";
 
-const route = useRoute(),
-  that = computed(() =>
-    route.path === "/"
-      ? atlas.value[route.name as keyof object]?.$children[0]
-      : atlas.value[route.name as keyof object],
-  );
-
-const refs = ref([]),
-  router = useRouter(),
-  siblings = computed(() => that.value?.siblings ?? []),
-  stops: (() => void)[] = [];
-
-const $siblings = computed(() =>
-    siblings.value.filter(({ enabled }) => enabled),
-  ),
-  clearStops = () => {
-    stops.forEach((stop) => {
-      stop();
+const clear = () => {
+    [intersecting, promises].forEach((map) => {
+      map.clear();
     });
-    stops.length = 0;
   },
-  these = computed(() =>
-    that.value === undefined || that.value.parent?.flat
-      ? $siblings.value
-      : [that.value],
+  templates = computed(
+    () => new Map($these.value.map(({ id }) => [id, module(id)])),
   );
-
-const intersecting = computed(
-    () => new Map(these.value.map(({ id }) => [id, false])),
-  ),
-  $intersecting = ref(new Map(intersecting.value)),
-  templates = computed(() => {
-    const [[key, value] = []] = promises;
-    promises.clear();
-    if (key && value) promises.set(key, value);
-    return Object.fromEntries(
-      these.value.map((page) => [page.id, module(page)]),
-    );
-  });
 
 watch(
-  refs,
+  $these,
   (value) => {
-    clearStops();
-    setTimeout(() => {
-      value.forEach((target) => {
-        const { stop } = useIntersectionObserver(
-          target,
-          ([{ isIntersecting, target: { id } = {} } = {}] = []) => {
-            $intersecting.value = new Map(intersecting.value);
-            if (id && isIntersecting !== undefined)
-              intersecting.value.set(id, isIntersecting);
-          },
-          { threshold: 0.1 },
-        );
-        stops.push(stop);
-      });
+    clear();
+    value.forEach(({ id }) => {
+      intersecting.set(id, false);
+      promises.set(id, promiseWithResolvers());
     });
   },
-  { deep: true },
+  { immediate: true },
 );
 
-useScroll(window, {
-  behavior: "smooth",
-  onStop: () => {
-    if (!pause.value) {
-      const { scrollX, scrollY } = window;
-      const [first] = these.value;
-      const [root] = pages.value;
-      if (root && first) {
-        const { $children: [{ id } = {}] = [] } = root;
-        const name =
-          !Math.floor(scrollX) && !Math.floor(scrollY) && first.id === id
-            ? root.id
-            : ([...intersecting.value.entries()].find(
-                ([, value]) => value,
-              )?.[0] ??
-              [...$intersecting.value.entries()].find(
-                ([, value]) => value,
-              )?.[0] ??
-              first.id);
-        if (name !== route.name) {
-          scroll.value = false;
-          router.push({ name }).catch(consola.error);
-        }
-      }
-    }
-  },
+onUnmounted(() => {
+  clear();
 });
-
-onUnmounted(clearStops);
 </script>
