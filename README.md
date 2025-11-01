@@ -34,15 +34,19 @@ The runtime follows a monolithic architecture with several key components:
 ## Building and Running
 
 ### Prerequisites
+
 - Node.js (latest version)
 - pnpm (or npm/yarn)
 
 ### Commands
+
 - `npm run build` - Builds the project using Vite and TypeScript
 - `npm run lint` - Lints the codebase using ESLint
 
 ### Build Configuration
+
 The project uses Vite for bundling with a custom configuration:
+
 - Externalizes Vue, Vue Router, and loader dependencies
 - Creates manual chunks for shared libraries and UnoCSS
 - Uses `vite-plugin-static-copy` to copy external dependencies to the dist folder
@@ -51,6 +55,7 @@ The project uses Vite for bundling with a custom configuration:
 ## Integration with VueBro Ecosystem
 
 This runtime is designed to work with the broader VueBro ecosystem:
+
 - Receives data from `index.json` and `fonts.json` files
 - Uses `@vuebro/shared` for common utilities
 - Dynamic components loaded from `./pages/` directory
@@ -58,7 +63,7 @@ This runtime is designed to work with the broader VueBro ecosystem:
 
 ## File Structure
 
-```
+```text
 src/
 ├── stores/          # State management stores
 ├── views/           # Page view components
