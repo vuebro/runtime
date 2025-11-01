@@ -110,7 +110,6 @@ watch(a, async (value) => {
         ? getIcon(value.icon)
         : await loadIcon(value.icon);
       if (icon) {
-        console.log(icon);
         const { attributes, body } = iconToSVG(icon, { height: 16, width: 16 });
         href = `data:image/svg+xml,${encodeURIComponent(iconToHTML(replaceIDs(body), attributes))}`;
       }
