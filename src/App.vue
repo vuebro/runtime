@@ -6,35 +6,61 @@ router-view(v-slot="{ Component }")
 import type { TPage } from "@vuebro/shared";
 import type { MetaFlat } from "unhead/types";
 
+import { iconToHTML, iconToSVG, replaceIDs } from "@iconify/utils";
 import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { pages } from "@vuebro/shared";
+import { atlas, fetching, pages } from "@vuebro/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const a = computed(() => pages.value.find(({ id }) => id === route.name)),
+
+const a = computed(() => atlas.value[route.name as keyof TPage]),
+  description = computed(() => a.value?.description),
   favicon = ref(""),
   jsonld = ref(""),
+  keywords = computed(() => a.value?.keywords.join()),
+  ogImage = computed(
+    () =>
+      a.value?.images
+        .filter(({ url }) => url)
+        .map(({ alt = "", url }) => ({
+          alt,
+          url: `${window.location.origin}/${url}`,
+        })) ?? [],
+  ),
+  ogType = computed(
+    () => a.value?.type as MetaFlat["ogType"] | null | undefined,
+  ),
   ogUrl = computed(
     () =>
       a.value?.to &&
       `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
-  );
+  ),
+  title = computed(() => a.value?.title);
 
 watch(a, async (value) => {
-  let href = "/favicon.ico";
-  if (value?.icon) {
-    const icon = iconLoaded(value.icon)
-      ? getIcon(value.icon)
-      : await loadIcon(value.icon);
-    if (icon) {
-      const { body, height, left, top, width } = icon;
-      href = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left.toString()} ${top.toString()} ${width.toString()} ${height.toString()}">${body}</svg>`;
+  if (value) {
+    let href = "/favicon.ico";
+    if (value.icon) {
+      const icon = iconLoaded(value.icon)
+        ? getIcon(value.icon)
+        : await loadIcon(value.icon);
+      if (icon) {
+        console.log(icon);
+        const { attributes, body } = iconToSVG(icon, { height: 16, width: 16 });
+        href = `data:image/svg+xml,${encodeURIComponent(iconToHTML(replaceIDs(body), attributes))}`;
+      }
     }
+    favicon.value = href;
+    jsonld.value = JSON.stringify(
+      (await fetching(`./pages/${value.id}.jsonld`)) ?? {
+        "@context": "https://schema.org",
+      },
+    );
   }
-  favicon.value = href;
 });
+
 useHead({
   link: [
     [favicon, "icon", "icon"],
@@ -48,38 +74,15 @@ useHead({
     },
   ],
 });
+
 useSeoMeta({
-  description: computed(() => a.value?.description),
-  keywords: computed(() => a.value?.keywords.join()),
-  ogDescription: computed(() => a.value?.description),
-  ogImage: computed(
-    () =>
-      a.value?.images
-        .filter(({ url }) => url)
-        .map(({ alt = "", url }) => ({
-          alt,
-          url: `${window.location.origin}/${url}`,
-        })) ?? [],
-  ),
-  ogTitle: computed(() => a.value?.title),
-  ogType: computed(
-    () => a.value?.type as MetaFlat["ogType"] | null | undefined,
-  ),
+  description,
+  keywords,
+  ogDescription: description,
+  ogImage,
+  ogTitle: title,
+  ogType,
   ogUrl,
-  title: computed(() => a.value?.title),
+  title,
 });
-watch(
-  () =>
-    (
-      a.value as
-        | (TPage & {
-            jsonld: Promise<object>;
-          })
-        | undefined
-    )?.jsonld,
-  async (value) => {
-    jsonld.value =
-      JSON.stringify(await value) || '{"@context":"https://schema.org"}';
-  },
-);
 </script>
