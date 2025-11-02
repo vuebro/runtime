@@ -12,6 +12,12 @@ interface PromiseWithResolvers<T> {
 }
 
 const intersecting = new Map<string, boolean | undefined>(),
+  /**
+   * Loads a module dynamically
+   *
+   * @param {string} id The ID of the module to load
+   * @returns {ReturnType<typeof defineAsyncComponent>} The async component
+   */
   module = (id: string) =>
     defineAsyncComponent(async () =>
       loadModule(`./pages/${id}.vue`, {
@@ -19,6 +25,13 @@ const intersecting = new Map<string, boolean | undefined>(),
       }),
     ),
   promises = new Map<string, PromiseWithResolvers<unknown>>(),
+  /**
+   * Creates a promise with separate resolve and reject functions
+   *
+   * @template T The type of the promise
+   * @returns {PromiseWithResolvers<T>} Object containing the promise and its
+   *   resolve/reject functions
+   */
   promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];
     let reject!: PromiseWithResolvers<T>["reject"];

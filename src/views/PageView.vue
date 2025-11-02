@@ -23,6 +23,9 @@ import {
   promiseWithResolvers,
 } from "@/stores/monolit";
 
+/**
+ * Clears the intersecting and promises maps
+ */
 const clear = () => {
     [intersecting, promises].forEach((map) => {
       map.clear();

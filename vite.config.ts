@@ -8,6 +8,13 @@ const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
     dest: "assets",
     file: "",
     name: key,
+    /**
+     * Renames the file with the package version
+     *
+     * @param {string} fileName The original file name
+     * @param {string} fileExtension The file extension
+     * @returns {string} The new file name with version
+     */
     rename(fileName: string, fileExtension: string) {
       const { version } = JSON.parse(
         readFileSync(`node_modules/${key}/package.json`).toString(),
@@ -54,6 +61,9 @@ export default mergeConfig(
     plugins: [
       viteStaticCopy({ targets }),
       {
+        /**
+         * Function called when the bundle is closed to update the manifest.json
+         */
         closeBundle: () => {
           const path = "./dist/.vite/manifest.json";
           writeFileSync(
