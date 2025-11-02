@@ -7,10 +7,5 @@ Head
     p Oops. Nothing here...
 </template>
 <script setup lang="ts">
-/**
- * @file 404 Not Found view component Displays a friendly error page when a
- *   route is not found
- */
-
 import { Head } from "@unhead/vue/components";
 </script>

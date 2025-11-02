@@ -11,12 +11,6 @@ div(
 </template>
 
 <script setup lang="ts">
-/**
- * @file Page view component that renders multiple page components Uses
- *   intersection observer to track component visibility and manages component
- *   mounting
- */
-
 import { atlas } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
 import { computed, onUnmounted, watch } from "vue";
@@ -29,29 +23,15 @@ import {
   promiseWithResolvers,
 } from "@/stores/monolit";
 
-/**
- * Clears intersection and promise maps
- */
 const clear = () => {
     [intersecting, promises].forEach((map) => {
       map.clear();
     });
   },
-  /**
-   * Computed property that creates a map of templates with their async
-   * components
-   *
-   * @type {import("vue").ComputedRef<
-   *   Map<string, import("vue").DefineAsyncComponentOptions>
-   * >}
-   */
   templates = computed(
     () => new Map($these.value.map(({ id }) => [id, module(id)])),
   );
 
-/**
- * Watcher that updates the maps when $these changes
- */
 watch(
   $these,
   (value) => {
@@ -64,9 +44,6 @@ watch(
   { immediate: true },
 );
 
-/**
- * Cleanup function that clears maps when component unmounts
- */
 onUnmounted(() => {
   clear();
 });
