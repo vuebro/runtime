@@ -30,8 +30,8 @@
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.4",
-    "@vuebro/loader-sfc": "^2.3.19",
-    "@vuebro/shared": "^1.1.47",
+    "@vuebro/loader-sfc": "^2.3.20",
+    "@vuebro/shared": "^1.1.48",
     "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
@@ -41,8 +41,8 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@types/node": "^24.9.2",
-    "@vuebro/configs": "^1.1.56",
+    "@types/node": "^24.10.0",
+    "@vuebro/configs": "^1.1.57",
     "eslint": "^9.39.0",
     "unocss": "^66.5.4",
     "vite": "^7.1.12",
