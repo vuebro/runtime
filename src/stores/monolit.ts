@@ -15,8 +15,8 @@ const intersecting = new Map<string, boolean | undefined>(),
   /**
    * Loads a module dynamically
    *
-   * @param {string} id The ID of the module to load
-   * @returns {ReturnType<typeof defineAsyncComponent>} The async component
+   * @param id The ID of the module to load
+   * @returns The async component
    */
   module = (id: string) =>
     defineAsyncComponent(async () =>
@@ -28,9 +28,7 @@ const intersecting = new Map<string, boolean | undefined>(),
   /**
    * Creates a promise with separate resolve and reject functions
    *
-   * @template T The type of the promise
-   * @returns {PromiseWithResolvers<T>} Object containing the promise and its
-   *   resolve/reject functions
+   * @returns Object containing the promise and its resolve/reject functions
    */
   promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];

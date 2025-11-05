@@ -11,9 +11,9 @@ const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
     /**
      * Renames the file with the package version
      *
-     * @param {string} fileName The original file name
-     * @param {string} fileExtension The file extension
-     * @returns {string} The new file name with version
+     * @param fileName The original file name
+     * @param fileExtension The file extension
+     * @returns The new file name with version
      */
     rename(fileName: string, fileExtension: string) {
       const { version } = JSON.parse(

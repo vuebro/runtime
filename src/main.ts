@@ -54,9 +54,10 @@ await initUnocssRuntime({
   /**
    * Callback function called when the application is ready
    *
-   * @param {{ extractAll: function(): Promise<void>, toggleObserver: function(boolean): void }} root0
-   *   The root object containing initialization functions
-   * @returns {boolean} Returns false to indicate completion
+   * @param root0 The root object containing initialization functions
+   * @param root0.extractAll Function to extract all components
+   * @param root0.toggleObserver Function to toggle the intersection observer
+   * @returns Returns false to indicate completion
    */
   ready: ({ extractAll, toggleObserver }) => {
     let scrollLock = false;
@@ -88,11 +89,10 @@ await initUnocssRuntime({
         /**
          * Defines the scroll behavior for router navigation
          *
-         * @param {object} root0 The root object
-         * @param {string} root0.hash The hash value for scrolling to an element
-         * @param {string} root0.name The route name
-         * @returns {import("vue-router").ScrollToOptions | false | undefined}
-         *   Scroll options or false
+         * @param root0 The root object
+         * @param root0.hash The hash value for scrolling to an element
+         * @param root0.name The route name
+         * @returns Scroll options or false
          */
         scrollBehavior: async ({ hash, name }) => {
           if (name) {
@@ -158,8 +158,7 @@ await initUnocssRuntime({
   /**
    * Returns the root element for the application
    *
-   * @returns {HTMLElement | undefined} The root element or undefined if not
-   *   found
+   * @returns The root element or undefined if not found
    */
   rootElement: () => document.getElementById("app") ?? undefined,
 });
