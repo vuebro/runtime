@@ -11,7 +11,7 @@ interface PromiseWithResolvers<T> {
   resolve: (value: PromiseLike<T> | T) => void;
 }
 
-const intersecting = new Map<string, boolean | undefined>(),
+export const intersecting = new Map<string, boolean | undefined>(),
   /**
    * Loads a module dynamically
    *
@@ -46,23 +46,12 @@ const intersecting = new Map<string, boolean | undefined>(),
     routeName.value === pages.value[0]?.id
       ? pages.value[0]?.$children[0]
       : atlas.value[routeName.value as keyof object],
-  ),
-  these = computed(() =>
-    that.value === undefined || that.value.parent?.flat
-      ? (that.value?.siblings ?? [])
-      : [that.value],
   );
 
-const $these = useArrayFilter(these, ({ enabled }) => enabled);
+const these = computed(() =>
+  that.value === undefined || that.value.parent?.flat
+    ? (that.value?.siblings ?? [])
+    : [that.value],
+);
 
-export {
-  $these,
-  intersecting,
-  module,
-  promises,
-  promiseWithResolvers,
-  root,
-  routeName,
-  scrollLock,
-  that,
-};
+export const $these = useArrayFilter(these, ({ enabled }) => enabled);
