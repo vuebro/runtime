@@ -3,31 +3,34 @@ div(
   v-for="[id, is] in templates",
   :id,
   :key="id",
-  v-intersection-observer="[([{isIntersecting}={}])=>{intersecting.set(id,isIntersecting)},{threshold:0.1}]",
+  v-intersection-observer="[([{isIntersecting}={}])=>{main.intersecting.set(id,isIntersecting)},{threshold:0.1}]",
   un-cloak,
-  :class="atlas[id]?.class"
+  :class="shared.atlas[id]?.class"
 )
-  component(:is, :id="id", @vue:mounted="promises.get(id)?.resolve(undefined)")
+  component(
+    :is,
+    :id="id",
+    @vue:mounted="main.promises.get(id)?.resolve(undefined)"
+  )
 </template>
 
 <script setup lang="ts">
-import { atlas } from "@vuebro/shared";
+import { useSharedStore } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
+import { storeToRefs } from "pinia";
 import { computed, onUnmounted, watch } from "vue";
 
-import {
-  $these,
-  intersecting,
-  module,
-  promises,
-  promiseWithResolvers,
-} from "@/stores/monolit";
+import { module, promiseWithResolvers, useMainStore } from "@/stores/main";
+
+const main = useMainStore(),
+  shared = useSharedStore(),
+  { $these } = storeToRefs(main);
 
 /**
  * Clears the intersecting and promises maps
  */
 const clear = () => {
-    [intersecting, promises].forEach((map) => {
+    [main.intersecting, main.promises].forEach((map) => {
       map.clear();
     });
   },
@@ -40,8 +43,8 @@ watch(
   (value) => {
     clear();
     value.forEach(({ id }) => {
-      intersecting.set(id, false);
-      promises.set(id, promiseWithResolvers());
+      main.intersecting.set(id, false);
+      main.promises.set(id, promiseWithResolvers());
     });
   },
   { immediate: true },

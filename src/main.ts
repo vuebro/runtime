@@ -1,22 +1,16 @@
 import { createHead } from "@unhead/vue/client";
 import initUnocssRuntime from "@unocss/runtime";
 import presets from "@vuebro/configs/uno/presets";
-import { atlas, fetching, nodes, pages } from "@vuebro/shared";
+import { fetching, useSharedStore } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { ofetch as customFetch } from "ofetch";
+import { createPinia, storeToRefs } from "pinia";
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import vueApp from "@/App.vue";
-import {
-  $these,
-  intersecting,
-  promises,
-  root,
-  routeName,
-  that,
-} from "@/stores/monolit";
+import { useMainStore } from "@/stores/main";
 import "@/style.css";
 import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
@@ -30,12 +24,13 @@ const [[page = {}], fonts] = (
   app = createApp(vueApp),
   { pathname } = new URL(document.baseURI);
 
-consola.info(
-  "👊 VueBro / https://github.com/vuebro / runtime ver.:",
-  __APP_VERSION__,
-);
+app.use(createPinia());
 
-nodes.push(page);
+const main = useMainStore(),
+  shared = useSharedStore(),
+  { atlas } = storeToRefs(shared);
+
+shared.nodes.push(page);
 
 await initUnocssRuntime({
   defaults: {
@@ -65,7 +60,7 @@ await initUnocssRuntime({
     const router = createRouter({
         history: createWebHistory(pathname),
         routes: [
-          ...pages.value
+          ...shared.pages
             .filter(({ path }) => path !== undefined)
             .map((page) => {
               const {
@@ -96,14 +91,14 @@ await initUnocssRuntime({
          */
         scrollBehavior: async ({ hash, name }) => {
           if (name) {
-            routeName.value = name;
+            main.routeName = name;
             if (scrollLock) scrollLock = false;
             else {
-              const { index, parent: { flat } = {} } = that.value ?? {};
+              const { index, parent: { flat } = {} } = main.that ?? {};
               toggleObserver(true);
-              await root.promise;
+              await main.root.promise;
               await Promise.all(
-                [...promises.values()].map(({ promise }) => promise),
+                [...main.promises.values()].map(({ promise }) => promise),
               );
               await extractAll();
               toggleObserver(false);
@@ -129,17 +124,17 @@ await initUnocssRuntime({
          * Callback when scrolling stops
          */
         onStop: () => {
-          const [first] = $these.value,
-            [root] = pages.value;
+          const [first] = main.$these,
+            [root] = shared.pages;
           if (root && first) {
             const { $children: [{ id } = {}] = [] } = root;
             const name =
               !Math.floor(x.value) && !Math.floor(y.value) && first.id === id
                 ? root.id
-                : ([...intersecting.entries()].find(
+                : ([...main.intersecting.entries()].find(
                     ([, value]) => value,
                   )?.[0] ?? first.id);
-            if (name !== routeName.value) {
+            if (name !== main.routeName) {
               scrollLock = true;
               router.push({ name }).catch(consola.error);
             }
@@ -164,3 +159,8 @@ await initUnocssRuntime({
 });
 
 app.use(createHead()).provide("pages", toReactive(atlas)).mount("#app");
+
+consola.info(
+  "👊 VueBro / https://github.com/vuebro / runtime ver.:",
+  __APP_VERSION__,
+);
