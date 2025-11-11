@@ -5,13 +5,13 @@ div(
   :key="id",
   v-intersection-observer="[([{isIntersecting}={}])=>{intersecting.set(id,isIntersecting)},{threshold:0.1}]",
   un-cloak,
-  :class="atlas[id]?.class"
+  :class="kvNodes[id]?.class"
 )
   component(:is, :id="id", @vue:mounted="promises.get(id)?.resolve(undefined)")
 </template>
 
 <script setup lang="ts">
-import { atlas } from "@vuebro/shared";
+import { kvNodes } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
 import { computed, onUnmounted, watch } from "vue";
 
@@ -21,7 +21,7 @@ import {
   module,
   promises,
   promiseWithResolvers,
-} from "@/stores/monolit";
+} from "@/stores/main";
 
 /**
  * Clears the intersecting and promises maps

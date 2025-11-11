@@ -1,7 +1,7 @@
 import { createHead } from "@unhead/vue/client";
 import initUnocssRuntime from "@unocss/runtime";
 import presets from "@vuebro/configs/uno/presets";
-import { atlas, fetching, nodes, pages } from "@vuebro/shared";
+import { fetching, kvNodes, nodes, tree } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { ofetch as customFetch } from "ofetch";
@@ -16,7 +16,7 @@ import {
   root,
   routeName,
   that,
-} from "@/stores/monolit";
+} from "@/stores/main";
 import "@/style.css";
 import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
@@ -35,7 +35,7 @@ consola.info(
   __APP_VERSION__,
 );
 
-nodes.push(page);
+tree.push(page);
 
 await initUnocssRuntime({
   defaults: {
@@ -65,7 +65,7 @@ await initUnocssRuntime({
     const router = createRouter({
         history: createWebHistory(pathname),
         routes: [
-          ...pages.value
+          ...nodes.value
             .filter(({ path }) => path !== undefined)
             .map((page) => {
               const {
@@ -130,7 +130,7 @@ await initUnocssRuntime({
          */
         onStop: () => {
           const [first] = $these.value,
-            [root] = pages.value;
+            [root] = nodes.value;
           if (root && first) {
             const { $children: [{ id } = {}] = [] } = root;
             const name =
@@ -163,4 +163,4 @@ await initUnocssRuntime({
   rootElement: () => document.getElementById("app") ?? undefined,
 });
 
-app.use(createHead()).provide("pages", toReactive(atlas)).mount("#app");
+app.use(createHead()).provide("pages", toReactive(kvNodes)).mount("#app");

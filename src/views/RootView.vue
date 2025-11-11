@@ -5,11 +5,11 @@ Suspense
 </template>
 
 <script setup lang="ts">
-import { pages } from "@vuebro/shared";
+import { nodes } from "@vuebro/shared";
 import { computed } from "vue";
 
-import { module, root } from "@/stores/monolit";
+import { module, root } from "@/stores/main";
 
-const [the] = pages.value,
+const [the] = nodes.value,
   is = computed(() => the && module(the.id));
 </script>

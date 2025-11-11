@@ -1,7 +1,7 @@
 import type { RouteRecordNameGeneric } from "vue-router";
 
 import loadModule from "@vuebro/loader-sfc";
-import { atlas, pages } from "@vuebro/shared";
+import { kvNodes, nodes } from "@vuebro/shared";
 import { useArrayFilter } from "@vueuse/core";
 import { computed, defineAsyncComponent, ref } from "vue";
 
@@ -43,9 +43,9 @@ export const intersecting = new Map<string, boolean | undefined>(),
   routeName = ref<RouteRecordNameGeneric>(),
   scrollLock = ref(false),
   that = computed(() =>
-    routeName.value === pages.value[0]?.id
-      ? pages.value[0]?.$children[0]
-      : atlas.value[routeName.value as keyof object],
+    routeName.value === nodes.value[0]?.id
+      ? nodes.value[0]?.$children[0]
+      : kvNodes.value[routeName.value as keyof object],
   );
 
 const these = computed(() =>

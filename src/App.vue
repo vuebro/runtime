@@ -1,6 +1,6 @@
 <template lang="pug">
 router-view(v-slot="{ Component }")
-  component(:is="Component", :id="pages[0]?.id")
+  component(:is="Component", :id="nodes[0]?.id")
 </template>
 <script setup lang="ts">
 import type { TPage } from "@vuebro/shared";
@@ -9,13 +9,13 @@ import type { MetaFlat } from "unhead/types";
 import { iconToHTML, iconToSVG, replaceIDs } from "@iconify/utils";
 import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { atlas, fetching, pages } from "@vuebro/shared";
+import { fetching, kvNodes, nodes } from "@vuebro/shared";
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-const a = computed(() => atlas.value[route.name as keyof TPage]),
+const a = computed(() => kvNodes.value[route.name as keyof TPage]),
   description = computed(() => a.value?.description),
   favicon = ref(""),
   jsonld = ref(""),
