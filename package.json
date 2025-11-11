@@ -1,6 +1,6 @@
 {
   "name": "@vuebro/runtime",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "Vue.js-based runtime for VueBro applications with dynamic loading, SEO optimization, and intersection observer tracking.",
   "keywords": [
     "vue",
