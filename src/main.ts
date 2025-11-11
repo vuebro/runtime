@@ -28,9 +28,9 @@ app.use(createPinia());
 
 const main = useMainStore(),
   shared = useSharedStore(),
-  { atlas } = storeToRefs(shared);
+  { kvNodes } = storeToRefs(shared);
 
-shared.nodes.push(page);
+shared.tree.push(page);
 
 await initUnocssRuntime({
   defaults: {
@@ -60,7 +60,7 @@ await initUnocssRuntime({
     const router = createRouter({
         history: createWebHistory(pathname),
         routes: [
-          ...shared.pages
+          ...shared.nodes
             .filter(({ path }) => path !== undefined)
             .map((page) => {
               const {
@@ -125,7 +125,7 @@ await initUnocssRuntime({
          */
         onStop: () => {
           const [first] = main.$these,
-            [root] = shared.pages;
+            [root] = shared.nodes;
           if (root && first) {
             const { $children: [{ id } = {}] = [] } = root;
             const name =
@@ -158,7 +158,7 @@ await initUnocssRuntime({
   rootElement: () => document.getElementById("app") ?? undefined,
 });
 
-app.use(createHead()).provide("pages", toReactive(atlas)).mount("#app");
+app.use(createHead()).provide("pages", toReactive(kvNodes)).mount("#app");
 
 consola.info(
   "👊 VueBro / https://github.com/vuebro / runtime ver.:",

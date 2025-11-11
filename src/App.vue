@@ -1,6 +1,6 @@
 <template lang="pug">
 router-view(v-slot="{ Component }")
-  component(:is="Component", :id="shared.pages[0]?.id")
+  component(:is="Component", :id="shared.nodes[0]?.id")
 </template>
 <script setup lang="ts">
 import type { TPage } from "@vuebro/shared";
@@ -16,7 +16,7 @@ import { useRoute } from "vue-router";
 const route = useRoute(),
   shared = useSharedStore();
 
-const a = computed(() => shared.atlas[route.name as keyof TPage]),
+const a = computed(() => shared.kvNodes[route.name as keyof TPage]),
   description = computed(() => a.value?.description),
   favicon = ref(""),
   jsonld = ref(""),

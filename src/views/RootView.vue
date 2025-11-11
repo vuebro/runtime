@@ -11,7 +11,7 @@ import { computed } from "vue";
 import { module, useMainStore } from "@/stores/main";
 
 const shared = useSharedStore(),
-  [the] = shared.pages,
+  [the] = shared.nodes,
   is = computed(() => the && module(the.id)),
   main = useMainStore();
 </script>

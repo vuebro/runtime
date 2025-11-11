@@ -5,7 +5,7 @@ div(
   :key="id",
   v-intersection-observer="[([{isIntersecting}={}])=>{main.intersecting.set(id,isIntersecting)},{threshold:0.1}]",
   un-cloak,
-  :class="shared.atlas[id]?.class"
+  :class="shared.kvNodes[id]?.class"
 )
   component(
     :is,

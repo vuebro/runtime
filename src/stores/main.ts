@@ -41,9 +41,9 @@ export const module = (id: string) =>
     const routeName = ref<RouteRecordNameGeneric>(),
       shared = useSharedStore(),
       that = computed(() =>
-        routeName.value === shared.pages[0]?.id
-          ? shared.pages[0]?.$children[0]
-          : shared.atlas[routeName.value as keyof object],
+        routeName.value === shared.nodes[0]?.id
+          ? shared.nodes[0]?.$children[0]
+          : shared.kvNodes[routeName.value as keyof object],
       ),
       these = computed(() =>
         that.value === undefined || that.value.parent?.flat
