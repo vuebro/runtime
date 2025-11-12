@@ -1,9 +1,9 @@
+import type { TPage } from "@vuebro/shared";
 import type { RouteRecordNameGeneric } from "vue-router";
 
 import loadModule from "@vuebro/loader-sfc";
 import { sharedStore } from "@vuebro/shared";
-import { useArrayFilter } from "@vueuse/core";
-import { computed, defineAsyncComponent, ref, toRefs } from "vue";
+import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
   promise: Promise<T>;
@@ -13,7 +13,40 @@ interface PromiseWithResolvers<T> {
 
 const { kvNodes, nodes } = toRefs(sharedStore);
 
-export const intersecting = new Map<string, boolean | undefined>(),
+/**
+ * Creates a promise with separate resolve and reject functions
+ *
+ * @returns Object containing the promise and its resolve/reject functions
+ */
+export const promiseWithResolvers = <T>() => {
+    let resolve!: PromiseWithResolvers<T>["resolve"];
+    let reject!: PromiseWithResolvers<T>["reject"];
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, reject, resolve };
+  },
+  mainStore = reactive({
+    $these: computed((): TPage[] =>
+      mainStore.these.filter(({ enabled }) => enabled),
+    ),
+    intersecting: new Map<string, boolean | undefined>(),
+    promises: new Map<string, PromiseWithResolvers<unknown>>(),
+    root: promiseWithResolvers(),
+    routeName: undefined as RouteRecordNameGeneric,
+    scrollLock: false,
+    that: computed((): TPage | undefined =>
+      mainStore.routeName === nodes.value[0]?.id
+        ? nodes.value[0]?.$children[0]
+        : kvNodes.value[mainStore.routeName as keyof object],
+    ),
+    these: computed((): TPage[] =>
+      mainStore.that === undefined || mainStore.that.parent?.flat
+        ? (mainStore.that?.siblings ?? [])
+        : [mainStore.that],
+    ),
+  }),
   /**
    * Loads a module dynamically
    *
@@ -25,35 +58,4 @@ export const intersecting = new Map<string, boolean | undefined>(),
       loadModule(`./pages/${id}.vue`, {
         scriptOptions: { inlineTemplate: true },
       }),
-    ),
-  promises = new Map<string, PromiseWithResolvers<unknown>>(),
-  /**
-   * Creates a promise with separate resolve and reject functions
-   *
-   * @returns Object containing the promise and its resolve/reject functions
-   */
-  promiseWithResolvers = <T>() => {
-    let resolve!: PromiseWithResolvers<T>["resolve"];
-    let reject!: PromiseWithResolvers<T>["reject"];
-    const promise = new Promise<T>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, reject, resolve };
-  },
-  root = promiseWithResolvers(),
-  routeName = ref<RouteRecordNameGeneric>(),
-  scrollLock = ref(false),
-  that = computed(() =>
-    routeName.value === nodes.value[0]?.id
-      ? nodes.value[0]?.$children[0]
-      : kvNodes.value[routeName.value as keyof object],
-  );
-
-const these = computed(() =>
-  that.value === undefined || that.value.parent?.flat
-    ? (that.value?.siblings ?? [])
-    : [that.value],
-);
-
-export const $these = useArrayFilter(these, ({ enabled }) => enabled);
+    );

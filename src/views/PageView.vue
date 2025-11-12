@@ -15,13 +15,11 @@ import { sharedStore } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
 import { computed, onUnmounted, toRefs, watch } from "vue";
 
-import {
-  $these,
-  intersecting,
-  module,
-  promises,
-  promiseWithResolvers,
-} from "@/stores/main";
+import { mainStore, module, promiseWithResolvers } from "@/stores/main";
+
+const { $these } = toRefs(mainStore),
+  { intersecting, promises } = mainStore,
+  { kvNodes } = toRefs(sharedStore);
 
 /**
  * Clears the intersecting and promises maps
@@ -33,8 +31,7 @@ const clear = () => {
   },
   templates = computed(
     () => new Map($these.value.map(({ id }) => [id, module(id)])),
-  ),
-  { kvNodes } = toRefs(sharedStore);
+  );
 
 watch(
   $these,

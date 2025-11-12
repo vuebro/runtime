@@ -9,14 +9,7 @@ import { createApp, toRefs } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import vueApp from "@/App.vue";
-import {
-  $these,
-  intersecting,
-  promises,
-  root,
-  routeName,
-  that,
-} from "@/stores/main";
+import { mainStore } from "@/stores/main";
 import "@/style.css";
 import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
@@ -28,6 +21,8 @@ const [index, fonts] = (
     )
   ).map((value) => value ?? []),
   app = createApp(vueApp),
+  { $these, routeName, that } = toRefs(mainStore),
+  { intersecting, promises, root } = mainStore,
   { kvNodes, nodes, tree } = toRefs(sharedStore),
   { pathname } = new URL(document.baseURI);
 
