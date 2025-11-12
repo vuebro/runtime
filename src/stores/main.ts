@@ -1,15 +1,17 @@
 import type { RouteRecordNameGeneric } from "vue-router";
 
 import loadModule from "@vuebro/loader-sfc";
-import { kvNodes, nodes } from "@vuebro/shared";
+import { sharedStore } from "@vuebro/shared";
 import { useArrayFilter } from "@vueuse/core";
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed, defineAsyncComponent, ref, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
   promise: Promise<T>;
   reject: (reason?: unknown) => void;
   resolve: (value: PromiseLike<T> | T) => void;
 }
+
+const { kvNodes, nodes } = toRefs(sharedStore);
 
 export const intersecting = new Map<string, boolean | undefined>(),
   /**

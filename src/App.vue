@@ -9,11 +9,12 @@ import type { MetaFlat } from "unhead/types";
 import { iconToHTML, iconToSVG, replaceIDs } from "@iconify/utils";
 import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
-import { fetching, kvNodes, nodes } from "@vuebro/shared";
-import { computed, ref, watch } from "vue";
+import { fetching, sharedStore } from "@vuebro/shared";
+import { computed, ref, toRefs, watch } from "vue";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
+const route = useRoute(),
+  { kvNodes, nodes } = toRefs(sharedStore);
 
 const a = computed(() => kvNodes.value[route.name as keyof TPage]),
   description = computed(() => a.value?.description),

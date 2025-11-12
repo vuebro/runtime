@@ -1,15 +1,20 @@
 <template lang="pug">
 Suspense
-  div(v-if="the?.enabled", :id="the.id", :class="the.class", un-cloak)
-    component(:is, :id="the.id", @vue:mounted="root.resolve(undefined)")
+  div(
+    v-if="nodes[0]?.enabled",
+    :id="nodes[0].id",
+    :class="nodes[0].class",
+    un-cloak
+  )
+    component(:is, :id="nodes[0].id", @vue:mounted="root.resolve(undefined)")
 </template>
 
 <script setup lang="ts">
-import { nodes } from "@vuebro/shared";
-import { computed } from "vue";
+import { sharedStore } from "@vuebro/shared";
+import { computed, toRefs } from "vue";
 
 import { module, root } from "@/stores/main";
 
-const [the] = nodes.value,
-  is = computed(() => the && module(the.id));
+const { nodes } = toRefs(sharedStore);
+const is = computed(() => nodes.value[0] && module(nodes.value[0].id));
 </script>

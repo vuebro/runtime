@@ -11,9 +11,9 @@ div(
 </template>
 
 <script setup lang="ts">
-import { kvNodes } from "@vuebro/shared";
+import { sharedStore } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
-import { computed, onUnmounted, watch } from "vue";
+import { computed, onUnmounted, toRefs, watch } from "vue";
 
 import {
   $these,
@@ -33,7 +33,8 @@ const clear = () => {
   },
   templates = computed(
     () => new Map($these.value.map(({ id }) => [id, module(id)])),
-  );
+  ),
+  { kvNodes } = toRefs(sharedStore);
 
 watch(
   $these,

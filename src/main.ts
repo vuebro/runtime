@@ -1,11 +1,11 @@
 import { createHead } from "@unhead/vue/client";
 import initUnocssRuntime from "@unocss/runtime";
 import presets from "@vuebro/configs/uno/presets";
-import { fetching, kvNodes, nodes, tree } from "@vuebro/shared";
+import { fetching, sharedStore } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { ofetch as customFetch } from "ofetch";
-import { createApp } from "vue";
+import { createApp, toRefs } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import vueApp from "@/App.vue";
@@ -22,12 +22,13 @@ import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
 import rootView from "@/views/RootView.vue";
 
-const [[page = {}], fonts] = (
+const [index, fonts] = (
     await Promise.all(
       ["index", "fonts"].map((file) => fetching(`${file}.json`)),
     )
   ).map((value) => value ?? []),
   app = createApp(vueApp),
+  { kvNodes, nodes, tree } = toRefs(sharedStore),
   { pathname } = new URL(document.baseURI);
 
 consola.info(
@@ -35,7 +36,7 @@ consola.info(
   __APP_VERSION__,
 );
 
-tree.push(page);
+tree.value = index;
 
 await initUnocssRuntime({
   defaults: {
