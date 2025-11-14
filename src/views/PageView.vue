@@ -13,13 +13,13 @@ div(
 <script setup lang="ts">
 import { sharedStore } from "@vuebro/shared";
 import { vIntersectionObserver } from "@vueuse/components";
-import { computed, onUnmounted, toRefs, watch } from "vue";
+import { computed, onUnmounted, toRef, watchEffect } from "vue";
 
 import { mainStore, module, promiseWithResolvers } from "@/stores/main";
 
-const { $these } = toRefs(mainStore),
-  { intersecting, promises } = mainStore,
-  { kvNodes } = toRefs(sharedStore);
+const $these = $toRef(mainStore, "$these"),
+  kvNodes = toRef(sharedStore, "kvNodes"),
+  { intersecting, promises } = mainStore;
 
 /**
  * Clears the intersecting and promises maps
@@ -29,21 +29,15 @@ const clear = () => {
       map.clear();
     });
   },
-  templates = computed(
-    () => new Map($these.value.map(({ id }) => [id, module(id)])),
-  );
+  templates = computed(() => new Map($these.map(({ id }) => [id, module(id)])));
 
-watch(
-  $these,
-  (value) => {
-    clear();
-    value.forEach(({ id }) => {
-      intersecting.set(id, false);
-      promises.set(id, promiseWithResolvers());
-    });
-  },
-  { immediate: true },
-);
+watchEffect(() => {
+  clear();
+  $these.forEach(({ id }) => {
+    intersecting.set(id, false);
+    promises.set(id, promiseWithResolvers());
+  });
+});
 
 onUnmounted(() => {
   clear();
