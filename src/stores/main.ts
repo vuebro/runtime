@@ -11,7 +11,7 @@ interface PromiseWithResolvers<T> {
   resolve: (value: PromiseLike<T> | T) => void;
 }
 
-const { kvNodes, nodes } = toRefs(sharedStore);
+const { kvNodes, nodes } = $(toRefs(sharedStore));
 
 /**
  * Creates a promise with separate resolve and reject functions
@@ -37,9 +37,9 @@ export const promiseWithResolvers = <T>() => {
     routeName: undefined as RouteRecordNameGeneric,
     scrollLock: false,
     that: computed((): TPage | undefined =>
-      mainStore.routeName === nodes.value[0]?.id
-        ? nodes.value[0]?.$children[0]
-        : kvNodes.value[mainStore.routeName as keyof object],
+      mainStore.routeName === nodes[0]?.id
+        ? nodes[0]?.$children[0]
+        : kvNodes[mainStore.routeName as keyof object],
     ),
     these: computed((): TPage[] =>
       mainStore.that === undefined || mainStore.that.parent?.flat
