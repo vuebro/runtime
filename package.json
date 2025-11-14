@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/package",
   "name": "@vuebro/runtime",
   "version": "1.2.17",
   "description": "Vue.js-based runtime for VueBro applications with dynamic loading, SEO optimization, and intersection observer tracking.",
@@ -37,8 +38,8 @@
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.6",
-    "@vuebro/loader-sfc": "^2.3.28",
-    "@vuebro/shared": "^1.2.6",
+    "@vuebro/loader-sfc": "^2.3.30",
+    "@vuebro/shared": "^1.2.7",
     "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
@@ -49,7 +50,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@vuebro/configs": "^1.1.79",
+    "@vuebro/configs": "^1.2.1",
     "eslint": "^9.39.1",
     "unocss": "^66.5.6",
     "vite": "^7.2.2",
