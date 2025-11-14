@@ -39,7 +39,7 @@
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.6",
     "@vuebro/loader-sfc": "^2.3.30",
-    "@vuebro/shared": "^1.2.7",
+    "@vuebro/shared": "^1.2.8",
     "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
