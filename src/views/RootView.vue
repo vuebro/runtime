@@ -11,11 +11,11 @@ Suspense
 
 <script setup lang="ts">
 import { sharedStore } from "@vuebro/shared";
-import { computed, toRefs } from "vue";
+import { computed } from "vue";
 
 import { mainStore, module } from "@/stores/main";
 
-const { nodes } = toRefs(sharedStore),
+const nodes = $toRef(sharedStore, "nodes"),
   { root } = mainStore;
-const is = computed(() => nodes.value[0] && module(nodes.value[0].id));
+const is = computed(() => nodes[0] && module(nodes[0].id));
 </script>
