@@ -5,7 +5,7 @@ import { fetching, sharedStore } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { ofetch as customFetch } from "ofetch";
-import { createApp, toRefs } from "vue";
+import { createApp, toRef, toRefs } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import vueApp from "@/App.vue";
@@ -15,15 +15,19 @@ import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
 import rootView from "@/views/RootView.vue";
 
+let routeName = $toRef(mainStore, "routeName");
+
+const { $these, that } = $(toRefs(mainStore));
+const { kvNodes, nodes } = $(toRefs(sharedStore));
+
 const [index, fonts] = (
     await Promise.all(
       ["index", "fonts"].map((file) => fetching(`${file}.json`)),
     )
   ).map((value) => value ?? []),
   app = createApp(vueApp),
-  { $these, routeName, that } = toRefs(mainStore),
+  tree = toRef(sharedStore, "tree"),
   { intersecting, promises, root } = mainStore,
-  { kvNodes, nodes, tree } = toRefs(sharedStore),
   { pathname } = new URL(document.baseURI);
 
 consola.info(
@@ -61,7 +65,7 @@ await initUnocssRuntime({
     const router = createRouter({
         history: createWebHistory(pathname),
         routes: [
-          ...nodes.value
+          ...nodes
             .filter(({ path }) => path !== undefined)
             .map((page) => {
               const {
@@ -92,10 +96,10 @@ await initUnocssRuntime({
          */
         scrollBehavior: async ({ hash, name }) => {
           if (name) {
-            routeName.value = name;
+            routeName = name;
             if (scrollLock) scrollLock = false;
             else {
-              const { index, parent: { flat } = {} } = that.value ?? {};
+              const { index, parent: { flat } = {} } = that ?? {};
               toggleObserver(true);
               await root.promise;
               await Promise.all(
@@ -120,28 +124,30 @@ await initUnocssRuntime({
           return false;
         },
       }),
-      { x, y } = useScroll(window, {
-        /**
-         * Callback when scrolling stops
-         */
-        onStop: () => {
-          const [first] = $these.value,
-            [root] = nodes.value;
-          if (root && first) {
-            const { $children: [{ id } = {}] = [] } = root;
-            const name =
-              !Math.floor(x.value) && !Math.floor(y.value) && first.id === id
-                ? root.id
-                : ([...intersecting.entries()].find(
-                    ([, value]) => value,
-                  )?.[0] ?? first.id);
-            if (name !== routeName.value) {
-              scrollLock = true;
-              router.push({ name }).catch(consola.error);
+      { x, y } = $(
+        useScroll(window, {
+          /**
+           * Callback when scrolling stops
+           */
+          onStop: () => {
+            const [first] = $these,
+              [root] = nodes;
+            if (root && first) {
+              const { $children: [{ id } = {}] = [] } = root;
+              const name =
+                !Math.floor(x) && !Math.floor(y) && first.id === id
+                  ? root.id
+                  : ([...intersecting.entries()].find(
+                      ([, value]) => value,
+                    )?.[0] ?? first.id);
+              if (name !== routeName) {
+                scrollLock = true;
+                router.push({ name }).catch(consola.error);
+              }
             }
-          }
-        },
-      });
+          },
+        }),
+      );
 
     router.beforeEach(({ path }) =>
       path !== decodeURI(path) ? decodeURI(path) : undefined,
