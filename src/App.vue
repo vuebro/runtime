@@ -10,51 +10,49 @@ import { iconToHTML, iconToSVG, replaceIDs } from "@iconify/utils";
 import { getIcon, iconLoaded, loadIcon } from "@iconify/vue";
 import { useHead, useSeoMeta } from "@unhead/vue";
 import { fetching, sharedStore } from "@vuebro/shared";
-import { computed, ref, toRefs, watch } from "vue";
+import { computed, toRefs, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 
-const route = useRoute(),
-  { kvNodes, nodes } = toRefs(sharedStore);
+let favicon = $ref(""),
+  jsonld = $ref("");
 
-const a = computed(() => kvNodes.value[route.name as keyof TPage]),
-  description = computed(() => a.value?.description),
-  favicon = ref(""),
-  jsonld = ref(""),
-  keywords = computed(() => a.value?.keywords.join()),
+const route = useRoute(),
+  { kvNodes, nodes } = $(toRefs(sharedStore));
+
+const a = $computed(() => kvNodes[route.name as keyof TPage]),
+  description = computed(() => a?.description),
+  keywords = computed(() => a?.keywords.join()),
   ogImage = computed(
     () =>
-      a.value?.images
+      a?.images
         .filter(({ url }) => url)
         .map(({ alt = "", url }) => ({
           alt,
           url: `${window.location.origin}/${url}`,
         })) ?? [],
   ),
-  ogType = computed(
-    () => a.value?.type as MetaFlat["ogType"] | null | undefined,
-  ),
+  ogType = computed(() => a?.type as MetaFlat["ogType"] | null | undefined),
   ogUrl = computed(
-    () =>
-      a.value?.to &&
-      `${window.location.origin}${a.value.to === "/" ? "" : a.value.to}`,
+    () => a?.to && `${window.location.origin}${a.to === "/" ? "" : a.to}`,
   ),
-  title = computed(() => a.value?.title);
+  title = computed(() => a?.title);
 
-watch(a, async (value) => {
-  if (value) {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+watchEffect(async () => {
+  if (a) {
     let href = "/favicon.ico";
-    if (value.icon) {
-      const icon = iconLoaded(value.icon)
-        ? getIcon(value.icon)
-        : await loadIcon(value.icon);
+    if (a.icon) {
+      const icon = iconLoaded(a.icon)
+        ? getIcon(a.icon)
+        : await loadIcon(a.icon);
       if (icon) {
         const { attributes, body } = iconToSVG(icon, { height: 16, width: 16 });
         href = `data:image/svg+xml,${encodeURIComponent(iconToHTML(replaceIDs(body), attributes))}`;
       }
     }
-    favicon.value = href;
-    jsonld.value = JSON.stringify(
-      (await fetching(`./pages/${value.id}.jsonld`)) ?? {
+    favicon = href;
+    jsonld = JSON.stringify(
+      (await fetching(`./pages/${a.id}.jsonld`)) ?? {
         "@context": "https://schema.org",
       },
     );
