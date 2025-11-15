@@ -3,7 +3,7 @@ div(
   v-for="[id, is] in templates",
   :id,
   :key="id",
-  v-intersection-observer="[([{isIntersecting}={}])=>{intersecting.set(id,isIntersecting)},{threshold:0.1}]",
+  v-element-visibility="[(state)=>{intersecting.set(id,state)},{threshold:0.1}]",
   un-cloak,
   :class="kvNodes[id]?.class"
 )
@@ -12,7 +12,7 @@ div(
 
 <script setup lang="ts">
 import { sharedStore } from "@vuebro/shared";
-import { vIntersectionObserver } from "@vueuse/components";
+import { vElementVisibility } from "@vueuse/components";
 import { computed, onUnmounted, toRef, watchEffect } from "vue";
 
 import { mainStore, module, promiseWithResolvers } from "@/stores/main";
