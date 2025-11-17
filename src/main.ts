@@ -5,7 +5,7 @@ import { fetching, sharedStore } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
 import { ofetch as customFetch } from "ofetch";
-import { createApp, toRef, toRefs } from "vue";
+import { createApp, toRefs } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 import vueApp from "@/App.vue";
@@ -26,7 +26,6 @@ const [index, fonts] = (
     )
   ).map((value) => value ?? []),
   app = createApp(vueApp),
-  tree = toRef(sharedStore, "tree"),
   { intersecting, promises, root } = mainStore,
   { pathname } = new URL(document.baseURI);
 
@@ -35,7 +34,7 @@ consola.info(
   __APP_VERSION__,
 );
 
-tree.value = index;
+sharedStore.tree = index;
 
 await initUnocssRuntime({
   defaults: {
