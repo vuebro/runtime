@@ -37,9 +37,9 @@
     "@iconify/utils": "^3.0.2",
     "@iconify/vue": "^5.0.0",
     "@unhead/vue": "^2.0.19",
-    "@unocss/runtime": "^66.5.6",
-    "@vuebro/loader-sfc": "^2.3.31",
-    "@vuebro/shared": "^1.2.9",
+    "@unocss/runtime": "^66.5.7",
+    "@vuebro/loader-sfc": "^2.3.32",
+    "@vuebro/shared": "^1.2.10",
     "@vueuse/components": "^14.0.0",
     "@vueuse/core": "^14.0.0",
     "consola": "^3.4.2",
@@ -50,10 +50,10 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@vuebro/configs": "^1.2.7",
+    "@vuebro/configs": "^1.2.11",
     "eslint": "^9.39.1",
-    "unocss": "^66.5.6",
-    "vite": "^7.2.2",
+    "unocss": "^66.5.7",
+    "vite": "^7.2.4",
     "vite-plugin-static-copy": "^3.1.4"
   }
 }

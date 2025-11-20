@@ -4,8 +4,8 @@ div(
   :id,
   :key="id",
   v-element-visibility="[(state)=>{intersecting.set(id,state)},{threshold:0.1}]",
-  un-cloak,
-  :class="kvNodes[id]?.class"
+  :class="kvNodes[id]?.class",
+  un-cloak
 )
   component(:is, :id="id", @vue:mounted="promises.get(id)?.resolve(undefined)")
 </template>
