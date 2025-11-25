@@ -1,8 +1,10 @@
 import type { TPage } from "@vuebro/shared";
 import type { RouteRecordNameGeneric } from "vue-router";
 
+import { componentPlugin } from "@mdit-vue/plugin-component";
 import loadModule from "@vuebro/loader-sfc";
 import { sharedStore } from "@vuebro/shared";
+import MarkdownIt from "markdown-it";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
@@ -12,6 +14,7 @@ interface PromiseWithResolvers<T> {
 }
 
 const { kvNodes, nodes } = $(toRefs(sharedStore));
+const md = MarkdownIt({ html: true }).use(componentPlugin);
 
 /**
  * Creates a promise with separate resolve and reject functions
@@ -55,7 +58,7 @@ export const promiseWithResolvers = <T>() => {
    */
   module = (id: string) =>
     defineAsyncComponent(async () =>
-      loadModule(`./pages/${id}.vue`, {
+      loadModule(md.render(`./docs/${id}.md`), {
         scriptOptions: { inlineTemplate: true },
       }),
     );

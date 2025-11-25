@@ -31,7 +31,7 @@ const a = $computed(() => kvNodes[route.name as keyof TPage]),
           url: `${window.location.origin}/${url}`,
         })) ?? [],
   ),
-  ogType = computed(() => a?.type as MetaFlat["ogType"] | null | undefined),
+  ogType = computed(() => a?.type as MetaFlat["ogType"] | null),
   ogUrl = computed(
     () => a?.to && `${window.location.origin}${a.to === "/" ? "" : a.to}`,
   ),
@@ -52,7 +52,7 @@ watchEffect(async () => {
     }
     favicon = href;
     jsonld = JSON.stringify(
-      (await fetching(`./pages/${a.id}.jsonld`)) ?? {
+      (await fetching(`./docs/${a.id}.jsonld`)) ?? {
         "@context": "https://schema.org",
       },
     );
