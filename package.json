@@ -43,7 +43,7 @@
     "@mdit-vue/plugin-toc": "^3.0.2",
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.9",
-    "@vuebro/loader-sfc": "^2.4.0",
+    "@vuebro/loader-sfc": "^2.4.1",
     "@vuebro/shared": "^1.2.11",
     "@vueuse/components": "^14.1.0",
     "@vueuse/core": "^14.1.0",
