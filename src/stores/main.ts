@@ -1,10 +1,24 @@
+import type { MarkdownItEnv } from "@mdit-vue/types";
 import type { TPage } from "@vuebro/shared";
 import type { RouteRecordNameGeneric } from "vue-router";
 
+import mermaid from "@datatraccorporation/markdown-it-mermaid";
 import { componentPlugin } from "@mdit-vue/plugin-component";
+import { frontmatterPlugin } from "@mdit-vue/plugin-frontmatter";
+import { sfcPlugin } from "@mdit-vue/plugin-sfc";
+import { tocPlugin } from "@mdit-vue/plugin-toc";
 import loadModule from "@vuebro/loader-sfc";
-import { sharedStore } from "@vuebro/shared";
+import { fetching, sharedStore } from "@vuebro/shared";
 import MarkdownIt from "markdown-it";
+import abbreviation from "markdown-it-abbr";
+import deflist from "markdown-it-deflist";
+import { full as emoji } from "markdown-it-emoji";
+import footnote from "markdown-it-footnote";
+import insert from "markdown-it-ins";
+import mark from "markdown-it-mark";
+import subscript from "markdown-it-sub";
+import superscript from "markdown-it-sup";
+import taskLists from "markdown-it-task-lists";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
@@ -14,7 +28,21 @@ interface PromiseWithResolvers<T> {
 }
 
 const { kvNodes, nodes } = $(toRefs(sharedStore));
-const md = MarkdownIt({ html: true }).use(componentPlugin);
+const md = MarkdownIt({ html: true })
+  .use(mermaid)
+  .use(abbreviation)
+  .use(deflist)
+  .use(emoji)
+  .use(footnote)
+  .use(insert)
+  .use(mark)
+  .use(subscript)
+  .use(superscript)
+  .use(taskLists)
+  .use(frontmatterPlugin)
+  .use(tocPlugin)
+  .use(componentPlugin)
+  .use(sfcPlugin);
 
 /**
  * Creates a promise with separate resolve and reject functions
@@ -56,9 +84,17 @@ export const promiseWithResolvers = <T>() => {
    * @param id The ID of the module to load
    * @returns The async component
    */
-  module = (id: string) =>
-    defineAsyncComponent(async () =>
-      loadModule(md.render(`./docs/${id}.md`), {
-        scriptOptions: { inlineTemplate: true },
-      }),
+  module = async (id: string) => {
+    const env: MarkdownItEnv = {};
+    md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
+    return defineAsyncComponent(() =>
+      loadModule(
+        `${env.sfcBlocks?.template?.content ?? ""}
+${env.sfcBlocks?.script?.content ?? ""}
+${env.sfcBlocks?.scriptSetup?.content ?? ""}
+${env.sfcBlocks?.styles.map(({ content }) => content).join("\n") ?? ""}
+`,
+        { scriptOptions: { inlineTemplate: true } },
+      ),
     );
+  };
