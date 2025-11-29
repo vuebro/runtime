@@ -44,11 +44,6 @@ const md = MarkdownIt({ html: true })
   .use(componentPlugin)
   .use(sfcPlugin);
 
-/**
- * Creates a promise with separate resolve and reject functions
- *
- * @returns Object containing the promise and its resolve/reject functions
- */
 export const promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];
     let reject!: PromiseWithResolvers<T>["reject"];
@@ -78,23 +73,16 @@ export const promiseWithResolvers = <T>() => {
         : [mainStore.that],
     ),
   }),
-  /**
-   * Loads a module dynamically
-   *
-   * @param id The ID of the module to load
-   * @returns The async component
-   */
-  module = async (id: string) => {
-    const env: MarkdownItEnv = {};
-    md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
-    return defineAsyncComponent(() =>
-      loadModule(
+  module = (id: string) =>
+    defineAsyncComponent(async () => {
+      const env: MarkdownItEnv = {};
+      md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
+      return loadModule(
         `${env.sfcBlocks?.template?.content ?? ""}
 ${env.sfcBlocks?.script?.content ?? ""}
 ${env.sfcBlocks?.scriptSetup?.content ?? ""}
 ${env.sfcBlocks?.styles.map(({ content }) => content).join("\n") ?? ""}
 `,
         { scriptOptions: { inlineTemplate: true } },
-      ),
-    );
-  };
+      );
+    });

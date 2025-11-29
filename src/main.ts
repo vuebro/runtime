@@ -50,14 +50,6 @@ await initUnocssRuntime({
       },
     }),
   },
-  /**
-   * Callback function called when the application is ready
-   *
-   * @param root0 The root object containing initialization functions
-   * @param root0.extractAll Function to extract all components
-   * @param root0.toggleObserver Function to toggle the intersection observer
-   * @returns Returns false to indicate completion
-   */
   ready: ({ extractAll, toggleObserver }) => {
     let scrollLock = false;
 
@@ -85,14 +77,6 @@ await initUnocssRuntime({
             }),
           { component: notFoundView, name: "404", path: "/:pathMatch(.*)*" },
         ],
-        /**
-         * Defines the scroll behavior for router navigation
-         *
-         * @param root0 The root object
-         * @param root0.hash The hash value for scrolling to an element
-         * @param root0.name The route name
-         * @returns Scroll options or false
-         */
         scrollBehavior: async ({ hash, name }) => {
           if (name) {
             routeName = name;
@@ -125,9 +109,6 @@ await initUnocssRuntime({
       }),
       { x, y } = $(
         useScroll(window, {
-          /**
-           * Callback when scrolling stops
-           */
           onStop: () => {
             const [first] = $these,
               [root] = nodes;
@@ -156,11 +137,6 @@ await initUnocssRuntime({
 
     return false;
   },
-  /**
-   * Returns the root element for the application
-   *
-   * @returns The root element or undefined if not found
-   */
   rootElement: () => document.getElementById("app") ?? undefined,
 });
 

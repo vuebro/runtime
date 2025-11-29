@@ -21,9 +21,6 @@ const $these = $toRef(mainStore, "$these"),
   kvNodes = toRef(sharedStore, "kvNodes"),
   { intersecting, promises } = mainStore;
 
-/**
- * Clears the intersecting and promises maps
- */
 const clear = () => {
     [intersecting, promises].forEach((map) => {
       map.clear();
