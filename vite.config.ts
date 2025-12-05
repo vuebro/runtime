@@ -1,4 +1,4 @@
-import inject from "@rollup/plugin-inject";
+// import inject from "@rollup/plugin-inject";
 import config from "@vuebro/configs/vite";
 import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, mergeConfig } from "vite";
@@ -38,27 +38,31 @@ export default mergeConfig(
           //   )?.replace(/^@/, "");
           // },
           manualChunks: {
+            katex: ["katex"],
             markdown: [
               "markdown-it",
-              "markdown-it-abbr",
-              "markdown-it-deflist",
-              "markdown-it-emoji",
-              "markdown-it-footnote",
-              "markdown-it-ins",
-              "markdown-it-mark",
-              "markdown-it-sub",
-              "markdown-it-sup",
-              "markdown-it-task-lists",
+              "markdown-it-mdc",
+              "@mdit/plugin-katex",
+              "@mdit/plugin-abbr",
+              "@mdit/plugin-dl",
+              "@mdit/plugin-footnote",
+              "@mdit/plugin-icon",
+              "@mdit/plugin-ins",
+              "@mdit/plugin-mark",
+              "@mdit/plugin-sub",
+              "@mdit/plugin-sup",
+              "@mdit/plugin-tasklist",
               "@mdit-vue/plugin-component",
               "@mdit-vue/plugin-frontmatter",
               "@mdit-vue/plugin-sfc",
               "@mdit-vue/plugin-toc",
+              "@datatraccorporation/markdown-it-mermaid",
             ],
-            mermaid: ["@datatraccorporation/markdown-it-mermaid"],
+            mermaid: ["mermaid"],
             shared: ["@vuebro/shared"],
           },
         },
-        plugins: [inject({ Buffer: ["buffer", "Buffer"] })],
+        // plugins: [inject({ Buffer: ["buffer", "Buffer"] })],
       },
     },
     plugins: [

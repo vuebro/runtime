@@ -7,18 +7,20 @@ import { componentPlugin } from "@mdit-vue/plugin-component";
 import { frontmatterPlugin } from "@mdit-vue/plugin-frontmatter";
 import { sfcPlugin } from "@mdit-vue/plugin-sfc";
 import { tocPlugin } from "@mdit-vue/plugin-toc";
+import { abbr } from "@mdit/plugin-abbr";
+import { dl } from "@mdit/plugin-dl";
+import { footnote } from "@mdit/plugin-footnote";
+import { icon } from "@mdit/plugin-icon";
+import { ins } from "@mdit/plugin-ins";
+import { katex } from "@mdit/plugin-katex";
+import { mark } from "@mdit/plugin-mark";
+import { sub } from "@mdit/plugin-sub";
+import { sup } from "@mdit/plugin-sup";
+import { tasklist } from "@mdit/plugin-tasklist";
 import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
 import MarkdownIt from "markdown-it";
-import abbreviation from "markdown-it-abbr";
-import deflist from "markdown-it-deflist";
-import { full as emoji } from "markdown-it-emoji";
-import footnote from "markdown-it-footnote";
-import insert from "markdown-it-ins";
-import mark from "markdown-it-mark";
-import subscript from "markdown-it-sub";
-import superscript from "markdown-it-sup";
-import taskLists from "markdown-it-task-lists";
+import pluginMdc from "markdown-it-mdc";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
@@ -29,16 +31,18 @@ interface PromiseWithResolvers<T> {
 
 const { kvNodes, nodes } = $(toRefs(sharedStore));
 const md = MarkdownIt({ html: true })
+  .use(katex)
   .use(mermaid)
-  .use(abbreviation)
-  .use(deflist)
-  .use(emoji)
+  .use(abbr)
+  .use(dl)
+  .use(icon)
   .use(footnote)
-  .use(insert)
+  .use(ins)
   .use(mark)
-  .use(subscript)
-  .use(superscript)
-  .use(taskLists)
+  .use(sub)
+  .use(sup)
+  .use(tasklist)
+  .use(pluginMdc)
   .use(frontmatterPlugin)
   .use(tocPlugin)
   .use(componentPlugin)
