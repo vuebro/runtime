@@ -54,7 +54,7 @@
     "@unhead/vue": "^2.0.19",
     "@unocss/runtime": "^66.5.10",
     "@vuebro/loader-sfc": "^2.4.4",
-    "@vuebro/shared": "^1.2.16",
+    "@vuebro/shared": "^1.2.17",
     "@vueuse/components": "^14.1.0",
     "@vueuse/core": "^14.1.0",
     "consola": "^3.4.2",
