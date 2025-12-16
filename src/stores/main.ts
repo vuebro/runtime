@@ -59,7 +59,7 @@ export const promiseWithResolvers = <T>() => {
   },
   mainStore = reactive({
     $these: computed((): TPage[] =>
-      mainStore.these.filter(({ enabled }) => enabled),
+      mainStore.these.filter(({ frontmatter: { hidden } }) => !hidden),
     ),
     intersecting: new Map<string, boolean | undefined>(),
     promises: new Map<string, PromiseWithResolvers<unknown>>(),
@@ -72,7 +72,8 @@ export const promiseWithResolvers = <T>() => {
         : kvNodes[mainStore.routeName as keyof object],
     ),
     these: computed((): TPage[] =>
-      mainStore.that === undefined || mainStore.that.parent?.flat
+      mainStore.that === undefined ||
+      mainStore.that.parent?.frontmatter["joint"]
         ? (mainStore.that?.siblings ?? [])
         : [mainStore.that],
     ),

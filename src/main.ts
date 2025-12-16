@@ -1,10 +1,17 @@
+import type { TPage } from "@vuebro/shared";
+
+import { InferSeoMetaPlugin } from "@unhead/addons";
 import { createHead } from "@unhead/vue/client";
 import initUnocssRuntime from "@unocss/runtime";
 import presets from "@vuebro/configs/uno/presets";
 import { fetching, sharedStore } from "@vuebro/shared";
 import { toReactive, useScroll } from "@vueuse/core";
 import { consola } from "consola/browser";
-import { ofetch as customFetch } from "ofetch";
+import {
+  AliasSortingPlugin,
+  CanonicalPlugin,
+  TemplateParamsPlugin,
+} from "unhead/plugins";
 import { createApp, toRefs } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -20,12 +27,8 @@ let routeName = $toRef(mainStore, "routeName");
 const { $these, that } = $(toRefs(mainStore));
 const { kvNodes, nodes } = $(toRefs(sharedStore));
 
-const [index, fonts] = (
-    await Promise.all(
-      ["index", "fonts"].map((file) => fetching(`${file}.json`)),
-    )
-  ).map((value) => value ?? []),
-  app = createApp(vueApp),
+const app = createApp(vueApp),
+  index = (await fetching("index.json")) ?? [],
   { intersecting, promises, root } = mainStore,
   { pathname } = new URL(document.baseURI);
 
@@ -38,43 +41,20 @@ sharedStore.tree = index;
 
 await initUnocssRuntime({
   defaults: {
-    presets: presets({
-      webFontsOptions: {
-        customFetch,
-        fonts: Object.fromEntries(
-          fonts.map((font: string) => [
-            font.toLowerCase().replace(/ /g, "_"),
-            font,
-          ]),
-        ),
-      },
-    }),
+    presets: presets(),
   },
   ready: ({ extractAll, toggleObserver }) => {
     let scrollLock = false;
-
     const router = createRouter({
         history: createWebHistory(pathname),
         routes: [
-          ...nodes
+          ...(nodes as TPage[])
             .filter(({ path }) => path !== undefined)
-            .map((page) => {
-              const {
-                id: name,
-                loc,
-                path,
-              } = page as { id: string; loc?: string; path: string };
-              const alias = loc
-                ?.replace(/ /g, "_")
-                .replace(/^\/?/, "/")
-                .replace(/\/?$/, "/");
-              return {
-                ...(alias && { alias }),
-                children: [{ component: pageView, name, path: "" }],
-                component: rootView,
-                path: path.replace(/^\/?/, "/").replace(/\/?$/, "/"),
-              };
-            }),
+            .map(({ id: name, to: path = "/" }) => ({
+              children: [{ component: pageView, name, path: "" }],
+              component: rootView,
+              path,
+            })),
           { component: notFoundView, name: "404", path: "/:pathMatch(.*)*" },
         ],
         scrollBehavior: async ({ hash, name }) => {
@@ -82,7 +62,8 @@ await initUnocssRuntime({
             routeName = name;
             if (scrollLock) scrollLock = false;
             else {
-              const { index, parent: { flat } = {} } = that ?? {};
+              const { index, parent: { frontmatter: { joint } = {} } = {} } =
+                that ?? {};
               toggleObserver(true);
               await root.promise;
               await Promise.all(
@@ -98,7 +79,7 @@ await initUnocssRuntime({
               }
               return {
                 behavior: "smooth" as ScrollOptions["behavior"],
-                ...(hash || (flat && index)
+                ...(hash || (joint && index)
                   ? { el: hash || `#${String(name)}` }
                   : { left: 0, top: 0 }),
               };
@@ -113,7 +94,9 @@ await initUnocssRuntime({
             const [first] = $these,
               [root] = nodes;
             if (root && first) {
-              const { $children: [{ id } = {}] = [] } = root;
+              const {
+                $children: [{ id } = {}],
+              } = root;
               const name =
                 !Math.floor(x) && !Math.floor(y) && first.id === id
                   ? root.id
@@ -140,4 +123,16 @@ await initUnocssRuntime({
   rootElement: () => document.getElementById("app") ?? undefined,
 });
 
-app.use(createHead()).provide("pages", toReactive(kvNodes)).mount("#app");
+app
+  .use(
+    createHead({
+      plugins: [
+        TemplateParamsPlugin,
+        AliasSortingPlugin,
+        CanonicalPlugin({}),
+        InferSeoMetaPlugin(),
+      ],
+    }),
+  )
+  .provide("pages", toReactive(kvNodes))
+  .mount("#app");

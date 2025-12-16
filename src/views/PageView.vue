@@ -4,10 +4,14 @@ div(
   :id,
   :key="id",
   v-element-visibility="[(state)=>{intersecting.set(id,state)},{threshold:0.1}]",
-  :class="kvNodes[id]?.class",
   un-cloak
 )
-  component(:is, :id="id", @vue:mounted="promises.get(id)?.resolve(undefined)")
+  div(v-bind="kvNodes[id]?.frontmatter['attrs'] ?? {}")
+    component(
+      :is,
+      :id="id",
+      @vue:mounted="promises.get(id)?.resolve(undefined)"
+    )
 </template>
 
 <script setup lang="ts">
