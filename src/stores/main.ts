@@ -2,7 +2,6 @@ import type { MarkdownItEnv } from "@mdit-vue/types";
 import type { TPage } from "@vuebro/shared";
 import type { RouteRecordNameGeneric } from "vue-router";
 
-import mermaid from "@datatraccorporation/markdown-it-mermaid";
 import { componentPlugin } from "@mdit-vue/plugin-component";
 import { frontmatterPlugin } from "@mdit-vue/plugin-frontmatter";
 import { sfcPlugin } from "@mdit-vue/plugin-sfc";
@@ -19,6 +18,7 @@ import { sup } from "@mdit/plugin-sup";
 import { tasklist } from "@mdit/plugin-tasklist";
 import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
+// import { linksPlugin } from "@vuepress/markdown";
 import MarkdownIt from "markdown-it";
 import pluginMdc from "markdown-it-mdc";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
@@ -30,9 +30,8 @@ interface PromiseWithResolvers<T> {
 }
 
 const { kvNodes, nodes } = $(toRefs(sharedStore));
-const md = MarkdownIt({ html: true })
+const md = MarkdownIt({ html: true, linkify: true, typographer: true })
   .use(katex)
-  .use(mermaid)
   .use(abbr)
   .use(dl)
   .use(icon)
@@ -43,6 +42,7 @@ const md = MarkdownIt({ html: true })
   .use(sup)
   .use(tasklist)
   .use(pluginMdc)
+  // .use(linksPlugin)
   .use(frontmatterPlugin)
   .use(tocPlugin)
   .use(componentPlugin)
@@ -82,6 +82,13 @@ export const promiseWithResolvers = <T>() => {
     defineAsyncComponent(async () => {
       const env: MarkdownItEnv = {};
       md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
+
+      console.log(`${env.sfcBlocks?.template?.content ?? ""}
+${env.sfcBlocks?.script?.content ?? ""}
+${env.sfcBlocks?.scriptSetup?.content ?? ""}
+${env.sfcBlocks?.styles.map(({ content }) => content).join("\n") ?? ""}
+`);
+
       return loadModule(
         `${env.sfcBlocks?.template?.content ?? ""}
 ${env.sfcBlocks?.script?.content ?? ""}

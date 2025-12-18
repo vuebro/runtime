@@ -34,7 +34,6 @@
   },
   "prettier": "@vuebro/configs/prettierrc",
   "dependencies": {
-    "@datatraccorporation/markdown-it-mermaid": "^0.5.0",
     "@mdit-vue/plugin-component": "^3.0.2",
     "@mdit-vue/plugin-frontmatter": "^3.0.2",
     "@mdit-vue/plugin-sfc": "^3.0.2",
@@ -66,8 +65,10 @@
   },
   "devDependencies": {
     "@mdit-vue/types": "^3.0.2",
-    "@types/node": "^25.0.2",
+    "@rollup/plugin-inject": "^5.0.5",
+    "@types/node": "^25.0.3",
     "@vuebro/configs": "^1.2.27",
+    "buffer": "^6.0.3",
     "eslint": "^9.39.2",
     "unocss": "^66.5.10",
     "vite": "^7.3.0",

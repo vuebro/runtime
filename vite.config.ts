@@ -1,4 +1,6 @@
-// import inject from "@rollup/plugin-inject";
+import type { HtmlTagDescriptor } from "vite";
+
+import inject from "@rollup/plugin-inject";
 import config from "@vuebro/configs/vite";
 import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig, mergeConfig } from "vite";
@@ -10,15 +12,19 @@ const external = ["vue", "vue-router", "@vuebro/loader-sfc"],
     file: "",
     name: key,
     rename(fileName: string, fileExtension: string) {
-      const { version } = JSON.parse(
-        readFileSync(`node_modules/${key}/package.json`).toString(),
-      ) as { version: string };
-      const file = `${fileName}-${version}.${fileExtension}`;
-      if (targets[i]) targets[i].file = `${targets[i].dest}/${file}`;
-      return file;
+      if (targets[i].file)
+        return targets[i].file.split("/").pop() ?? targets[i].file;
+      else {
+        const { version } = JSON.parse(
+          readFileSync(`node_modules/${key}/package.json`).toString(),
+        ) as { version: string };
+        const file = `${fileName}-${version}.${fileExtension}`;
+        targets[i].file = `${targets[i].dest}/${file}`;
+        return file;
+      }
     },
     src: `node_modules/${key}/dist/${
-      key.split("/").pop() ?? ""
+      key.split("/").pop() ?? key
     }.esm-browser.prod.js`,
   }));
 
@@ -56,19 +62,17 @@ export default mergeConfig(
               "@mdit-vue/plugin-frontmatter",
               "@mdit-vue/plugin-sfc",
               "@mdit-vue/plugin-toc",
-              "@datatraccorporation/markdown-it-mermaid",
             ],
-            mermaid: ["mermaid"],
             shared: ["@vuebro/shared"],
           },
         },
-        // plugins: [inject({ Buffer: ["buffer", "Buffer"] })],
+        plugins: [inject({ Buffer: ["buffer", "Buffer"] })],
       },
     },
     plugins: [
       viteStaticCopy({ targets }),
       {
-        closeBundle: () => {
+        closeBundle() {
           const path = "./dist/.vite/manifest.json";
           writeFileSync(
             path,
@@ -84,6 +88,36 @@ export default mergeConfig(
           );
         },
         name: "manifest",
+      },
+      {
+        name: "importmap",
+        transformIndexHtml() {
+          const imports = Object.fromEntries(
+            targets.map((target) => [
+              target.name,
+              `./assets/${target.rename(
+                `${target.name.split("/").pop() ?? target.name}.esm-browser.prod`,
+                "js",
+              )}`,
+            ]),
+          );
+          return [
+            {
+              attrs: { type: "importmap" },
+              children: JSON.stringify({ imports }),
+              injectTo: "head",
+              tag: "script",
+            },
+            ...Object.values(imports).map(
+              (href) =>
+                ({
+                  attrs: { crossorigin: true, href, rel: "modulepreload" },
+                  injectTo: "head",
+                  tag: "link",
+                }) as HtmlTagDescriptor,
+            ),
+          ];
+        },
       },
     ],
   }),
