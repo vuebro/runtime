@@ -22,8 +22,6 @@ import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
 import rootView from "@/views/RootView.vue";
 
-import "@mdit/plugin-alert/style";
-
 let routeName = $toRef(mainStore, "routeName");
 
 const { $these, that } = $(toRefs(mainStore));

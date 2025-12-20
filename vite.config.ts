@@ -49,7 +49,6 @@ export default mergeConfig(
               "markdown-it",
               "markdown-it-mdc",
               "@mdit/plugin-abbr",
-              "@mdit/plugin-alert",
               "@mdit/plugin-align",
               "@mdit/plugin-attrs",
               "@mdit/plugin-demo",
