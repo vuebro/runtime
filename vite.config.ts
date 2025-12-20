@@ -65,12 +65,9 @@ export default mergeConfig(
               "@mdit/plugin-mark",
               "@mdit/plugin-ruby",
               "@mdit/plugin-spoiler",
-              "@mdit/plugin-stylize",
               "@mdit/plugin-sub",
               "@mdit/plugin-sup",
-              "@mdit/plugin-tab",
               "@mdit/plugin-tasklist",
-              "@mdit/plugin-embed",
               "@mdit-vue/plugin-component",
               "@mdit-vue/plugin-frontmatter",
               "@mdit-vue/plugin-sfc",
@@ -116,6 +113,17 @@ export default mergeConfig(
             ]),
           );
           return [
+            {
+              attrs: {
+                crossorigin: true,
+                href: "https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css",
+                integrity:
+                  "sha256-4Yn9AjiBGYnDZG3Ovai8DPsex5G3nmDPnRjwWknIoBY=",
+                rel: "stylesheet",
+              },
+              injectTo: "head",
+              tag: "link",
+            },
             {
               attrs: {
                 as: "fetch",

@@ -12,7 +12,6 @@ import { align } from "@mdit/plugin-align";
 import { attrs } from "@mdit/plugin-attrs";
 import { demo } from "@mdit/plugin-demo";
 import { dl } from "@mdit/plugin-dl";
-import { embed } from "@mdit/plugin-embed";
 import { figure } from "@mdit/plugin-figure";
 import { footnote } from "@mdit/plugin-footnote";
 import { icon } from "@mdit/plugin-icon";
@@ -24,10 +23,8 @@ import { katex } from "@mdit/plugin-katex";
 import { mark } from "@mdit/plugin-mark";
 import { ruby } from "@mdit/plugin-ruby";
 import { spoiler } from "@mdit/plugin-spoiler";
-import { stylize } from "@mdit/plugin-stylize";
 import { sub } from "@mdit/plugin-sub";
 import { sup } from "@mdit/plugin-sup";
-import { tab } from "@mdit/plugin-tab";
 import { tasklist } from "@mdit/plugin-tasklist";
 import { ElementTransform } from "@nolebase/markdown-it-element-transform";
 import loadModule from "@vuebro/loader-sfc";
@@ -89,20 +86,9 @@ const md = MarkdownIt({
   .use(mark)
   .use(ruby)
   .use(spoiler)
-  .use(stylize)
   .use(sub)
   .use(sup)
-  .use(tab)
   .use(tasklist)
-  .use(embed, {
-    config: [
-      {
-        name: "youtube",
-        setup: (id: string) =>
-          `<iframe width="560" height="315" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>`,
-      },
-    ],
-  })
   .use(pluginMdc)
   .use(frontmatterPlugin)
   .use(tocPlugin)
