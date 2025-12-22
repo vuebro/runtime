@@ -43,7 +43,8 @@ await initUnocssRuntime({
   defaults: {
     presets: presets(),
   },
-  ready: ({ extractAll, toggleObserver }) => {
+  ready: ({ extractAll, toggleObserver, uno }) => {
+    mainStore.uno = uno;
     let scrollLock = false;
     const router = createRouter({
         history: createWebHistory(pathname),

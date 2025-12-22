@@ -44,6 +44,7 @@ export default mergeConfig(
           //   )?.replace(/^@/, "");
           // },
           manualChunks: {
+            ajv: ["ajv", "ajv-keywords"],
             katex: ["katex"],
             markdown: [
               "markdown-it",
@@ -73,7 +74,18 @@ export default mergeConfig(
               "@mdit-vue/plugin-toc",
               "@nolebase/markdown-it-element-transform",
             ],
-            shared: ["@vuebro/shared"],
+            unocss: [
+              "@unocss/runtime",
+              "@unocss/transformer-directives",
+              "@unocss/preset-tagify",
+              "@unocss/extractor-arbitrary-variants",
+              "@unocss/preset-attributify",
+              "@unocss/preset-web-fonts",
+              "@unocss/rule-utils",
+              "@unocss/core",
+              "@unocss/preset-typography",
+              "@unocss/preset-wind4",
+            ],
           },
         },
         plugins: [inject({ Buffer: ["buffer", "Buffer"] })],

@@ -1,5 +1,6 @@
 import type { MarkdownItEnv } from "@mdit-vue/types";
 import type { TPage } from "@vuebro/shared";
+import type { UnocssPluginContext } from "unocss";
 import type { RouteRecordNameGeneric } from "vue-router";
 
 import { componentPlugin } from "@mdit-vue/plugin-component";
@@ -26,8 +27,10 @@ import { sub } from "@mdit/plugin-sub";
 import { sup } from "@mdit/plugin-sup";
 import { tasklist } from "@mdit/plugin-tasklist";
 import { ElementTransform } from "@nolebase/markdown-it-element-transform";
+import transformerDirectives from "@unocss/transformer-directives";
 import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
+import MagicString from "magic-string";
 import MarkdownIt from "markdown-it";
 import pluginMdc from "markdown-it-mdc";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
@@ -42,56 +45,57 @@ let transformNextLinkCloseToken = false;
 
 const { kvNodes, nodes } = $(toRefs(sharedStore));
 const md = MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-})
-  .use(ElementTransform, {
-    transform(token) {
-      switch (token.type) {
-        case "link_close":
-          if (transformNextLinkCloseToken) {
-            token.tag = "RouterLink";
-            transformNextLinkCloseToken = false;
-          }
-          break;
-        case "link_open": {
-          const href = token.attrGet("href") ?? "/";
-          if (!URL.canParse(href)) {
-            token.tag = "RouterLink";
-            token.attrSet("to", href);
-            token.attrs?.splice(token.attrIndex("href"), 1);
-            transformNextLinkCloseToken = true;
-          }
-          break;
-        }
-      }
-    },
+    html: true,
+    linkify: true,
+    typographer: true,
   })
-  .use(abbr)
-  .use(align)
-  .use(attrs)
-  .use(demo)
-  .use(dl)
-  .use(figure)
-  .use(footnote)
-  .use(icon)
-  .use(imgLazyload)
-  .use(imgMark)
-  .use(imgSize)
-  .use(ins)
-  .use(katex)
-  .use(mark)
-  .use(ruby)
-  .use(spoiler)
-  .use(sub)
-  .use(sup)
-  .use(tasklist)
-  .use(pluginMdc)
-  .use(frontmatterPlugin)
-  .use(tocPlugin)
-  .use(componentPlugin)
-  .use(sfcPlugin);
+    .use(ElementTransform, {
+      transform(token) {
+        switch (token.type) {
+          case "link_close":
+            if (transformNextLinkCloseToken) {
+              token.tag = "RouterLink";
+              transformNextLinkCloseToken = false;
+            }
+            break;
+          case "link_open": {
+            const href = token.attrGet("href") ?? "/";
+            if (!URL.canParse(href)) {
+              token.tag = "RouterLink";
+              token.attrSet("to", href);
+              token.attrs?.splice(token.attrIndex("href"), 1);
+              transformNextLinkCloseToken = true;
+            }
+            break;
+          }
+        }
+      },
+    })
+    .use(abbr)
+    .use(align)
+    .use(attrs)
+    .use(demo)
+    .use(dl)
+    .use(figure)
+    .use(footnote)
+    .use(icon)
+    .use(imgLazyload)
+    .use(imgMark)
+    .use(imgSize)
+    .use(ins)
+    .use(katex)
+    .use(mark)
+    .use(ruby)
+    .use(spoiler)
+    .use(sub)
+    .use(sup)
+    .use(tasklist)
+    .use(pluginMdc)
+    .use(frontmatterPlugin)
+    .use(tocPlugin)
+    .use(componentPlugin)
+    .use(sfcPlugin),
+  { transform } = transformerDirectives();
 
 export const promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];
@@ -107,6 +111,45 @@ export const promiseWithResolvers = <T>() => {
       mainStore.these.filter(({ frontmatter: { hidden } }) => !hidden),
     ),
     intersecting: new Map<string, boolean | undefined>(),
+    module: (id: string) =>
+      defineAsyncComponent(async () => {
+        const env: MarkdownItEnv = {},
+          { uno } = mainStore;
+
+        md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
+
+        const styles =
+          env.sfcBlocks?.styles.map(
+            ({ contentStripped, tagClose, tagOpen }) => ({
+              contentStripped: new MagicString(contentStripped),
+              tagClose,
+              tagOpen,
+            }),
+          ) ?? [];
+
+        await Promise.all(
+          styles.map(
+            async ({ contentStripped }) =>
+              await transform(contentStripped, id, {
+                uno,
+              } as UnocssPluginContext),
+          ),
+        );
+
+        return loadModule(
+          `${env.sfcBlocks?.template?.content ?? ""}
+${env.sfcBlocks?.script?.content ?? ""}
+${env.sfcBlocks?.scriptSetup?.content ?? ""}
+${styles
+  .map(
+    ({ contentStripped, tagClose, tagOpen }) =>
+      `${tagOpen}${contentStripped.toString()}${tagClose}}`,
+  )
+  .join("\n")}
+`,
+          { scriptOptions: { inlineTemplate: true } },
+        );
+      }),
     promises: new Map<string, PromiseWithResolvers<unknown>>(),
     root: promiseWithResolvers(),
     routeName: undefined as RouteRecordNameGeneric,
@@ -122,17 +165,5 @@ export const promiseWithResolvers = <T>() => {
         ? (mainStore.that?.siblings ?? [])
         : [mainStore.that],
     ),
-  }),
-  module = (id: string) =>
-    defineAsyncComponent(async () => {
-      const env: MarkdownItEnv = {};
-      md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
-      return loadModule(
-        `${env.sfcBlocks?.template?.content ?? ""}
-${env.sfcBlocks?.script?.content ?? ""}
-${env.sfcBlocks?.scriptSetup?.content ?? ""}
-${env.sfcBlocks?.styles.map(({ content }) => content).join("\n") ?? ""}
-`,
-        { scriptOptions: { inlineTemplate: true } },
-      );
-    });
+    uno: {},
+  });

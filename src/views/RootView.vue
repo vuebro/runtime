@@ -13,9 +13,9 @@ Suspense
 import { sharedStore } from "@vuebro/shared";
 import { computed } from "vue";
 
-import { mainStore, module } from "@/stores/main";
+import { mainStore } from "@/stores/main";
 
 const nodes = $toRef(sharedStore, "nodes"),
-  { root } = mainStore;
+  { module, root } = mainStore;
 const is = computed(() => nodes[0] && module(nodes[0].id));
 </script>

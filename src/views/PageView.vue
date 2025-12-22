@@ -19,11 +19,11 @@ import { sharedStore } from "@vuebro/shared";
 import { vElementVisibility } from "@vueuse/components";
 import { computed, onUnmounted, toRef, watchEffect } from "vue";
 
-import { mainStore, module, promiseWithResolvers } from "@/stores/main";
+import { mainStore, promiseWithResolvers } from "@/stores/main";
 
 const $these = $toRef(mainStore, "$these"),
   kvNodes = toRef(sharedStore, "kvNodes"),
-  { intersecting, promises } = mainStore;
+  { intersecting, module, promises } = mainStore;
 
 const clear = () => {
     [intersecting, promises].forEach((map) => {
