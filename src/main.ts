@@ -63,7 +63,7 @@ await initUnocssRuntime({
             routeName = name;
             if (scrollLock) scrollLock = false;
             else {
-              const { index, parent: { frontmatter: { joint } = {} } = {} } =
+              const { index, parent: { frontmatter: { merge } = {} } = {} } =
                 that ?? {};
               toggleObserver(true);
               await root.promise;
@@ -80,7 +80,7 @@ await initUnocssRuntime({
               }
               return {
                 behavior: "smooth" as ScrollOptions["behavior"],
-                ...(hash || (joint && index)
+                ...(hash || (merge && index)
                   ? { el: hash || `#${String(name)}` }
                   : { left: 0, top: 0 }),
               };
