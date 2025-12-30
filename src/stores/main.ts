@@ -130,6 +130,7 @@ export const promiseWithResolvers = <T>() => {
         await Promise.all(
           styles.map(
             async ({ contentStripped }) =>
+              // @ts-expect-error a temporary fix due to the unocss bug
               await transform(contentStripped, id, {
                 uno,
               } as UnocssPluginContext),
@@ -161,7 +162,7 @@ ${styles
     ),
     these: computed((): TPage[] =>
       mainStore.that === undefined ||
-      mainStore.that.parent?.frontmatter["joint"]
+      mainStore.that.parent?.frontmatter["merge"]
         ? (mainStore.that?.siblings ?? [])
         : [mainStore.that],
     ),
