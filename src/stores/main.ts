@@ -118,14 +118,18 @@ export const promiseWithResolvers = <T>() => {
 
         md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
 
-        const styles =
-          env.sfcBlocks?.styles.map(
-            ({ contentStripped, tagClose, tagOpen }) => ({
-              contentStripped: new MagicString(contentStripped),
-              tagClose,
-              tagOpen,
-            }),
-          ) ?? [];
+        const injector = `
+const $id = "${id}";
+const $frontmatter = ${JSON.stringify(env.frontmatter ?? {})};
+`,
+          styles =
+            env.sfcBlocks?.styles.map(
+              ({ contentStripped, tagClose, tagOpen }) => ({
+                contentStripped: new MagicString(contentStripped),
+                tagClose,
+                tagOpen,
+              }),
+            ) ?? [];
 
         await Promise.all(
           styles.map(
@@ -140,7 +144,11 @@ export const promiseWithResolvers = <T>() => {
         return loadModule(
           `${env.sfcBlocks?.template?.content ?? ""}
 ${env.sfcBlocks?.script?.content ?? ""}
-${env.sfcBlocks?.scriptSetup?.content ?? ""}
+${
+  env.sfcBlocks?.scriptSetup
+    ? `${env.sfcBlocks.scriptSetup.tagOpen}${injector}${env.sfcBlocks.scriptSetup.contentStripped}${env.sfcBlocks.scriptSetup.tagClose}`
+    : `<script setup>${injector}</script>`
+}
 ${styles
   .map(
     ({ contentStripped, tagClose, tagOpen }) =>
@@ -161,8 +169,7 @@ ${styles
         : kvNodes[mainStore.routeName as keyof object],
     ),
     these: computed((): TPage[] =>
-      mainStore.that === undefined ||
-      mainStore.that.parent?.frontmatter["merge"]
+      mainStore.that === undefined || mainStore.that.parent?.frontmatter["flat"]
         ? (mainStore.that?.siblings ?? [])
         : [mainStore.that],
     ),

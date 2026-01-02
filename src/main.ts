@@ -63,7 +63,7 @@ await initUnocssRuntime({
             routeName = name;
             if (scrollLock) scrollLock = false;
             else {
-              const { index, parent: { frontmatter: { merge } = {} } = {} } =
+              const { index, parent: { frontmatter: { flat } = {} } = {} } =
                 that ?? {};
               toggleObserver(true);
               await root.promise;
@@ -80,7 +80,7 @@ await initUnocssRuntime({
               }
               return {
                 behavior: "smooth" as ScrollOptions["behavior"],
-                ...(hash || (merge && index)
+                ...(hash || (flat && index)
                   ? { el: hash || `#${String(name)}` }
                   : { left: 0, top: 0 }),
               };
@@ -135,5 +135,5 @@ app
       ],
     }),
   )
-  .provide("pages", toReactive(kvNodes))
+  .provide("docs", toReactive(kvNodes))
   .mount("#app");
