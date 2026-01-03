@@ -34,66 +34,77 @@ import MagicString from "magic-string";
 import MarkdownIt from "markdown-it";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
+/* -------------------------------------------------------------------------- */
+
 interface PromiseWithResolvers<T> {
   promise: Promise<T>;
   reject: (reason?: unknown) => void;
   resolve: (value: PromiseLike<T> | T) => void;
 }
 
+/* -------------------------------------------------------------------------- */
+
 let transformNextLinkCloseToken = false;
 
-const { kvNodes, nodes } = $(toRefs(sharedStore));
-const md = MarkdownIt({
-    html: true,
-    linkify: true,
-    typographer: true,
-  })
-    .use(ElementTransform, {
-      transform(token) {
-        switch (token.type) {
-          case "link_close":
-            if (transformNextLinkCloseToken) {
-              token.tag = "RouterLink";
-              transformNextLinkCloseToken = false;
-            }
-            break;
-          case "link_open": {
-            const href = token.attrGet("href") ?? "/";
-            if (!URL.canParse(href)) {
-              token.tag = "RouterLink";
-              token.attrSet("to", href);
-              token.attrs?.splice(token.attrIndex("href"), 1);
-              transformNextLinkCloseToken = true;
-            }
-            break;
-          }
-        }
-      },
-    })
-    .use(abbr)
-    .use(align)
-    .use(attrs)
-    .use(demo)
-    .use(dl)
-    .use(figure)
-    .use(footnote)
-    .use(icon)
-    .use(imgLazyload)
-    .use(imgMark)
-    .use(imgSize)
-    .use(ins)
-    .use(katex)
-    .use(mark)
-    .use(ruby)
-    .use(spoiler)
-    .use(sub)
-    .use(sup)
-    .use(tasklist)
-    .use(frontmatterPlugin)
-    .use(tocPlugin)
-    .use(componentPlugin)
-    .use(sfcPlugin),
+/* -------------------------------------------------------------------------- */
+
+const { kvNodes, nodes } = toRefs(sharedStore),
   { transform } = transformerDirectives();
+
+/* -------------------------------------------------------------------------- */
+
+const md = MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+})
+  .use(ElementTransform, {
+    transform(token) {
+      switch (token.type) {
+        case "link_close":
+          if (transformNextLinkCloseToken) {
+            token.tag = "RouterLink";
+            transformNextLinkCloseToken = false;
+          }
+          break;
+        case "link_open": {
+          const href = token.attrGet("href") ?? "/";
+          if (!URL.canParse(href)) {
+            token.tag = "RouterLink";
+            token.attrSet("to", href);
+            token.attrs?.splice(token.attrIndex("href"), 1);
+            transformNextLinkCloseToken = true;
+          }
+          break;
+        }
+      }
+    },
+  })
+  .use(abbr)
+  .use(align)
+  .use(attrs)
+  .use(demo)
+  .use(dl)
+  .use(figure)
+  .use(footnote)
+  .use(icon)
+  .use(imgLazyload)
+  .use(imgMark)
+  .use(imgSize)
+  .use(ins)
+  .use(katex)
+  .use(mark)
+  .use(ruby)
+  .use(spoiler)
+  .use(sub)
+  .use(sup)
+  .use(tasklist)
+  .use(frontmatterPlugin)
+  .use(tocPlugin)
+  .use(componentPlugin)
+  .use(sfcPlugin);
+
+/* -------------------------------------------------------------------------- */
 
 export const promiseWithResolvers = <T>() => {
     let resolve!: PromiseWithResolvers<T>["resolve"];
@@ -162,9 +173,9 @@ ${styles
     routeName: undefined as RouteRecordNameGeneric,
     scrollLock: false,
     that: computed((): TPage | undefined =>
-      mainStore.routeName === nodes[0]?.id
-        ? nodes[0]?.$children[0]
-        : kvNodes[mainStore.routeName as keyof object],
+      mainStore.routeName === nodes.value[0]?.id
+        ? nodes.value[0]?.$children[0]
+        : kvNodes.value[mainStore.routeName as keyof object],
     ),
     these: computed((): TPage[] =>
       mainStore.that === undefined || mainStore.that.parent?.frontmatter["flat"]
