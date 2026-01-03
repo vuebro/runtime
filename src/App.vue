@@ -7,13 +7,25 @@ import type { TPage } from "@vuebro/shared";
 
 import { useHead } from "@unhead/vue";
 import { sharedStore } from "@vuebro/shared";
-import { computed, toRef } from "vue";
+import { computed, toRefs } from "vue";
 import { useRoute } from "vue-router";
 
-const kvNodes = $toRef(sharedStore, "kvNodes"),
-  nodes = toRef(sharedStore, "nodes"),
-  route = useRoute();
-const input = computed(() => kvNodes[route.name as keyof TPage]?.frontmatter);
+/* -------------------------------------------------------------------------- */
+
+const route = useRoute();
+
+/* -------------------------------------------------------------------------- */
+
+const { kvNodes, nodes } = toRefs(sharedStore);
+
+/* -------------------------------------------------------------------------- */
+
+const input = computed(() => ({
+  ...nodes.value[0]?.frontmatter,
+  ...kvNodes.value[route.name as keyof TPage]?.frontmatter,
+}));
+
+/* -------------------------------------------------------------------------- */
 
 useHead(input, { mode: "client" });
 </script>
