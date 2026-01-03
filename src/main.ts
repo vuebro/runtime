@@ -41,7 +41,9 @@ sharedStore.tree = index;
 
 await initUnocssRuntime({
   defaults: {
-    presets: presets(),
+    presets: presets({
+      iconsOptions: { extraProperties: { display: "inline-block" } },
+    }),
   },
   ready: ({ extractAll, toggleObserver, uno }) => {
     mainStore.uno = uno;
