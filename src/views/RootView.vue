@@ -2,11 +2,7 @@
 Suspense
   div(v-if="!nodes[0]?.frontmatter['hidden']", :id="nodes[0]?.id", un-cloak)
     div(v-bind="nodes[0]?.frontmatter['attrs'] ?? {}")
-      component(
-        :is,
-        :id="nodes[0]?.id",
-        @vue:mounted="root.resolve(undefined)"
-      )
+      component(:is, @vue:mounted="root.resolve(undefined)")
 </template>
 
 <script setup lang="ts">
