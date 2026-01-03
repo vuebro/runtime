@@ -20,12 +20,12 @@ const { kvNodes, nodes } = toRefs(sharedStore);
 
 /* -------------------------------------------------------------------------- */
 
-const input = computed(() => ({
-  ...nodes.value[0]?.frontmatter,
-  ...kvNodes.value[route.name as keyof TPage]?.frontmatter,
-}));
+const input = computed(
+  () => kvNodes.value[route.name as keyof TPage]?.frontmatter,
+);
 
 /* -------------------------------------------------------------------------- */
 
+useHead(nodes.value[0]?.frontmatter, { mode: "client" });
 useHead(input, { mode: "client" });
 </script>
