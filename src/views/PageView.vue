@@ -7,11 +7,7 @@ div(
   un-cloak
 )
   div(v-bind="kvNodes[id]?.frontmatter['attrs'] ?? {}")
-    component(
-      :is,
-      :id="id",
-      @vue:mounted="promises.get(id)?.resolve(undefined)"
-    )
+    component(:is, @vue:mounted="promises.get(id)?.resolve(undefined)")
 </template>
 
 <script setup lang="ts">
