@@ -32,7 +32,6 @@ import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
 import MagicString from "magic-string";
 import MarkdownIt from "markdown-it";
-import pluginMdc from "markdown-it-mdc";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 interface PromiseWithResolvers<T> {
@@ -90,7 +89,6 @@ const md = MarkdownIt({
     .use(sub)
     .use(sup)
     .use(tasklist)
-    .use(pluginMdc)
     .use(frontmatterPlugin)
     .use(tocPlugin)
     .use(componentPlugin)
