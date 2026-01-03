@@ -48,7 +48,6 @@ export default mergeConfig(
             katex: ["katex"],
             markdown: [
               "markdown-it",
-              "markdown-it-mdc",
               "@mdit/plugin-abbr",
               "@mdit/plugin-align",
               "@mdit/plugin-attrs",
