@@ -137,5 +137,5 @@ app
       ],
     }),
   )
-  .provide("docs", toReactive(kvNodes))
+  .provide("pages", toReactive(kvNodes))
   .mount("#app");
