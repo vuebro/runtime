@@ -125,7 +125,7 @@ export const promiseWithResolvers = <T>() => {
         const env: MarkdownItEnv = {},
           { uno } = mainStore;
 
-        md.render((await fetching(`./docs/${id}.md`)) ?? "", env);
+        md.render((await fetching(`./pages/${id}.md`)) ?? "", env);
 
         const injector = `
 const $id = "${id}";
