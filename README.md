@@ -58,7 +58,7 @@ This runtime is designed to work with the broader VueBro ecosystem:
 
 - Receives data from `index.json` and `fonts.json` files
 - Uses `@vuebro/shared` for common utilities
-- Dynamic components loaded from `./docs/` directory
+- Dynamic components loaded from `./pages/` directory
 - Uses `@vuebro/configs` for shared Vite, TypeScript, and UnoCSS configurations
 
 ## File Structure
