@@ -67,6 +67,7 @@
     "@vueuse/components": "^14.1.0",
     "@vueuse/core": "^14.1.0",
     "consola": "^3.4.2",
+    "highlight.js": "^11.11.1",
     "magic-string": "^0.30.21",
     "markdown-it": "^14.1.0",
     "unhead": "^2.1.1",
