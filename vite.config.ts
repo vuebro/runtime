@@ -45,6 +45,7 @@ export default mergeConfig(
           // },
           manualChunks: {
             ajv: ["ajv", "ajv-keywords"],
+            hljs: ["highlight.js"],
             katex: ["katex"],
             markdown: [
               "markdown-it",
@@ -123,17 +124,6 @@ export default mergeConfig(
             ]),
           );
           return [
-            {
-              attrs: {
-                crossorigin: true,
-                href: "https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css",
-                integrity:
-                  "sha256-4Yn9AjiBGYnDZG3Ovai8DPsex5G3nmDPnRjwWknIoBY=",
-                rel: "stylesheet",
-              },
-              injectTo: "head",
-              tag: "link",
-            },
             {
               attrs: {
                 as: "fetch",
