@@ -30,6 +30,7 @@ import { ElementTransform } from "@nolebase/markdown-it-element-transform";
 import transformerDirectives from "@unocss/transformer-directives";
 import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
+import hljs from "highlight.js";
 import MagicString from "magic-string";
 import MarkdownIt from "markdown-it";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
@@ -53,56 +54,61 @@ const { kvNodes, nodes } = toRefs(sharedStore),
 
 /* -------------------------------------------------------------------------- */
 
-const md = MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-})
-  .use(ElementTransform, {
-    transform(token) {
-      switch (token.type) {
-        case "link_close":
-          if (transformNextLinkCloseToken) {
-            token.tag = "RouterLink";
-            transformNextLinkCloseToken = false;
-          }
-          break;
-        case "link_open": {
-          const href = token.attrGet("href") ?? "/";
-          if (!URL.canParse(href)) {
-            token.tag = "RouterLink";
-            token.attrSet("to", href);
-            token.attrs?.splice(token.attrIndex("href"), 1);
-            transformNextLinkCloseToken = true;
-          }
-          break;
-        }
-      }
-    },
+const highlight = (code: string, language: string) =>
+    language && hljs.getLanguage(language)
+      ? hljs.highlight(code, { language }).value
+      : "",
+  md = MarkdownIt({
+    highlight,
+    html: true,
+    linkify: true,
+    typographer: true,
   })
-  .use(abbr)
-  .use(align)
-  .use(attrs)
-  .use(demo)
-  .use(dl)
-  .use(figure)
-  .use(footnote)
-  .use(icon)
-  .use(imgLazyload)
-  .use(imgMark)
-  .use(imgSize)
-  .use(ins)
-  .use(katex)
-  .use(mark)
-  .use(ruby)
-  .use(spoiler)
-  .use(sub)
-  .use(sup)
-  .use(tasklist)
-  .use(frontmatterPlugin)
-  .use(tocPlugin)
-  .use(componentPlugin)
-  .use(sfcPlugin);
+    .use(ElementTransform, {
+      transform(token) {
+        switch (token.type) {
+          case "link_close":
+            if (transformNextLinkCloseToken) {
+              token.tag = "RouterLink";
+              transformNextLinkCloseToken = false;
+            }
+            break;
+          case "link_open": {
+            const href = token.attrGet("href") ?? "/";
+            if (!URL.canParse(href)) {
+              token.tag = "RouterLink";
+              token.attrSet("to", href);
+              token.attrs?.splice(token.attrIndex("href"), 1);
+              transformNextLinkCloseToken = true;
+            }
+            break;
+          }
+        }
+      },
+    })
+    .use(abbr)
+    .use(align)
+    .use(attrs)
+    .use(demo)
+    .use(dl)
+    .use(figure)
+    .use(footnote)
+    .use(icon)
+    .use(imgLazyload)
+    .use(imgMark)
+    .use(imgSize)
+    .use(ins)
+    .use(katex)
+    .use(mark)
+    .use(ruby)
+    .use(spoiler)
+    .use(sub)
+    .use(sup)
+    .use(tasklist)
+    .use(frontmatterPlugin)
+    .use(tocPlugin)
+    .use(componentPlugin)
+    .use(sfcPlugin);
 
 /* -------------------------------------------------------------------------- */
 
