@@ -54,61 +54,62 @@ const { kvNodes, nodes } = toRefs(sharedStore),
 
 /* -------------------------------------------------------------------------- */
 
-const highlight = (code: string, language: string) =>
-    language && hljs.getLanguage(language)
-      ? hljs.highlight(code, { language }).value
-      : "",
-  md = MarkdownIt({
-    highlight,
-    html: true,
-    linkify: true,
-    typographer: true,
-  })
-    .use(ElementTransform, {
-      transform(token) {
-        switch (token.type) {
-          case "link_close":
-            if (transformNextLinkCloseToken) {
-              token.tag = "RouterLink";
-              transformNextLinkCloseToken = false;
-            }
-            break;
-          case "link_open": {
-            const href = token.attrGet("href") ?? "/";
-            if (!URL.canParse(href)) {
-              token.tag = "RouterLink";
-              token.attrSet("to", href);
-              token.attrs?.splice(token.attrIndex("href"), 1);
-              transformNextLinkCloseToken = true;
-            }
-            break;
+const md: MarkdownIt = MarkdownIt({
+  highlight: (code: string, language: string) =>
+    `<pre><code class="hljs">${
+      language && hljs.getLanguage(language)
+        ? hljs.highlight(code, { language }).value
+        : md.utils.escapeHtml(code)
+    }</code></pre>`,
+  html: true,
+  linkify: true,
+  typographer: true,
+})
+  .use(ElementTransform, {
+    transform(token) {
+      switch (token.type) {
+        case "link_close":
+          if (transformNextLinkCloseToken) {
+            token.tag = "RouterLink";
+            transformNextLinkCloseToken = false;
           }
+          break;
+        case "link_open": {
+          const href = token.attrGet("href") ?? "/";
+          if (!URL.canParse(href)) {
+            token.tag = "RouterLink";
+            token.attrSet("to", href);
+            token.attrs?.splice(token.attrIndex("href"), 1);
+            transformNextLinkCloseToken = true;
+          }
+          break;
         }
-      },
-    })
-    .use(abbr)
-    .use(align)
-    .use(attrs)
-    .use(demo)
-    .use(dl)
-    .use(figure)
-    .use(footnote)
-    .use(icon)
-    .use(imgLazyload)
-    .use(imgMark)
-    .use(imgSize)
-    .use(ins)
-    .use(katex)
-    .use(mark)
-    .use(ruby)
-    .use(spoiler)
-    .use(sub)
-    .use(sup)
-    .use(tasklist)
-    .use(frontmatterPlugin)
-    .use(tocPlugin)
-    .use(componentPlugin)
-    .use(sfcPlugin);
+      }
+    },
+  })
+  .use(abbr)
+  .use(align)
+  .use(attrs)
+  .use(demo)
+  .use(dl)
+  .use(figure)
+  .use(footnote)
+  .use(icon)
+  .use(imgLazyload)
+  .use(imgMark)
+  .use(imgSize)
+  .use(ins)
+  .use(katex)
+  .use(mark)
+  .use(ruby)
+  .use(spoiler)
+  .use(sub)
+  .use(sup)
+  .use(tasklist)
+  .use(frontmatterPlugin)
+  .use(tocPlugin)
+  .use(componentPlugin)
+  .use(sfcPlugin);
 
 /* -------------------------------------------------------------------------- */
 
