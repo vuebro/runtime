@@ -22,6 +22,9 @@ import notFoundView from "@/views/NotFoundView.vue";
 import pageView from "@/views/PageView.vue";
 import rootView from "@/views/RootView.vue";
 
+import "@highlightjs/cdn-assets/styles/default.css";
+import "katex/dist/katex.css";
+
 let routeName = $toRef(mainStore, "routeName");
 
 const { $these, that } = $(toRefs(mainStore));
