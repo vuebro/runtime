@@ -34,6 +34,7 @@
   },
   "prettier": "@vuebro/configs/prettierrc",
   "dependencies": {
+    "@highlightjs/cdn-assets": "^11.11.1",
     "@mdit-vue/plugin-component": "^3.0.2",
     "@mdit-vue/plugin-frontmatter": "^3.0.2",
     "@mdit-vue/plugin-sfc": "^3.0.2",
@@ -67,9 +68,10 @@
     "@vueuse/components": "^14.1.0",
     "@vueuse/core": "^14.1.0",
     "consola": "^3.4.2",
-    "highlight.js": "^11.11.1",
+    "katex": "^0.16.27",
     "magic-string": "^0.30.21",
     "markdown-it": "^14.1.0",
+    "markdown-it-emoji": "^3.0.0",
     "unhead": "^2.1.1",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
@@ -77,6 +79,7 @@
   "devDependencies": {
     "@mdit-vue/types": "^3.0.2",
     "@rollup/plugin-inject": "^5.0.5",
+    "@types/markdown-it-emoji": "^3.0.1",
     "@types/node": "^25.0.3",
     "@vuebro/configs": "^1.2.37",
     "buffer": "^6.0.3",
