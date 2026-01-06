@@ -45,7 +45,6 @@ export default mergeConfig(
           // },
           manualChunks: {
             ajv: ["ajv", "ajv-keywords"],
-            hljs: ["highlight.js"],
             katex: ["katex"],
             markdown: [
               "markdown-it",
