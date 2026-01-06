@@ -3,6 +3,7 @@ import type { TPage } from "@vuebro/shared";
 import type { UnocssPluginContext } from "unocss";
 import type { RouteRecordNameGeneric } from "vue-router";
 
+import hljs from "@highlightjs/cdn-assets/es/highlight";
 import { componentPlugin } from "@mdit-vue/plugin-component";
 import { frontmatterPlugin } from "@mdit-vue/plugin-frontmatter";
 import { sfcPlugin } from "@mdit-vue/plugin-sfc";
@@ -30,9 +31,9 @@ import { ElementTransform } from "@nolebase/markdown-it-element-transform";
 import transformerDirectives from "@unocss/transformer-directives";
 import loadModule from "@vuebro/loader-sfc";
 import { fetching, sharedStore } from "@vuebro/shared";
-import hljs from "highlight.js";
 import MagicString from "magic-string";
 import MarkdownIt from "markdown-it";
+import { full } from "markdown-it-emoji";
 import { computed, defineAsyncComponent, reactive, toRefs } from "vue";
 
 /* -------------------------------------------------------------------------- */
@@ -57,9 +58,9 @@ const { kvNodes, nodes } = toRefs(sharedStore),
 const md: MarkdownIt = MarkdownIt({
   highlight: (code: string, language: string) =>
     `<pre><code class="hljs">${
-      language && hljs.getLanguage(language)
+      (language && hljs.getLanguage(language)
         ? hljs.highlight(code, { language }).value
-        : md.utils.escapeHtml(code)
+        : md.utils.escapeHtml(code)) as string
     }</code></pre>`,
   html: true,
   linkify: true,
@@ -87,6 +88,7 @@ const md: MarkdownIt = MarkdownIt({
       }
     },
   })
+  .use(full)
   .use(abbr)
   .use(align)
   .use(attrs)
